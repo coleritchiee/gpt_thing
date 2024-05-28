@@ -4,7 +4,7 @@ import 'home/home.dart';
 import 'login/login.dart';
 
 var appRoutes = {
-  '/': (context) => const HomePage(),
+  '': (context) => const HomePage(),
   '/login': (context) => const LoginPage(),
   '/settings': (context) => const SettingsPage(),
 };
