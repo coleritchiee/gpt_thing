@@ -13,13 +13,20 @@ class HomePage extends StatelessWidget {
       drawer: Drawer(
         shape: const LinearBorder(),
         child: ListView(
+          padding: const EdgeInsets.all(8.0),       
           children: [
-            ListTile(
-              title: const Text('GPT Thing'),
+            const ListTile(
+              title: Text('GPT Thing'),
             ),
             ListTile(
               title: const Text('ChatGPT'),
               titleTextStyle: Theme.of(context).textTheme.bodySmall,
+              leading: const Icon(Icons.chat_bubble_rounded),
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(5),
+                ),
+              ),
               onTap: () {
                 Navigator.pop(context);
               },
@@ -27,6 +34,12 @@ class HomePage extends StatelessWidget {
             ListTile(
               title: const Text('DALL·E'),
               titleTextStyle: Theme.of(context).textTheme.bodySmall,
+              leading: const Icon(Icons.design_services_rounded),
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(5),
+                ),
+              ),
               onTap: () {
                 Navigator.pop(context);
               },
@@ -34,6 +47,13 @@ class HomePage extends StatelessWidget {
             ListTile(
               title: const Text('Login'),
               titleTextStyle: Theme.of(context).textTheme.bodySmall,
+              leading: const Icon(Icons.login_rounded),
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(5),
+                ),
+              ),
+              tileColor: Colors.green,
               onTap: () {
                 Navigator.pop(context);
               },
