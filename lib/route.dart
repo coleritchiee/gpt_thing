@@ -7,4 +7,4 @@ var appRoutes = {
   '/': (context) => const HomePage(),
   '/login': (context) => const LoginPage(),
   '/settings': (context) => const SettingsPage(),
-}
+};
