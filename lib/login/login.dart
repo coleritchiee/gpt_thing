@@ -1,55 +1,105 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:gpt_thing/theme.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../services/auth.dart';
 
 class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+  final emailController;
+  final passwordController;
+  const LoginPage({super.key, this.emailController, this.passwordController});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        padding: const EdgeInsets.all(30),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            const FlutterLogo(
-              size: 150,
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 50),
+          child: Column(children: [
+            const FlutterLogo(size: 100),
+            const SizedBox(
+              height: 50,
             ),
-            Flexible(
-              child: LoginButton(
-                icon: FontAwesomeIcons.userNinja,
-                text: 'Continue as Guest',
-                loginMethod: AuthService().anonLogin,
-                color: Colors.deepPurple,
+            Text(
+              "Welcome Back",
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+                fontFamily: GoogleFonts.notoSans().fontFamily
               ),
             ),
-            FutureBuilder<Object>(
-              future: SignInWithApple.isAvailable(),
-              builder: (context, snapshot) {
-                if (snapshot.data == true) {
-                  return SignInWithAppleButton(
-                    onPressed: () {
-                      AuthService().signInWithApple();
-                    },
-                  );
-                } else {
-                  return Container();
-                }
-              },
+            const SizedBox(height: 25),
+            SizedBox(
+              width: 350,
+              child: TextField(
+                controller: emailController,
+                decoration: const InputDecoration(
+                  enabledBorder:  OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey)
+                  ),
+                  focusedBorder:  OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.green)
+                  ),
+                  hintText: "Email Address",
+                ),
+              ),
             ),
-            LoginButton(
-              text: 'Sign in with Google',
-              icon: FontAwesomeIcons.google,
-              color: Colors.blue,
-              loginMethod: AuthService().googleLogin,
+            const SizedBox(height: 10),
+
+            SizedBox(
+              width: 350,
+              child: TextField(
+                controller: passwordController,
+                decoration: const InputDecoration(
+                  enabledBorder:  OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey)
+                  ),
+                  focusedBorder:  OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.green)
+                  ),
+                  hintText: 'Password',
+                ),
+              ),
             ),
-          ],
+            const SizedBox(height: 25),
+            LoginButton(text: 'Sign in', icon: Icons.account_circle, color: Colors.green, loginMethod: AuthService().anonLogin),
+            const SizedBox(height: 25),
+            const Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25),
+                  child: SizedBox(
+                    width: 400,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Divider(
+                            thickness: 0.5,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        Text("   OR   ",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        Expanded(
+                          child: Divider(
+                            thickness: 0.5,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+              ),
+          ]),
         ),
-      ),
+      )
     );
   }
 }
@@ -81,7 +131,15 @@ class LoginButton extends StatelessWidget {
           backgroundColor: color,
         ),
         onPressed: () => loginMethod(),
-        label: Text(text, textAlign: TextAlign.center),
+        label: Text(
+            text,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.white,
+              fontFamily: GoogleFonts.notoSans().fontFamily
+          ),
+        ),
       ),
     );
   }
