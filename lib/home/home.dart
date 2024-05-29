@@ -113,6 +113,27 @@ class HomePage extends StatelessWidget {
           ],
         ),
       ),
+      body: Center(
+        child: Padding (
+          padding: const EdgeInsets.all(36.0),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: 768,
+            ),
+            child: Column(
+              children: [
+                const Expanded(
+                  child: Text("chat goes here"),
+                ),
+                TextField(
+                  style: Theme.of(context).textTheme.bodySmall,
+                  autocorrect: true,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
