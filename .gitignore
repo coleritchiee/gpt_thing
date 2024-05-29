@@ -44,3 +44,5 @@ app.*.map.json
 
 # API keys and whatnot
 lib/firebase_options.dart
+ios/Runner/GoogleService-Info.plist
+app/google-services.json

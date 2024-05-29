@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:gpt_thing/login/login.dart';
 import 'package:gpt_thing/route.dart';
 import 'package:gpt_thing/theme.dart';
 import 'package:provider/provider.dart';
@@ -33,7 +34,7 @@ class _AppState extends State<App> {
           return MaterialApp(
                 routes: appRoutes,
                 theme: appTheme,
-                home: const HomePage(),
+                home: const LoginPage(),
           );
         }
         return Text('loading', textDirection: TextDirection.rtl);

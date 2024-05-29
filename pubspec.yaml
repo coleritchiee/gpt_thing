@@ -45,6 +45,7 @@ dependencies:
   sign_in_with_apple: ^6.1.0
   rxdart: ^0.27.7
   json_annotation: ^4.9.0
+  font_awesome_flutter: ^10.6.0
 
 dev_dependencies:
   flutter_test:
