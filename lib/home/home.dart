@@ -125,9 +125,30 @@ class HomePage extends StatelessWidget {
                 const Expanded(
                   child: Text("chat goes here"),
                 ),
-                TextField(
-                  style: Theme.of(context).textTheme.bodySmall,
-                  autocorrect: true,
+                ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxHeight: 215,
+                  ),
+                  child: TextField(
+                    style: Theme.of(context).textTheme.bodySmall,
+                    maxLines: null,
+                    autocorrect: true,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(16),
+                        ),
+                        borderSide: BorderSide(
+                          color: Colors.black,
+                          width: 1,
+                        ),
+                      ),
+                      hintText: 'Message ChatGPT',
+                      hintStyle: TextStyle(
+                        color: Colors.grey[500],
+                      ),
+                    )
+                  ), 
                 ),
               ],
             ),

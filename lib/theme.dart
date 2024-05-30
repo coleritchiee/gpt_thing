@@ -13,7 +13,7 @@ var appTheme = ThemeData(
       fontWeight: FontWeight.w600,
     ),
     titleMedium: TextStyle(
-    color: Colors.grey
+      color: Colors.grey,
     ),
   ),
 );
