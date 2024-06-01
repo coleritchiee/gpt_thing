@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-late final chatFocusNode = FocusNode(
+final chatController = TextEditingController();
+
+final chatFocusNode = FocusNode(
   onKeyEvent: (FocusNode node, KeyEvent event) {
     if (!HardwareKeyboard.instance.isShiftPressed && event.logicalKey.keyLabel == 'Enter') {
       if (event is KeyDownEvent) {
-        print("message submitted");
+        print(chatController.text); // this is where you call the api
+        chatController.clear();
       }
       return KeyEventResult.handled;
     } else {
@@ -155,6 +158,7 @@ class HomePage extends StatelessWidget {
                     style: Theme.of(context).textTheme.bodySmall,
                     maxLines: null,
                     focusNode: chatFocusNode,
+                    controller: chatController,
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(
                         borderRadius: BorderRadius.all(
@@ -174,9 +178,5 @@ class HomePage extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  void submitPrompt(String prompt) {
-    print(prompt);
   }
 }
