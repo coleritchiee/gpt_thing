@@ -1,4 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+late final chatFocusNode = FocusNode(
+  onKeyEvent: (FocusNode node, KeyEvent event) {
+    if (!HardwareKeyboard.instance.isShiftPressed && event.logicalKey.keyLabel == 'Enter') {
+      if (event is KeyDownEvent) {
+        print("message submitted");
+      }
+      return KeyEventResult.handled;
+    } else {
+      return KeyEventResult.ignored;
+    }
+  }
+);
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -140,15 +154,11 @@ class HomePage extends StatelessWidget {
                   child: TextField(
                     style: Theme.of(context).textTheme.bodySmall,
                     maxLines: null,
-                    autocorrect: true,
+                    focusNode: chatFocusNode,
                     decoration: InputDecoration(
-                      border: OutlineInputBorder(
+                      border: const OutlineInputBorder(
                         borderRadius: BorderRadius.all(
                           Radius.circular(16),
-                        ),
-                        borderSide: BorderSide(
-                          color: Colors.black,
-                          width: 1,
                         ),
                       ),
                       hintText: 'Message ChatGPT',
@@ -156,7 +166,7 @@ class HomePage extends StatelessWidget {
                         color: Colors.grey[500],
                       ),
                     )
-                  ), 
+                  ),
                 ),
               ],
             ),
@@ -164,5 +174,9 @@ class HomePage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void submitPrompt(String prompt) {
+    print(prompt);
   }
 }
