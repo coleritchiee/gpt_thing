@@ -159,41 +159,61 @@ class HomePage extends StatelessWidget {
                     maxHeight: 215,
                     maxWidth: 768,
                   ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          style: Theme.of(context).textTheme.bodySmall,
-                          maxLines: null,
-                          focusNode: chatFocusNode,
-                          controller: chatController,
-                          decoration: InputDecoration(
-                            hintText: 'Message ChatGPT',
-                            hintStyle: TextStyle(
-                              color: Colors.grey[500],
-                            ),
-                          )
-                        ),
+                  child: Container(
+                    padding: const EdgeInsets.only(
+                      left: 22,
+                      right: 12,
+                      top: 12,
+                      bottom: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: (Colors.grey[800])!),
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(18),
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.arrow_upward_rounded),
-                        onPressed: sendChatMessage,
-                        color: Colors.grey[900],
-                        style: ButtonStyle(
-                          backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
-                          shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                            const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            style: Theme.of(context).textTheme.bodySmall,
+                            maxLines: null,
+                            focusNode: chatFocusNode,
+                            controller: chatController,
+                            decoration: InputDecoration.collapsed(
+                              hintText: 'Message ChatGPT',
+                              hintStyle: TextStyle(
+                                color: Colors.grey[500],
                               ),
-                            ),
+                              
+                            )
                           ),
                         ),
-                        iconSize: 30,
-                        padding: const EdgeInsets.all(2),
-                        constraints: const BoxConstraints(),
-                      ),
-                    ],
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            left: 8
+                          ),
+                          child: IconButton(
+                            icon: const Icon(Icons.arrow_upward_rounded),
+                            onPressed: sendChatMessage,
+                            color: Colors.grey[900],
+                            style: ButtonStyle(
+                              backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
+                              shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                                const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(8),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            iconSize: 26,
+                            padding: const EdgeInsets.all(2),
+                            constraints: const BoxConstraints(),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ],
