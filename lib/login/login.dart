@@ -66,7 +66,7 @@ class LoginPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 25),
-            LoginButton(text: 'Sign in', icon: Icons.account_circle, color: Colors.green, loginMethod: AuthService().anonLogin),
+            LoginButton(text: 'Sign in', icon: Icons.account_circle, color: Colors.green, loginMethod: AuthService().anonLogin, textColor: Colors.white, iconColor: Colors.white),
             const SizedBox(height: 25),
             const Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
@@ -97,6 +97,10 @@ class LoginPage extends StatelessWidget {
                     ),
                   )
               ),
+            const SizedBox(height: 25),
+            LoginButton(text: "Sign in with Google", icon: FontAwesomeIcons.google, color: Colors.white, loginMethod: AuthService().googleLogin, textColor: Colors.black, iconColor: Colors.black),
+            const SizedBox(height: 25),
+            LoginButton(text: "Sign in with Apple", icon: FontAwesomeIcons.apple, color: Colors.white, loginMethod: AuthService().signInWithApple, textColor: Colors.black, iconColor: Colors.black),
           ]),
         ),
       )
@@ -109,12 +113,17 @@ class LoginButton extends StatelessWidget {
   final IconData icon;
   final String text;
   final Function loginMethod;
+  final Color textColor;
+  final Color iconColor;
 
   const LoginButton({super.key,
     required this.text,
     required this.icon,
     required this.color,
-    required this.loginMethod});
+    required this.loginMethod,
+    required this.textColor,
+    required this.iconColor
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -123,12 +132,13 @@ class LoginButton extends StatelessWidget {
       child: ElevatedButton.icon(
         icon: Icon(
           icon,
-          color: Colors.white,
+          color: iconColor,
           size: 20,
         ),
         style: TextButton.styleFrom(
           padding: const EdgeInsets.all(24),
           backgroundColor: color,
+          elevation: 5
         ),
         onPressed: () => loginMethod(),
         label: Text(
@@ -136,7 +146,7 @@ class LoginButton extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 16,
-              color: Colors.white,
+              color: textColor,
               fontFamily: GoogleFonts.notoSans().fontFamily
           ),
         ),
