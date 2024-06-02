@@ -46,12 +46,7 @@ class _MessageBoxState extends State<MessageBox> {
         maxWidth: 768,
       ),
       child: Container(
-        padding: const EdgeInsets.only(
-          left: 22,
-          right: 12,
-          top: 12,
-          bottom: 12,
-        ),
+        padding: const EdgeInsets.only(right: 12),
         decoration: BoxDecoration(
           border: Border.all(color: (Colors.grey[800])!),
           borderRadius: const BorderRadius.all(
@@ -67,37 +62,41 @@ class _MessageBoxState extends State<MessageBox> {
                 focusNode: msgFocusNode,
                 controller: msgController,
                 onChanged: (val) {updateEmpty();},
-                decoration: InputDecoration.collapsed(
+                decoration: InputDecoration(
                   hintText: 'Message ChatGPT',
                   hintStyle: TextStyle(
                     color: Colors.grey[500],
                   ),
+                  contentPadding: const EdgeInsets.only(
+                    left: 22.0,
+                    right: 8.0,
+                    top: 12.0,
+                    bottom: 12.0,
+                  ),
+                  border: InputBorder.none,
                 )),
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 8),
-              child: IconButton(
-                icon: const Icon(Icons.arrow_upward_rounded),
-                onPressed: _isEmpty ? null : sendMsg,
-                color: Colors.grey[900],
-                disabledColor: Colors.grey[900],
-                style: ButtonStyle(
-                  backgroundColor: WidgetStateProperty.all<Color>(
-                    _isEmpty ? (Colors.grey[800])! : Colors.white
-                  ),
-                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                    const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(8),
-                      ),
+            IconButton(
+              icon: const Icon(Icons.arrow_upward_rounded),
+              onPressed: _isEmpty ? null : sendMsg,
+              color: Colors.grey[900],
+              disabledColor: Colors.grey[900],
+              style: ButtonStyle(
+                backgroundColor: WidgetStateProperty.all<Color>(
+                  _isEmpty ? (Colors.grey[800])! : Colors.white
+                ),
+                shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                  const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(8),
                     ),
                   ),
                 ),
-                iconSize: 26,
-                padding: const EdgeInsets.all(2),
-                constraints: const BoxConstraints(),
               ),
-            )
+              iconSize: 26,
+              padding: const EdgeInsets.all(2),
+              constraints: const BoxConstraints(),
+            ),
           ],
         ),
       ),
