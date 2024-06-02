@@ -1,25 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
-final chatController = TextEditingController();
-
-void sendChatMessage() {
-  print(chatController.text); // this is where you call the api
-  chatController.clear();
-}
-
-final chatFocusNode = FocusNode(
-  onKeyEvent: (FocusNode node, KeyEvent event) {
-    if (!HardwareKeyboard.instance.isShiftPressed && event.logicalKey.keyLabel == 'Enter') {
-      if (event is KeyDownEvent) {
-        sendChatMessage();
-      }
-      return KeyEventResult.handled;
-    } else {
-      return KeyEventResult.ignored;
-    }
-  }
-);
+import 'message_box.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -154,68 +134,7 @@ class HomePage extends StatelessWidget {
                 const Expanded(
                   child: Text("chat goes here"),
                 ),
-                ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxHeight: 215,
-                    maxWidth: 768,
-                  ),
-                  child: Container(
-                    padding: const EdgeInsets.only(
-                      left: 22,
-                      right: 12,
-                      top: 12,
-                      bottom: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: (Colors.grey[800])!),
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(18),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            style: Theme.of(context).textTheme.bodySmall,
-                            maxLines: null,
-                            focusNode: chatFocusNode,
-                            controller: chatController,
-                            decoration: InputDecoration.collapsed(
-                              hintText: 'Message ChatGPT',
-                              hintStyle: TextStyle(
-                                color: Colors.grey[500],
-                              ),
-                              
-                            )
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            left: 8
-                          ),
-                          child: IconButton(
-                            icon: const Icon(Icons.arrow_upward_rounded),
-                            onPressed: sendChatMessage,
-                            color: Colors.grey[900],
-                            style: ButtonStyle(
-                              backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
-                              shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                                const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(8),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            iconSize: 26,
-                            padding: const EdgeInsets.all(2),
-                            constraints: const BoxConstraints(),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
+                MessageBox(),
               ],
             ),
           ),
