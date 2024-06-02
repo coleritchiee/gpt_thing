@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'chat_window.dart';
 import 'message_box.dart';
 
 class HomePage extends StatelessWidget {
@@ -129,11 +130,9 @@ class HomePage extends StatelessWidget {
             constraints: const BoxConstraints(
               maxWidth: 768,
             ),
-            child: Column(
+            child: const Column(
               children: [
-                const Expanded(
-                  child: Text("chat goes here"),
-                ),
+                ChatWindow(),
                 MessageBox(),
               ],
             ),

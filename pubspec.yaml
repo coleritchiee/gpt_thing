@@ -45,6 +45,7 @@ dependencies:
   sign_in_with_apple: ^6.1.0
   rxdart: ^0.27.7
   json_annotation: ^4.9.0
+  flutter_markdown: ^0.7.1
 
 dev_dependencies:
   flutter_test:
