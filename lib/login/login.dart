@@ -19,7 +19,7 @@ class LoginPage extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 50),
           child: Column(children: [
-            const FlutterLogo(size: 100),
+            const FlutterLogo(size: 50),
             const SizedBox(
               height: 50,
             ),
@@ -100,7 +100,16 @@ class LoginPage extends StatelessWidget {
             const SizedBox(height: 25),
             LoginButton(text: "Sign in with Google", icon: FontAwesomeIcons.google, color: Colors.white, loginMethod: AuthService().googleLogin, textColor: Colors.black, iconColor: Colors.black),
             const SizedBox(height: 25),
-            LoginButton(text: "Sign in with Apple", icon: FontAwesomeIcons.apple, color: Colors.white, loginMethod: AuthService().signInWithApple, textColor: Colors.black, iconColor: Colors.black),
+            FutureBuilder<Object>(
+              future: SignInWithApple.isAvailable(),
+              builder: (context, snapshot) {
+                if (snapshot.data == true) {
+                  return LoginButton(text: "Sign in with Apple", icon: FontAwesomeIcons.apple, color: Colors.white, loginMethod: AuthService().signInWithApple, textColor: Colors.black, iconColor: Colors.black);
+                } else {
+                  return Container();
+                }
+              },
+            ),
           ]),
         ),
       )
