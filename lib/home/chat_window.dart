@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 
 class ChatWindow extends StatefulWidget {

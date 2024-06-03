@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gpt_thing/home/chat_data.dart';
@@ -14,20 +15,40 @@ class MessageBox extends StatefulWidget {
 class _MessageBoxState extends State<MessageBox> {
   var msgController = TextEditingController();
   bool _isEmpty = true;
+  bool _isWaiting = false;
+
+  void recMsg() async {
+    await Future.delayed(const Duration(seconds: 2)); // THIS IS WHERE THE API IS CALLED
+    var stuff = [ // 8 ball responses until the API can join the party
+      "It is certain", "It is decidedly so", "Without a doubt", "Yes definitely",
+      "You may rely on it", "As I see it, yes", "Most likely", "Outlook good", "Yes",
+      "Signs point to yes", "Reply hazy try again", "Ask again later",
+      "Better not tell you now", "Cannot predict now", "Concentrate and ask again",
+      "Don't count on it", "My reply is no", "My sources say no", "Outlook not so good",
+      "Very doubtful"
+    ];
+    var val = Random().nextInt(stuff.length);
+    widget.data.addMessage(false, stuff[val]);
+    setState(() {
+      _isWaiting = false;
+    });
+  }
 
   void sendMsg() {
     widget.data.addMessage(true, msgController.text);
-    // print(widget.data);
-    // print(msgController.text); // CALL THE API HERE
     msgController.clear();
-    updateEmpty();
+    recMsg();
+    setState(() {
+      _isEmpty = true;
+      _isWaiting = true;
+    });
   }
 
   late final msgFocusNode = FocusNode(
     onKeyEvent: (FocusNode node, KeyEvent event) {
       if (!HardwareKeyboard.instance.isShiftPressed &&
           event.logicalKey.keyLabel == 'Enter') {
-        if (event is KeyDownEvent && !_isEmpty) {
+        if (event is KeyDownEvent && !_isWaiting && !_isEmpty) {
           sendMsg();
         }
         return KeyEventResult.handled;
@@ -83,12 +104,12 @@ class _MessageBoxState extends State<MessageBox> {
             ),
             IconButton(
               icon: const Icon(Icons.arrow_upward_rounded),
-              onPressed: _isEmpty ? null : sendMsg,
+              onPressed: _isWaiting || _isEmpty ? null : sendMsg,
               color: Colors.grey[900],
               disabledColor: Colors.grey[900],
               style: ButtonStyle(
                 backgroundColor: WidgetStateProperty.all<Color>(
-                  _isEmpty ? (Colors.grey[800])! : Colors.white
+                  _isWaiting || _isEmpty ? (Colors.grey[800])! : Colors.white
                 ),
                 shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                   const RoundedRectangleBorder(
