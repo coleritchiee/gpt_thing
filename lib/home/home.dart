@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gpt_thing/home/chat_data.dart';
+import 'package:gpt_thing/home/key_set_dialog.dart';
 import 'chat_window.dart';
 import 'message_box.dart';
 
@@ -9,6 +10,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ChatData data = ChatData();
+    KeySetDialog keyDialog = KeySetDialog();
 
     return Scaffold(
       appBar: AppBar(
@@ -139,7 +141,7 @@ class HomePage extends StatelessWidget {
                 return Column(
                   children: [
                     ChatWindow(data: data),
-                    MessageBox(data: data),
+                    MessageBox(data: data, keyDialog: keyDialog),
                   ],
                 );
               },

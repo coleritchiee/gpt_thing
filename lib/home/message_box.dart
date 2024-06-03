@@ -2,11 +2,13 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gpt_thing/home/chat_data.dart';
+import 'package:gpt_thing/home/key_set_dialog.dart';
 
 class MessageBox extends StatefulWidget {
   final ChatData data;
+  final KeySetDialog keyDialog;
 
-  const MessageBox({super.key, required this.data});
+  const MessageBox({super.key, required this.data, required this.keyDialog});
 
   @override
   State<MessageBox> createState() => _MessageBoxState();
@@ -35,6 +37,10 @@ class _MessageBoxState extends State<MessageBox> {
   }
 
   void sendMsg() {
+    if (!widget.data.keyIsSet()) {
+      showDialog(context: context, builder: widget.keyDialog.build);
+      return;
+    }
     widget.data.addMessage(true, msgController.text);
     msgController.clear();
     recMsg();
