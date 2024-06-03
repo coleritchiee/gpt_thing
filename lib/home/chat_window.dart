@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:gpt_thing/home/chat_data.dart';
 
 class ChatWindow extends StatefulWidget {
-  const ChatWindow({super.key});
+  final ChatData data;
+
+  const ChatWindow({super.key, required this.data});
 
   @override
   State<ChatWindow> createState() => _ChatWindowState();
@@ -19,34 +22,13 @@ class ChatMessage {
 }
 
 class _ChatWindowState extends State<ChatWindow> {
-  List<ChatMessage> messages = [
-    ChatMessage(true, "Hi"),
-    ChatMessage(false, "Hello! What can I help you with today?"),
-    ChatMessage(true, "May I have something to eat?"),
-    ChatMessage(false, "No."),
-    ChatMessage(true, "May I have something to eat?"),
-    ChatMessage(false, "No."),
-    ChatMessage(true, "May I have something to eat?"),
-    ChatMessage(false, "No."),
-    ChatMessage(true, "May I have something to eat?"),
-    ChatMessage(false, "Try asking again."),
-    ChatMessage(true, "MAY I HAVE SOMETHING TO EAT?"),
-    ChatMessage(false, "No~"),
-  ];
-
-  void sendMsg(ChatMessage msg) {
-    setState(() {
-      messages.add(msg);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         reverse: true,
-        children: messages.reversed.map((msg) {
+        children: widget.data.messages.reversed.map((msg) {
           return Padding(
             padding: const EdgeInsets.only(
               top: 8,
@@ -69,8 +51,8 @@ class _ChatWindowState extends State<ChatWindow> {
                 ),
                 Align(
                   alignment: msg.user ? Alignment.centerRight : Alignment.centerLeft,
-                  child: MarkdownBody(
-                    data: msg.message,
+                  child: Text(
+                    msg.message,
                   ),
                 ),
               ],

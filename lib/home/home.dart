@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gpt_thing/home/chat_data.dart';
 import 'chat_window.dart';
 import 'message_box.dart';
 
@@ -7,6 +8,8 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ChatData data = ChatData();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('GPT Thing'),
@@ -130,11 +133,16 @@ class HomePage extends StatelessWidget {
             constraints: const BoxConstraints(
               maxWidth: 768,
             ),
-            child: const Column(
-              children: [
-                ChatWindow(),
-                MessageBox(),
-              ],
+            child: ListenableBuilder(
+              listenable: data,
+              builder: (context, child) {
+                return Column(
+                  children: [
+                    ChatWindow(data: data),
+                    MessageBox(data: data),
+                  ],
+                );
+              },
             ),
           ),
         ),

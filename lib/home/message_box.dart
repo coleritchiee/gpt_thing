@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gpt_thing/home/chat_data.dart';
 
 class MessageBox extends StatefulWidget {
-  const MessageBox({super.key});
+  final ChatData data;
+
+  const MessageBox({super.key, required this.data});
 
   @override
   State<MessageBox> createState() => _MessageBoxState();
@@ -13,7 +16,9 @@ class _MessageBoxState extends State<MessageBox> {
   bool _isEmpty = true;
 
   void sendMsg() {
-    print(msgController.text); // this is where you call the api
+    widget.data.addMessage(true, msgController.text);
+    // print(widget.data);
+    // print(msgController.text); // CALL THE API HERE
     msgController.clear();
     updateEmpty();
   }
