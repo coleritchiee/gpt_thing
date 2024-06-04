@@ -1,15 +1,23 @@
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 
+enum ChatRole {
+  user,
+  assistant,
+  system,
+}
+
 class ChatMessage {
-  bool user;
+  ChatRole role;
   String message;
 
-  ChatMessage(this.user, this.message);
+  ChatMessage(this.role, this.message);
 }
 
 class ChatData extends ChangeNotifier {
-  List<ChatMessage> messages = [];
+  List<ChatMessage> messages = [
+    ChatMessage(ChatRole.system, "Respond to any prompt in a single sentence."),
+  ];
   String apiKey = "";
   String organization = "";
 
@@ -26,16 +34,29 @@ class ChatData extends ChangeNotifier {
     return apiKey.isNotEmpty;
   }
 
-  void addMessage(bool user, String message) {
-    messages.add(ChatMessage(user, message));
+  void addMessage(ChatRole role, String message) {
+    messages.add(ChatMessage(role, message));
     notifyListeners();
+  }
+
+  static String roleToString(ChatRole role) {
+    switch (role) {
+      case ChatRole.user:
+        return "User";
+      case ChatRole.assistant:
+        return "ChatGPT";
+      case ChatRole.system:
+        return "System";
+      default:
+        return "Unknown";
+    }
   }
 
   @override
   String toString() { // really just to be used for debugging
     String retStr = "ChatData Contents:";
     for (int i = 0; i < messages.length; i++) {
-      retStr += "\n ${messages[i].user ? "User" : "ChatGPT"}:\n  ${messages[i].message}";
+      retStr += "\n ${messages[i].role}:\n  ${messages[i].message}";
     }
     return retStr;
   }

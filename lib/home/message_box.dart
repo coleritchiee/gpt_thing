@@ -21,8 +21,8 @@ class _MessageBoxState extends State<MessageBox> {
   bool _isWaiting = false;
 
   void recMsg(String msg) async {
-    final response = await widget.api.chatPrompt(msg);
-    widget.data.addMessage(false, (response.choices.first.message.content)!.first.text!);
+    final response = await widget.api.chatPrompt(widget.data.messages);
+    widget.data.addMessage(ChatRole.assistant, (response.choices.first.message.content)!.first.text!);
     setState(() {
       _isWaiting = false;
     });
@@ -33,7 +33,7 @@ class _MessageBoxState extends State<MessageBox> {
       showDialog(context: context, builder: widget.keyDialog.build);
       return;
     }
-    widget.data.addMessage(true, msgController.text);
+    widget.data.addMessage(ChatRole.user, msgController.text);
     recMsg(msgController.text);
     msgController.clear();
     setState(() {

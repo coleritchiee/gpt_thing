@@ -36,9 +36,17 @@ class _ChatWindowState extends State<ChatWindow> {
             child: Column(
               children: [
                 Align(
-                  alignment: msg.user ? Alignment.centerRight : Alignment.centerLeft,
+                  alignment: msg.role == ChatRole.user
+                    ? Alignment.centerRight
+                    : msg.role == ChatRole.system
+                      ? Alignment.center
+                      : Alignment.centerLeft,
                   child: Text(
-                    msg.user ? "You" : "ChatGPT",
+                    msg.role == ChatRole.user
+                    ? "You"
+                    : msg.role == ChatRole.system
+                      ? "System"
+                      : "ChatGPT",
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -49,7 +57,11 @@ class _ChatWindowState extends State<ChatWindow> {
                   height: 4,
                 ),
                 Align(
-                  alignment: msg.user ? Alignment.centerRight : Alignment.centerLeft,
+                  alignment: msg.role == ChatRole.user
+                    ? Alignment.centerRight
+                    : msg.role == ChatRole.system
+                      ? Alignment.center
+                      : Alignment.centerLeft,
                   child: Text(
                     msg.message,
                   ),
