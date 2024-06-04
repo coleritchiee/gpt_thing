@@ -1,3 +1,4 @@
+import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 
 class ChatMessage {
@@ -14,7 +15,11 @@ class ChatData extends ChangeNotifier {
 
   void setKey(String key, String org) {
     apiKey = key;
+    OpenAI.apiKey = apiKey;
     organization = org;
+    if (organization.isNotEmpty) {
+      OpenAI.organization = organization;
+    }
   }
 
   bool keyIsSet() {

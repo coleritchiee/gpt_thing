@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gpt_thing/home/api_manager.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/key_set_dialog.dart';
 import 'chat_window.dart';
@@ -9,6 +10,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    APIManager api = APIManager();
     ChatData data = ChatData();
     KeySetDialog keyDialog = KeySetDialog(data: data);
 
@@ -142,7 +144,7 @@ class HomePage extends StatelessWidget {
                 return Column(
                   children: [
                     ChatWindow(data: data),
-                    MessageBox(data: data, keyDialog: keyDialog),
+                    MessageBox(data: data, keyDialog: keyDialog, api: api),
                   ],
                 );
               },
