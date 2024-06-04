@@ -10,9 +10,9 @@ class ChatMessage {
 class ChatData extends ChangeNotifier {
   List<ChatMessage> messages = [];
   String apiKey = "";
-  String? organization;
+  String organization = "";
 
-  void setKey(String key, String? org) {
+  void setKey(String key, String org) {
     apiKey = key;
     organization = org;
   }

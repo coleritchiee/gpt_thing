@@ -10,7 +10,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ChatData data = ChatData();
-    KeySetDialog keyDialog = KeySetDialog();
+    KeySetDialog keyDialog = KeySetDialog(data: data);
 
     return Scaffold(
       appBar: AppBar(
