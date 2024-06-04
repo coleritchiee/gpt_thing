@@ -9,7 +9,12 @@ class MessageBox extends StatefulWidget {
   final KeySetDialog keyDialog;
   final APIManager api;
 
-  const MessageBox({super.key, required this.data, required this.keyDialog, required this.api});
+  const MessageBox({
+    super.key,
+    required this.data,
+    required this.keyDialog,
+    required this.api
+  });
 
   @override
   State<MessageBox> createState() => _MessageBoxState();
@@ -22,7 +27,10 @@ class _MessageBoxState extends State<MessageBox> {
 
   void recMsg(String msg) async {
     final response = await widget.api.chatPrompt(widget.data.messages);
-    widget.data.addMessage(ChatRole.assistant, (response.choices.first.message.content)!.first.text!);
+    widget.data.addMessage(
+      ChatRole.assistant,
+      (response.choices.first.message.content)!.first.text!
+    );
     setState(() {
       _isWaiting = false;
     });

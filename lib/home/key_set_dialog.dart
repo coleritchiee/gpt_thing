@@ -12,48 +12,85 @@ class KeySetDialog extends StatelessWidget{
     final orgController = TextEditingController();
 
     return Dialog(
-      child: StatefulBuilder(
-        builder: (context, setState) {
-          return Column(
-            children: [
-              const Text("Enter API key"),
-              TextField(
-                controller: keyController,
-                decoration: const InputDecoration(
-                  hintText: 'API Key',
-                ),
-                onChanged: (text) {setState(() {});}, // just to make the button update
-              ),
-              TextField(
-                controller: orgController,
-                decoration: const InputDecoration(
-                  hintText: 'Organization (Optional)',
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      insetPadding: const EdgeInsets.all(24.0),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(
+          maxWidth: 600,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: StatefulBuilder(
+            builder: (context, setState) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Cancel'),
+                  Text(
+                    "Enter API Key",
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
-                  TextButton(
-                    onPressed: keyController.text.isEmpty ? null : () {
-                      data.setKey(
-                        keyController.text,
-                        orgController.text,
-                      );
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Set'),
+                  const SizedBox(height: 4),
+                  Text(
+                    "This is sensitive info, we know. Don't worry—we don't save any of it.",
+                    style: Theme.of(context).textTheme.labelSmall,
                   ),
-                ]
-              )
-            ]
-          );
-        }
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: keyController,
+                    decoration: InputDecoration(
+                      hintText: 'API Key',
+                      hintStyle: TextStyle(
+                        color: Colors.grey[500],
+                      ),
+                      border: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(12),
+                        ),
+                      )
+                    ),
+                    onChanged: (text) {setState(() {});}, // make the button update
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: orgController,
+                    decoration: InputDecoration(
+                      hintText: 'Organization (Optional)',
+                      hintStyle: TextStyle(
+                        color: Colors.grey[500],
+                      ),
+                      border: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(12),
+                        ),
+                      )
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: keyController.text.isEmpty ? null : () {
+                          data.setKey(
+                            keyController.text,
+                            orgController.text,
+                          );
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Set'),
+                      ),
+                    ]
+                  )
+                ],
+              );
+            },
+          ),
+        ),
       ),
     );
   }
