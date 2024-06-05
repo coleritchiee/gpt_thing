@@ -12,6 +12,8 @@ class ChatData extends ChangeNotifier {
   List<ChatMessage> messages = [];
   String apiKey = "";
   String organization = "";
+  List<String> models = <String>[];
+  String model = "";
 
   void setKey(String key, String org) {
     apiKey = key;
@@ -20,6 +22,15 @@ class ChatData extends ChangeNotifier {
     if (organization.isNotEmpty) {
       OpenAI.organization = organization;
     }
+  }
+
+  void addModels(List<String> models) {
+    this.models = models;
+    notifyListeners();
+  }
+
+  void setModel(String model) {
+    this.model = model;
   }
 
   bool keyIsSet() {

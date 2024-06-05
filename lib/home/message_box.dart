@@ -28,7 +28,10 @@ class _MessageBoxState extends State<MessageBox> {
   bool _isWaiting = false;
 
   void recMsg(String msg) async {
-    final response = await widget.api.chatPrompt(widget.data.messages);
+    final response = await widget.api.chatPrompt(
+      widget.data.messages,
+      widget.data.model
+    );
     widget.data.addMessage(
       OpenAIChatMessageRole.assistant,
       (response.choices.first.message.content)!.first.text!

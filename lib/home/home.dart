@@ -12,7 +12,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     APIManager api = APIManager();
     ChatData data = ChatData();
-    KeySetDialog keyDialog = KeySetDialog(data: data);
+    KeySetDialog keyDialog = KeySetDialog(data: data, api: api);
 
     return Scaffold(
       appBar: AppBar(
@@ -143,6 +143,19 @@ class HomePage extends StatelessWidget {
               builder: (context, child) {
                 return Column(
                   children: [
+                    DropdownMenu<String>(
+                      dropdownMenuEntries: data.models.map(
+                        (model) {
+                          return DropdownMenuEntry(
+                            label: model,
+                            value: model,
+                          );
+                        },
+                      ).toList(),
+                      onSelected: (value) {
+                        data.model = (value)!;
+                      },
+                    ),
                     ChatWindow(data: data),
                     MessageBox(data: data, keyDialog: keyDialog, api: api),
                   ],

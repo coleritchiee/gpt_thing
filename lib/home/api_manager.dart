@@ -2,7 +2,10 @@ import 'package:dart_openai/dart_openai.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 
 class APIManager {
-  Future<OpenAIChatCompletionModel> chatPrompt(List<ChatMessage> history) async {
+  Future<OpenAIChatCompletionModel> chatPrompt(
+    List<ChatMessage> history,
+    String model
+  ) async {
     final List<OpenAIChatCompletionChoiceMessageModel> messages = [];
 
     for (int i = 0; i < history.length; i++) {
@@ -17,9 +20,19 @@ class APIManager {
     }
 
     return await OpenAI.instance.chat.create(
-      model: "gpt-3.5-turbo",
+      model: model,
       messages: messages,
-      maxTokens: 100,
+      maxTokens: 1024,
     );
+  }
+
+  Future<List<String>> getModels() async {
+    final result = await OpenAI.instance.model.list();
+    result.sort((a, b) => a.id.compareTo(b.id));
+    final models = <String>[];
+    for (int i = 0; i < result.length; i++) {
+      models.add(result[i].id);
+    }
+    return models;
   }
 }

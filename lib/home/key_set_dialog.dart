@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:gpt_thing/home/api_manager.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 
 class KeySetDialog extends StatelessWidget{
   final ChatData data;
+  final APIManager api;
 
-  const KeySetDialog({super.key, required this.data});
+  const KeySetDialog({super.key, required this.data, required this.api});
 
   @override
   Widget build(BuildContext context) {
@@ -45,8 +47,9 @@ class KeySetDialog extends StatelessWidget{
                         borderRadius: BorderRadius.all(
                           Radius.circular(12),
                         ),
-                      )
+                      ),
                     ),
+                    style: Theme.of(context).textTheme.bodySmall,
                     onChanged: (text) {setState(() {});}, // make the button update
                   ),
                   const SizedBox(height: 8),
@@ -61,8 +64,9 @@ class KeySetDialog extends StatelessWidget{
                         borderRadius: BorderRadius.all(
                           Radius.circular(12),
                         ),
-                      )
+                      ),
                     ),
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                   const SizedBox(height: 8),
                   Row(
@@ -75,12 +79,23 @@ class KeySetDialog extends StatelessWidget{
                         child: const Text('Cancel'),
                       ),
                       TextButton(
-                        onPressed: keyController.text.isEmpty ? null : () {
-                          data.setKey(
-                            keyController.text,
-                            orgController.text,
-                          );
-                          Navigator.pop(context);
+                        onPressed: keyController.text.isEmpty ? null : () async {
+                          data.setKey(keyController.text, orgController.text);
+                          try {
+                            data.addModels(await api.getModels());
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(e.runtimeType.toString() + ": Make sure your API key is correct."),
+                                ),
+                              );
+                            }
+                            return;
+                          }
+                          if (context.mounted) {
+                            Navigator.pop(context);
+                          }
                         },
                         child: const Text('Set'),
                       ),
