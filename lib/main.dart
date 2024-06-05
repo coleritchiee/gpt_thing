@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:gpt_thing/login/login.dart';
 import 'package:gpt_thing/route.dart';
 import 'package:gpt_thing/theme.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'home/home.dart';
+import 'login/register.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,10 +35,10 @@ class _AppState extends State<App> {
           return MaterialApp(
                 routes: appRoutes,
                 theme: appTheme,
-                home: const HomePage(),
+                home: LoginPage(),
           );
         }
-        return Text('loading', textDirection: TextDirection.rtl);
+        return const Text('loading', textDirection: TextDirection.rtl);
       },
     );
   }
