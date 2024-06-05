@@ -1,3 +1,4 @@
+import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 
@@ -36,15 +37,15 @@ class _ChatWindowState extends State<ChatWindow> {
             child: Column(
               children: [
                 Align(
-                  alignment: msg.role == ChatRole.user
+                  alignment: msg.role == OpenAIChatMessageRole.user
                     ? Alignment.centerRight
-                    : msg.role == ChatRole.system
+                    : msg.role == OpenAIChatMessageRole.system
                       ? Alignment.center
                       : Alignment.centerLeft,
                   child: Text(
-                    msg.role == ChatRole.user
+                    msg.role == OpenAIChatMessageRole.user
                     ? "You"
-                    : msg.role == ChatRole.system
+                    : msg.role == OpenAIChatMessageRole.system
                       ? "System"
                       : "ChatGPT",
                     style: const TextStyle(
@@ -57,9 +58,9 @@ class _ChatWindowState extends State<ChatWindow> {
                   height: 4,
                 ),
                 Align(
-                  alignment: msg.role == ChatRole.user
+                  alignment: msg.role == OpenAIChatMessageRole.user
                     ? Alignment.centerRight
-                    : msg.role == ChatRole.system
+                    : msg.role == OpenAIChatMessageRole.system
                       ? Alignment.center
                       : Alignment.centerLeft,
                   child: Text(

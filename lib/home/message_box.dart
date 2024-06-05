@@ -1,3 +1,4 @@
+import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gpt_thing/home/api_manager.dart';
@@ -29,7 +30,7 @@ class _MessageBoxState extends State<MessageBox> {
   void recMsg(String msg) async {
     final response = await widget.api.chatPrompt(widget.data.messages);
     widget.data.addMessage(
-      ChatRole.assistant,
+      OpenAIChatMessageRole.assistant,
       (response.choices.first.message.content)!.first.text!
     );
     setState(() {
@@ -43,9 +44,9 @@ class _MessageBoxState extends State<MessageBox> {
       return;
     }
     if (sysController.text.isNotEmpty) {
-      widget.data.addMessage(ChatRole.system, sysController.text);
+      widget.data.addMessage(OpenAIChatMessageRole.system, sysController.text);
     }
-    widget.data.addMessage(ChatRole.user, msgController.text);
+    widget.data.addMessage(OpenAIChatMessageRole.user, msgController.text);
     recMsg(msgController.text);
     msgController.clear();
     sysController.clear();

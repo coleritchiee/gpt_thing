@@ -7,11 +7,7 @@ class APIManager {
 
     for (int i = 0; i < history.length; i++) {
       messages.add(OpenAIChatCompletionChoiceMessageModel(
-        role: history[i].role == ChatRole.user
-          ? OpenAIChatMessageRole.user
-          : history[i].role == ChatRole.system
-            ? OpenAIChatMessageRole.system
-            : OpenAIChatMessageRole.assistant,
+        role: history[i].role,
         content: [
           OpenAIChatCompletionChoiceMessageContentItemModel.text(
             history[i].message,

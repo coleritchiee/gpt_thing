@@ -1,14 +1,8 @@
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 
-enum ChatRole {
-  user,
-  assistant,
-  system,
-}
-
 class ChatMessage {
-  ChatRole role;
+  OpenAIChatMessageRole role;
   String message;
 
   ChatMessage(this.role, this.message);
@@ -32,18 +26,18 @@ class ChatData extends ChangeNotifier {
     return apiKey.isNotEmpty;
   }
 
-  void addMessage(ChatRole role, String message) {
+  void addMessage(OpenAIChatMessageRole role, String message) {
     messages.add(ChatMessage(role, message));
     notifyListeners();
   }
 
-  static String roleToString(ChatRole role) {
+  static String roleToString(OpenAIChatMessageRole role) {
     switch (role) {
-      case ChatRole.user:
+      case OpenAIChatMessageRole.user:
         return "User";
-      case ChatRole.assistant:
+      case OpenAIChatMessageRole.assistant:
         return "ChatGPT";
-      case ChatRole.system:
+      case OpenAIChatMessageRole.system:
         return "System";
       default:
         return "Unknown";
