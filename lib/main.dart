@@ -6,6 +6,7 @@ import 'package:gpt_thing/theme.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'home/home.dart';
+import 'login/register.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,10 +35,10 @@ class _AppState extends State<App> {
           return MaterialApp(
                 routes: appRoutes,
                 theme: appTheme,
-                home: const LoginPage(),
+                home: LoginPage(),
           );
         }
-        return Text('loading', textDirection: TextDirection.rtl);
+        return const Text('loading', textDirection: TextDirection.rtl);
       },
     );
   }
