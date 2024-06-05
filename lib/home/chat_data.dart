@@ -15,9 +15,7 @@ class ChatMessage {
 }
 
 class ChatData extends ChangeNotifier {
-  List<ChatMessage> messages = [
-    ChatMessage(ChatRole.system, "Respond to any prompt in a single sentence."),
-  ];
+  List<ChatMessage> messages = [];
   String apiKey = "";
   String organization = "";
 
