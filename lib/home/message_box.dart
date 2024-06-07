@@ -28,6 +28,10 @@ class _MessageBoxState extends State<MessageBox> {
   bool _isWaiting = false;
   bool _showSysPrompt = false;
 
+  void openKeySetDialog() {
+    showDialog(context: context, builder: widget.keyDialog.build);
+  }
+
   void recMsg(String msg) async {
     final response = await widget.api.chatPrompt(
       widget.data.messages,
@@ -44,7 +48,7 @@ class _MessageBoxState extends State<MessageBox> {
 
   void sendMsg() {
     if (!widget.data.keyIsSet()) {
-      showDialog(context: context, builder: widget.keyDialog.build);
+      openKeySetDialog();
       return;
     }
     if (sysController.text.isNotEmpty && _showSysPrompt) {
@@ -207,34 +211,103 @@ class _MessageBoxState extends State<MessageBox> {
             ),
           ),
         ),
-        if (widget.data.messages.isEmpty)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                "System Prompt",
-                style: TextStyle(
-                  color: Colors.grey[500],
-                  fontSize: 12,
+        SizedBox(
+          height: 32,
+          child: Padding(
+            padding: EdgeInsets.zero,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                if (!widget.data.keyIsSet())
+                  TextButton(
+                    onPressed: () {
+                      openKeySetDialog();
+                    },
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.fromLTRB(4, 12, 4, 12),
+                      minimumSize: Size.zero,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(8),
+                        ),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.close_rounded,
+                          color: Theme.of(context).colorScheme.primary,
+                          size: 20,
+                        ),
+                        Text(
+                          "API Key",
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ]
+                    ),
+                  )
+                else 
+                  TextButton(
+                    onPressed: () {
+                      openKeySetDialog();
+                    },
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.fromLTRB(4, 12, 4, 12),
+                      minimumSize: Size.zero,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(8),
+                        ),
+                      ),
+                    ),
+                    child: const Row(
+                      children: [
+                        Icon(
+                          Icons.check_rounded,
+                          color: Colors.grey,
+                          size: 20,
+                        ),
+                        Text(
+                          "API Key",
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ]
+                    ),
+                  ),
+                if (widget.data.messages.isEmpty) Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "System Prompt",
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 12,
+                      ),
+                    ),
+                    Checkbox(
+                      onChanged: (value) {
+                        setState(() {
+                          _showSysPrompt = (value)!;
+                        });
+                      },
+                      value: _showSysPrompt,
+                      side: BorderSide(
+                        color: (Colors.grey[500])!,
+                      ),
+                      activeColor: Colors.grey[500],
+                    ),
+                  ],
                 ),
-              ),
-              Checkbox(
-                onChanged: (value) {
-                  setState(() {
-                    _showSysPrompt = (value)!;
-                  });
-                },
-                value: _showSysPrompt,
-                side: BorderSide(
-                  color: (Colors.grey[500])!,
-                ),
-                activeColor: Colors.grey[500],
-              ),
-            ],
-          )
-        else
-          const SizedBox(height: 32),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }
