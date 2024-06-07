@@ -133,7 +133,7 @@ class HomePage extends StatelessWidget {
       ),
       body: Center(
         child: Padding (
-          padding: const EdgeInsets.all(36.0),
+          padding: const EdgeInsets.all(4),
           child: ConstrainedBox(
             constraints: const BoxConstraints(
               maxWidth: 768,

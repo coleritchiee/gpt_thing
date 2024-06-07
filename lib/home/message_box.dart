@@ -26,6 +26,7 @@ class _MessageBoxState extends State<MessageBox> {
   final sysController = TextEditingController();
   bool _isEmpty = true;
   bool _isWaiting = false;
+  bool _showSysPrompt = false;
 
   void recMsg(String msg) async {
     final response = await widget.api.chatPrompt(
@@ -46,7 +47,7 @@ class _MessageBoxState extends State<MessageBox> {
       showDialog(context: context, builder: widget.keyDialog.build);
       return;
     }
-    if (sysController.text.isNotEmpty) {
+    if (sysController.text.isNotEmpty && _showSysPrompt) {
       widget.data.addMessage(OpenAIChatMessageRole.system, sysController.text);
     }
     widget.data.addMessage(OpenAIChatMessageRole.user, msgController.text);
@@ -97,7 +98,7 @@ class _MessageBoxState extends State<MessageBox> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (widget.data.messages.isEmpty) ConstrainedBox(
+        if (widget.data.messages.isEmpty && _showSysPrompt) ConstrainedBox(
           constraints: const BoxConstraints(
             maxHeight: 215,
             maxWidth: 768,
@@ -144,7 +145,7 @@ class _MessageBoxState extends State<MessageBox> {
             ),
           ),
         ),
-        if (widget.data.messages.isEmpty) const SizedBox(height: 8.0),
+        if (widget.data.messages.isEmpty && _showSysPrompt) const SizedBox(height: 8.0),
         ConstrainedBox(
           constraints: const BoxConstraints(
             maxHeight: 215,
@@ -206,7 +207,25 @@ class _MessageBoxState extends State<MessageBox> {
             ),
           ),
         ),
-      ]
+        if (widget.data.messages.isEmpty)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Checkbox(
+                onChanged: (value) {
+                  setState(() {
+                    _showSysPrompt = (value)!;
+                  });
+                },
+                value: _showSysPrompt,
+              ),
+              const Text("System Prompt"),
+            ],
+          )
+        else
+          const SizedBox(height: 32),
+      ],
     );
   }
 }

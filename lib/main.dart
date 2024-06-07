@@ -35,7 +35,7 @@ class _AppState extends State<App> {
           return MaterialApp(
                 routes: appRoutes,
                 theme: appTheme,
-                home: LoginPage(),
+                home: const HomePage(),
           );
         }
         return const Text('loading', textDirection: TextDirection.rtl);
