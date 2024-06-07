@@ -212,6 +212,13 @@ class _MessageBoxState extends State<MessageBox> {
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              Text(
+                "System Prompt",
+                style: TextStyle(
+                  color: Colors.grey[500],
+                  fontSize: 12,
+                ),
+              ),
               Checkbox(
                 onChanged: (value) {
                   setState(() {
@@ -219,8 +226,11 @@ class _MessageBoxState extends State<MessageBox> {
                   });
                 },
                 value: _showSysPrompt,
+                side: BorderSide(
+                  color: (Colors.grey[500])!,
+                ),
+                activeColor: Colors.grey[500],
               ),
-              const Text("System Prompt"),
             ],
           )
         else
