@@ -280,6 +280,7 @@ class _MessageBoxState extends State<MessageBox> {
                       ]
                     ),
                   ),
+                Text("Model: ${widget.data.model}"),
                 if (widget.data.messages.isEmpty) Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [

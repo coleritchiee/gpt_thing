@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gpt_thing/home/api_manager.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/key_set_dialog.dart';
+import 'package:gpt_thing/home/model_dialog.dart';
 import 'chat_window.dart';
 import 'message_box.dart';
 
@@ -13,6 +14,7 @@ class HomePage extends StatelessWidget {
     APIManager api = APIManager();
     ChatData data = ChatData();
     KeySetDialog keyDialog = KeySetDialog(data: data, api: api);
+    ModelDialog modelDialog = ModelDialog(data: data);
 
     return Scaffold(
       appBar: AppBar(
@@ -143,18 +145,9 @@ class HomePage extends StatelessWidget {
               builder: (context, child) {
                 return Column(
                   children: [
-                    DropdownMenu<String>(
-                      dropdownMenuEntries: data.models.map(
-                        (model) {
-                          return DropdownMenuEntry(
-                            label: model,
-                            value: model,
-                          );
-                        },
-                      ).toList(),
-                      onSelected: (value) {
-                        data.model = (value)!;
-                      },
+                    TextButton(
+                      onPressed: () {showDialog(context: context, builder: modelDialog.build);},
+                      child: Text("Select Model"),
                     ),
                     ChatWindow(data: data),
                     MessageBox(data: data, keyDialog: keyDialog, api: api),

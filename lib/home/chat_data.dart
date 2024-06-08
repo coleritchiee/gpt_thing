@@ -31,6 +31,7 @@ class ChatData extends ChangeNotifier {
 
   void setModel(String model) {
     this.model = model;
+    notifyListeners();
   }
 
   bool keyIsSet() {
