@@ -153,11 +153,17 @@ class _MessageBoxState extends State<MessageBox> {
                         )),
                   ),
                   Tooltip(
-                    message:
-                        "You can use this to influence how ChatGPT responds.",
-                    child: Icon(Icons.info_outline_rounded,
-                        size: 30, color: (Colors.grey[700])!),
-                  ),
+                      message: "Use this to influence how ChatGPT responds. For example:\n- Respond to any prompt in a haiku.\n- Explain everything to a five-year-old.\n- Only speak in Shakespearean English.",
+                      textStyle: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        color: Colors.grey[850],
+                      ),
+                      child: Icon(Icons.info_outline_rounded,
+                          size: 30, color: (Colors.grey[700])!)),
                 ],
               ),
             ),
@@ -308,12 +314,12 @@ class _MessageBoxState extends State<MessageBox> {
                   ),
                   child: Text(
                     widget.data.modelChosen()
-                      ? "Model: ${widget.data.model}"
-                      : "Choose a Model",
+                        ? "Model: ${widget.data.model}"
+                        : "Choose a Model",
                     style: TextStyle(
                       color: widget.data.modelChosen()
-                        ? Colors.grey
-                        : Theme.of(context).colorScheme.primary,
+                          ? Colors.grey
+                          : Theme.of(context).colorScheme.primary,
                       fontSize: 12,
                     ),
                   ),
