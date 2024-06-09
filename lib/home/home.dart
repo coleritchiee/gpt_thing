@@ -16,6 +16,18 @@ class HomePage extends StatelessWidget {
     KeySetDialog keyDialog = KeySetDialog(data: data, api: api);
     ModelDialog modelDialog = ModelDialog(data: data);
 
+    void showModelDialog() {
+      if (!data.keyIsSet()) {
+        showDialog(context: context, builder: keyDialog.build).then((val) {
+          if (data.keyIsSet()) {
+            showDialog(context: context, builder: modelDialog.build);
+          }
+        });
+        return;
+      }
+      showDialog(context: context, builder: modelDialog.build);
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('GPT Thing'),
@@ -146,8 +158,8 @@ class HomePage extends StatelessWidget {
                 return Column(
                   children: [
                     TextButton(
-                      onPressed: () {showDialog(context: context, builder: modelDialog.build);},
-                      child: Text("Select Model"),
+                      onPressed: () {showModelDialog();},
+                      child: const Text("Select Model"),
                     ),
                     ChatWindow(data: data),
                     MessageBox(data: data, keyDialog: keyDialog, api: api),
