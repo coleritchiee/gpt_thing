@@ -40,6 +40,13 @@ class ChatData extends ChangeNotifier {
     }
   }
 
+  void resetKey() {
+    apiKey = "";
+    OpenAI.apiKey = "";
+    organization = "";
+    OpenAI.organization = "";
+  }
+
   void addModels(List<String> ids) {
     for (String id in ids) {
       models.add(Model(id, groups));
