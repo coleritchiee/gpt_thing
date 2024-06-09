@@ -1,24 +1,8 @@
 import 'package:dart_openai/dart_openai.dart';
-import 'package:gpt_thing/home/chat_data.dart';
 
 class APIManager {
   Future<OpenAIChatCompletionModel> chatPrompt(
-    List<ChatMessage> history,
-    String model
-  ) async {
-    final List<OpenAIChatCompletionChoiceMessageModel> messages = [];
-
-    for (int i = 0; i < history.length; i++) {
-      messages.add(OpenAIChatCompletionChoiceMessageModel(
-        role: history[i].role,
-        content: [
-          OpenAIChatCompletionChoiceMessageContentItemModel.text(
-            history[i].message,
-          ),
-        ]
-      ));
-    }
-
+    List<OpenAIChatCompletionChoiceMessageModel> messages, String model) async {
     return await OpenAI.instance.chat.create(
       model: model,
       messages: messages,

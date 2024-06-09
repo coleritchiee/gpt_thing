@@ -1,15 +1,8 @@
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 
-class ChatMessage {
-  OpenAIChatMessageRole role;
-  String message;
-
-  ChatMessage(this.role, this.message);
-}
-
 class ChatData extends ChangeNotifier {
-  List<ChatMessage> messages = [];
+  List<OpenAIChatCompletionChoiceMessageModel> messages = [];
   String apiKey = "";
   String organization = "";
   List<String> models = <String>[];
@@ -39,7 +32,12 @@ class ChatData extends ChangeNotifier {
   }
 
   void addMessage(OpenAIChatMessageRole role, String message) {
-    messages.add(ChatMessage(role, message));
+    messages.add(OpenAIChatCompletionChoiceMessageModel(
+      role: role,
+      content: [
+        OpenAIChatCompletionChoiceMessageContentItemModel.text(message),
+      ],
+    ));
     notifyListeners();
   }
 
@@ -57,10 +55,12 @@ class ChatData extends ChangeNotifier {
   }
 
   @override
-  String toString() { // really just to be used for debugging
+  String toString() {
+    // really just to be used for debugging
+    // TODO: remove this eventually
     String retStr = "ChatData Contents:";
     for (int i = 0; i < messages.length; i++) {
-      retStr += "\n ${messages[i].role}:\n  ${messages[i].message}";
+      retStr += "\n ${messages[i].role}:\n  ${(messages[i].content)![0].text}";
     }
     return retStr;
   }
