@@ -10,12 +10,11 @@ class MessageBox extends StatefulWidget {
   final KeySetDialog keyDialog;
   final APIManager api;
 
-  const MessageBox({
-    super.key,
-    required this.data,
-    required this.keyDialog,
-    required this.api
-  });
+  const MessageBox(
+      {super.key,
+      required this.data,
+      required this.keyDialog,
+      required this.api});
 
   @override
   State<MessageBox> createState() => _MessageBoxState();
@@ -33,14 +32,10 @@ class _MessageBoxState extends State<MessageBox> {
   }
 
   void recMsg(String msg) async {
-    final response = await widget.api.chatPrompt(
-      widget.data.messages,
-      widget.data.model
-    );
-    widget.data.addMessage(
-      OpenAIChatMessageRole.assistant,
-      (response.choices.first.message.content)!.first.text!
-    );
+    final response =
+        await widget.api.chatPrompt(widget.data.messages, widget.data.model);
+    widget.data.addMessage(OpenAIChatMessageRole.assistant,
+        (response.choices.first.message.content)!.first.text!);
     setState(() {
       _isWaiting = false;
     });
@@ -77,7 +72,7 @@ class _MessageBoxState extends State<MessageBox> {
       }
     },
   );
-  
+
   late final sysFocusNode = FocusNode(
     onKeyEvent: (FocusNode node, KeyEvent event) {
       if (!HardwareKeyboard.instance.isShiftPressed &&
@@ -102,54 +97,54 @@ class _MessageBoxState extends State<MessageBox> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (widget.data.messages.isEmpty && _showSysPrompt) ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxHeight: 215,
-            maxWidth: 768,
-          ),
-          child: Container(
-            padding: const EdgeInsets.only(right: 12),
-            decoration: BoxDecoration(
-              border: Border.all(color: (Colors.grey[800])!),
-              borderRadius: const BorderRadius.all(
-                Radius.circular(18),
+        if (widget.data.messages.isEmpty && _showSysPrompt)
+          ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxHeight: 215,
+              maxWidth: 768,
+            ),
+            child: Container(
+              padding: const EdgeInsets.only(right: 12),
+              decoration: BoxDecoration(
+                border: Border.all(color: (Colors.grey[800])!),
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(18),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                        style: Theme.of(context).textTheme.bodySmall,
+                        maxLines: null,
+                        focusNode: sysFocusNode,
+                        controller: sysController,
+                        decoration: InputDecoration(
+                          hintText: 'System Prompt (Optional)',
+                          hintStyle: TextStyle(
+                            color: Colors.grey[500],
+                          ),
+                          contentPadding: const EdgeInsets.only(
+                            left: 22.0,
+                            right: 8.0,
+                            top: 12.0,
+                            bottom: 12.0,
+                          ),
+                          border: InputBorder.none,
+                        )),
+                  ),
+                  Tooltip(
+                    message:
+                        "You can use this to influence how ChatGPT responds.",
+                    child: Icon(Icons.info_outline_rounded,
+                        size: 30, color: (Colors.grey[700])!),
+                  ),
+                ],
               ),
             ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    style: Theme.of(context).textTheme.bodySmall,
-                    maxLines: null,
-                    focusNode: sysFocusNode,
-                    controller: sysController,
-                    decoration: InputDecoration(
-                      hintText: 'System Prompt (Optional)',
-                      hintStyle: TextStyle(
-                        color: Colors.grey[500],
-                      ),
-                      contentPadding: const EdgeInsets.only(
-                        left: 22.0,
-                        right: 8.0,
-                        top: 12.0,
-                        bottom: 12.0,
-                      ),
-                      border: InputBorder.none,
-                    )),
-                ),
-                Tooltip(
-                  message: "You can use this to influence how ChatGPT responds.",
-                  child: Icon(
-                    Icons.info_outline_rounded,
-                    size: 30,
-                    color: (Colors.grey[700])!
-                  ),
-                ),
-              ],
-            ),
           ),
-        ),
-        if (widget.data.messages.isEmpty && _showSysPrompt) const SizedBox(height: 8.0),
+        if (widget.data.messages.isEmpty && _showSysPrompt)
+          const SizedBox(height: 8.0),
         ConstrainedBox(
           constraints: const BoxConstraints(
             maxHeight: 215,
@@ -167,24 +162,26 @@ class _MessageBoxState extends State<MessageBox> {
               children: [
                 Expanded(
                   child: TextField(
-                    style: Theme.of(context).textTheme.bodySmall,
-                    maxLines: null,
-                    focusNode: msgFocusNode,
-                    controller: msgController,
-                    onChanged: (val) {updateEmpty();},
-                    decoration: InputDecoration(
-                      hintText: 'Message ChatGPT',
-                      hintStyle: TextStyle(
-                        color: Colors.grey[500],
-                      ),
-                      contentPadding: const EdgeInsets.only(
-                        left: 22.0,
-                        right: 8.0,
-                        top: 12.0,
-                        bottom: 12.0,
-                      ),
-                      border: InputBorder.none,
-                    )),
+                      style: Theme.of(context).textTheme.bodySmall,
+                      maxLines: null,
+                      focusNode: msgFocusNode,
+                      controller: msgController,
+                      onChanged: (val) {
+                        updateEmpty();
+                      },
+                      decoration: InputDecoration(
+                        hintText: 'Message ChatGPT',
+                        hintStyle: TextStyle(
+                          color: Colors.grey[500],
+                        ),
+                        contentPadding: const EdgeInsets.only(
+                          left: 22.0,
+                          right: 8.0,
+                          top: 12.0,
+                          bottom: 12.0,
+                        ),
+                        border: InputBorder.none,
+                      )),
                 ),
                 IconButton(
                   icon: const Icon(Icons.arrow_upward_rounded),
@@ -193,8 +190,9 @@ class _MessageBoxState extends State<MessageBox> {
                   disabledColor: Colors.grey[900],
                   style: ButtonStyle(
                     backgroundColor: WidgetStateProperty.all<Color>(
-                      _isWaiting || _isEmpty ? (Colors.grey[800])! : Colors.white
-                    ),
+                        _isWaiting || _isEmpty
+                            ? (Colors.grey[800])!
+                            : Colors.white),
                     shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                       const RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(
@@ -232,24 +230,22 @@ class _MessageBoxState extends State<MessageBox> {
                         ),
                       ),
                     ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.close_rounded,
+                    child: Row(children: [
+                      Icon(
+                        Icons.close_rounded,
+                        color: Theme.of(context).colorScheme.primary,
+                        size: 20,
+                      ),
+                      Text(
+                        "API Key",
+                        style: TextStyle(
                           color: Theme.of(context).colorScheme.primary,
-                          size: 20,
+                          fontSize: 12,
                         ),
-                        Text(
-                          "API Key",
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ]
-                    ),
+                      ),
+                    ]),
                   )
-                else 
+                else
                   TextButton(
                     onPressed: () {
                       openKeySetDialog();
@@ -263,48 +259,49 @@ class _MessageBoxState extends State<MessageBox> {
                         ),
                       ),
                     ),
-                    child: const Row(
-                      children: [
-                        Icon(
-                          Icons.check_rounded,
-                          color: Colors.grey,
-                          size: 20,
-                        ),
-                        Text(
-                          "API Key",
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ]
-                    ),
-                  ),
-                Text("Model: ${widget.data.model}"),
-                if (widget.data.messages.isEmpty) Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Text(
-                      "System Prompt",
-                      style: TextStyle(
+                    child: const Row(children: [
+                      Icon(
+                        Icons.check_rounded,
                         color: Colors.grey,
-                        fontSize: 12,
+                        size: 20,
                       ),
-                    ),
-                    Checkbox(
-                      onChanged: (value) {
-                        setState(() {
-                          _showSysPrompt = (value)!;
-                        });
-                      },
-                      value: _showSysPrompt,
-                      side: BorderSide(
-                        color: (Colors.grey[500])!,
+                      Text(
+                        "API Key",
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                        ),
                       ),
-                      activeColor: Colors.grey[500],
-                    ),
-                  ],
-                ),
+                    ]),
+                  ),
+                Text(widget.data.model.isEmpty
+                    ? "No Model Chosen"
+                    : "Model: ${widget.data.model}"),
+                if (widget.data.messages.isEmpty)
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "System Prompt",
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                        ),
+                      ),
+                      Checkbox(
+                        onChanged: (value) {
+                          setState(() {
+                            _showSysPrompt = (value)!;
+                          });
+                        },
+                        value: _showSysPrompt,
+                        side: BorderSide(
+                          color: (Colors.grey[500])!,
+                        ),
+                        activeColor: Colors.grey[500],
+                      ),
+                    ],
+                  ),
               ],
             ),
           ),

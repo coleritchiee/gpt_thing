@@ -9,6 +9,7 @@ class ModelDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String filter = data.groups.keys.first;
+    bool showPreviews = false;
 
     return Dialog(
       insetPadding: const EdgeInsets.all(24.0),
@@ -19,41 +20,65 @@ class ModelDialog extends StatelessWidget {
         ),
         child: StatefulBuilder( // so the right column can update from the left
           builder: (context, setState) {
-            return Row(
-              mainAxisSize: MainAxisSize.min,
+            return Column(
               children: [
-                ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: 200,
-                  ),
-                  child: ListView(
-                    children: data.groups.keys.map((key) {
-                      return TextButton(
-                        onPressed: () {
+                SizedBox(
+                  height: 30,
+                  child: Row(
+                    children: [
+                      const Text("Show Preview Models"),
+                      Checkbox(
+                        onChanged: (value) {
                           setState(() {
-                            print(data.groups[key]);
-                            filter = key;
+                            showPreviews = (value)!;
                           });
                         },
-                        child: Text(key),
-                      );
-                    }).toList(),
+                        value: showPreviews,
+                      ),
+                    ],
                   ),
                 ),
-                ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: 300,
-                  ),
-                  child: ListView(
-                    children: data.models.where((i) => i.group == filter).map((model) {
-                      return TextButton(
-                        onPressed: () {
-                          data.setModel(model.id);
-                          Navigator.of(context).pop();
-                        },
-                        child: Text(model.id),
-                      );
-                    }).toList(),
+                Expanded(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: 200,
+                        ),
+                        child: ListView(
+                          children: data.groups.keys.map((key) {
+                            return TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  filter = key;
+                                });
+                              },
+                              child: Text(key),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: 300,
+                        ),
+                        child: ListView(
+                          children: data.models.where((i) {
+                            return (i.group == filter) && (showPreviews || !i.preview);
+                          }
+                          ).map((model) {
+                            return TextButton(
+                              onPressed: () {
+                                data.setModel(model.id);
+                                Navigator.of(context).pop();
+                              },
+                              child: Text(model.id),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
