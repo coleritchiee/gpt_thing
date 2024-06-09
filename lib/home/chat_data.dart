@@ -1,11 +1,34 @@
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 
+class Model {
+  late String id;
+  late String group;
+  late bool preview;
+
+  Model(this.id, Map groups) {
+    group = "Other";
+    for (String key in groups.keys) {
+      if (id.startsWith(groups[key])) {
+        group = key;
+        break;
+      }
+    }
+    preview = id.endsWith("preview");
+  }
+}
+
 class ChatData extends ChangeNotifier {
+  final Map groups = {
+    "ChatGPT" : "gpt",
+    "Dall·E" : "dall-e",
+    "Other" : "",
+  };
+
   List<OpenAIChatCompletionChoiceMessageModel> messages = [];
   String apiKey = "";
   String organization = "";
-  List<String> models = <String>[];
+  List<Model> models = <Model>[];
   String model = "";
 
   void setKey(String key, String org) {
@@ -17,8 +40,10 @@ class ChatData extends ChangeNotifier {
     }
   }
 
-  void addModels(List<String> models) {
-    this.models = models;
+  void addModels(List<String> ids) {
+    for (String id in ids) {
+      models.add(Model(id, groups));
+    }
     notifyListeners();
   }
 

@@ -12,7 +12,7 @@ class APIManager {
 
   Future<List<String>> getModels() async {
     final result = await OpenAI.instance.model.list();
-    result.sort((a, b) => a.id.compareTo(b.id));
+    // result.sort((a, b) => a.id.compareTo(b.id));
     final models = <String>[];
     for (int i = 0; i < result.length; i++) {
       models.add(result[i].id);
