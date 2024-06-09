@@ -56,6 +56,10 @@ class ChatData extends ChangeNotifier {
     return apiKey.isNotEmpty;
   }
 
+  bool modelChosen() {
+    return model.isNotEmpty;
+  }
+
   void addMessage(OpenAIChatMessageRole role, String message) {
     messages.add(OpenAIChatCompletionChoiceMessageModel(
       role: role,

@@ -4,16 +4,19 @@ import 'package:flutter/services.dart';
 import 'package:gpt_thing/home/api_manager.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/key_set_dialog.dart';
+import 'package:gpt_thing/home/model_dialog.dart';
 
 class MessageBox extends StatefulWidget {
   final ChatData data;
   final KeySetDialog keyDialog;
+  final ModelDialog modelDialog;
   final APIManager api;
 
   const MessageBox(
       {super.key,
       required this.data,
       required this.keyDialog,
+      required this.modelDialog,
       required this.api});
 
   @override
@@ -27,8 +30,20 @@ class _MessageBoxState extends State<MessageBox> {
   bool _isWaiting = false;
   bool _showSysPrompt = false;
 
-  void openKeySetDialog() {
-    showDialog(context: context, builder: widget.keyDialog.build);
+  Future openKeySetDialog() {
+    return showDialog(context: context, builder: widget.keyDialog.build);
+  }
+
+  void openModelDialog() {
+    if (!widget.data.keyIsSet()) {
+      openKeySetDialog().then((val) {
+        if (widget.data.keyIsSet()) {
+          showDialog(context: context, builder: widget.modelDialog.build);
+        }
+      });
+      return;
+    }
+    showDialog(context: context, builder: widget.modelDialog.build);
   }
 
   void recMsg(String msg) async {
@@ -44,6 +59,10 @@ class _MessageBoxState extends State<MessageBox> {
   void sendMsg() {
     if (!widget.data.keyIsSet()) {
       openKeySetDialog();
+      return;
+    }
+    if (!widget.data.modelChosen()) {
+      openModelDialog();
       return;
     }
     if (sysController.text.isNotEmpty && _showSysPrompt) {
@@ -251,7 +270,7 @@ class _MessageBoxState extends State<MessageBox> {
                       openKeySetDialog();
                     },
                     style: TextButton.styleFrom(
-                      padding: const EdgeInsets.fromLTRB(4, 12, 4, 12),
+                      padding: const EdgeInsets.fromLTRB(4, 12, 8, 12),
                       minimumSize: Size.zero,
                       shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(
@@ -274,9 +293,31 @@ class _MessageBoxState extends State<MessageBox> {
                       ),
                     ]),
                   ),
-                Text(widget.data.model.isEmpty
-                    ? "No Model Chosen"
-                    : "Model: ${widget.data.model}"),
+                TextButton(
+                  onPressed: () {
+                    openModelDialog();
+                  },
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.fromLTRB(8, 12, 8, 12),
+                    minimumSize: Size.zero,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(8),
+                      ),
+                    ),
+                  ),
+                  child: Text(
+                    widget.data.modelChosen()
+                      ? "Model: ${widget.data.model}"
+                      : "Choose a Model",
+                    style: TextStyle(
+                      color: widget.data.modelChosen()
+                        ? Colors.grey
+                        : Theme.of(context).colorScheme.primary,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
                 if (widget.data.messages.isEmpty)
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
