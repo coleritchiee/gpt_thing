@@ -6,11 +6,11 @@ class Model {
   late String group;
   late bool preview;
 
-  Model(this.id, Map groups) {
+  Model(this.id, List<ModelGroup> groups) {
     group = "Other";
-    for (String key in groups.keys) {
-      if (id.startsWith(groups[key])) {
-        group = key;
+    for (ModelGroup mg in groups) {
+      if (id.startsWith(mg.prefix)) {
+        group = mg.name;
         break;
       }
     }
@@ -18,12 +18,47 @@ class Model {
   }
 }
 
+class ModelGroup {
+  String name;
+  String prefix;
+  String description;
+
+  ModelGroup({required this.name, required this.prefix, required this.description});
+}
+
 class ChatData extends ChangeNotifier {
-  final Map groups = {
-    "ChatGPT" : "gpt",
-    "Dall·E" : "dall-e",
-    "Other" : "",
-  };
+  final List<ModelGroup> groups = [
+    ModelGroup(
+      name: "ChatGPT",
+      prefix: "gpt",
+      description: "Natural language processing"
+    ),
+    ModelGroup(
+      name: "Dall·E",
+      prefix: "dall-e",
+      description: "Generate and edit images"
+    ),
+    ModelGroup(
+      name: "TTS",
+      prefix: "tts",
+      description: "Convert text to spoken audio"
+    ),
+    ModelGroup(
+      name: "Whisper",
+      prefix: "whisper",
+      description: "Convert audio to text"
+    ),
+    ModelGroup(
+      name: "Embeddings",
+      prefix: "text-embedding",
+      description: "Convert text to a numerical form"
+    ),
+    ModelGroup(
+      name: "Other",
+      prefix: "",
+      description: ""
+    ),
+  ];
 
   List<OpenAIChatCompletionChoiceMessageModel> messages = [];
   String apiKey = "";
