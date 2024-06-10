@@ -326,7 +326,6 @@ class _MessageBoxState extends State<MessageBox> {
                 ),
                 if (widget.data.messages.isEmpty)
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       const Text(
                         "System Prompt",

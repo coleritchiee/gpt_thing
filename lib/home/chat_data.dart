@@ -56,7 +56,7 @@ class ChatData extends ChangeNotifier {
     ModelGroup(
       name: "Other",
       prefix: "",
-      description: ""
+      description: "Specialized models"
     ),
   ];
 
