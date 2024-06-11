@@ -19,7 +19,7 @@ class ModelDialog extends StatelessWidget {
           maxHeight: 500,
         ),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(8, 16, 8, 8),
+          padding: const EdgeInsets.fromLTRB(0, 16, 0, 8),
           child: StatefulBuilder( // so the right column can update from the left
             builder: (context, setState) {
               return Column(
@@ -39,17 +39,22 @@ class ModelDialog extends StatelessWidget {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: data.groups.map((group) {
-                              return ListTile(
-                                onTap: () {
-                                  setState(() {
-                                    filter = group.name;
-                                  });
-                                },
-                                title: Text(group.name),
-                                subtitle: Text(group.description),
-                                subtitleTextStyle: const TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 12,
+                              return Expanded(
+                                child: ListTile(
+                                  onTap: () {
+                                    setState(() {
+                                      filter = group.name;
+                                    });
+                                  },
+                                  title: Text(group.name),
+                                  subtitle: Text(group.description),
+                                  subtitleTextStyle: const TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 12,
+                                  ),
+                                  tileColor: filter == group.name
+                                    ? Theme.of(context).colorScheme.inversePrimary
+                                    : null,
                                 ),
                               );
                             }).toList(),
@@ -72,7 +77,10 @@ class ModelDialog extends StatelessWidget {
                                   fontSize: 14,
                                 ),
                                 dense: true,
-                                visualDensity: VisualDensity(vertical: -4),
+                                visualDensity: const VisualDensity(vertical: -4),
+                                tileColor: data.model == model.id
+                                  ? Theme.of(context).colorScheme.inversePrimary
+                                  : null,
                               );
                             }).toList(),
                           ),
