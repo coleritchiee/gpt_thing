@@ -1,10 +1,17 @@
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+part 'chat_data.g.dart';
+
+@JsonSerializable(explicitToJson: true)
 class ChatData extends ChangeNotifier {
+  @JsonKey(ignore: true)
   List<OpenAIChatCompletionChoiceMessageModel> messages = [];
   String apiKey = "";
   String organization = "";
+
+  ChatData();
 
   void setKey(String key, String org) {
     apiKey = key;
@@ -28,6 +35,9 @@ class ChatData extends ChangeNotifier {
     ));
     notifyListeners();
   }
+
+  factory ChatData.fromJson(Map<String, dynamic> json) => _$ChatDataFromJson(json);
+  Map<String, dynamic> toJson() => _$ChatDataToJson(this);
 
   static String roleToString(OpenAIChatMessageRole role) {
     switch (role) {
