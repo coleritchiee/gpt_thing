@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:gpt_thing/login/login.dart';
 import 'package:gpt_thing/route.dart';
+import 'package:gpt_thing/services/user_provider.dart';
 import 'package:gpt_thing/theme.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
@@ -10,7 +11,12 @@ import 'login/register.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(App());
+  runApp(
+      ChangeNotifierProvider(
+        create: (context) => UserProvider(),
+        child: const App(),
+      )
+  );
 }
 
 class App extends StatefulWidget {

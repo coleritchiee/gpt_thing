@@ -4,6 +4,8 @@ import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:gpt_thing/services/models.dart';
+import 'package:gpt_thing/services/user_provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class AuthService {
@@ -12,7 +14,7 @@ class AuthService {
 
   Future<void> anonLogin() async {
     try {
-      await FirebaseAuth.instance.signInAnonymously();
+      UserCredential userCredential = await FirebaseAuth.instance.signInAnonymously();
     } on FirebaseAuthException {
       //handle error
     }
@@ -20,6 +22,7 @@ class AuthService {
 
   Future<void> emailLogin(email, password) async{
     await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+
   }
 
   Future<void> emailSignup(email, password) async{
