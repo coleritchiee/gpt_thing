@@ -247,7 +247,7 @@ class _MessageBoxState extends State<MessageBox> {
                       openKeySetDialog();
                     },
                     style: TextButton.styleFrom(
-                      padding: const EdgeInsets.fromLTRB(4, 12, 4, 12),
+                      padding: const EdgeInsets.fromLTRB(4, 10, 8, 10),
                       minimumSize: Size.zero,
                       shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(
@@ -276,7 +276,7 @@ class _MessageBoxState extends State<MessageBox> {
                       openKeySetDialog();
                     },
                     style: TextButton.styleFrom(
-                      padding: const EdgeInsets.fromLTRB(4, 12, 8, 12),
+                      padding: const EdgeInsets.fromLTRB(4, 10, 8, 10),
                       minimumSize: Size.zero,
                       shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(
