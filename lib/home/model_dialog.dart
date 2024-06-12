@@ -9,7 +9,13 @@ class ModelDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String filter = data.groups.first.name;
+    String newModel = data.model;
     bool showPreviews = false;
+
+    void setModel(String model) {
+      data.setModel(model);
+      Navigator.of(context).pop();
+    }
 
     return Dialog(
       insetPadding: const EdgeInsets.all(24.0),
@@ -68,8 +74,9 @@ class ModelDialog extends StatelessWidget {
                             ).map((model) {
                               return ListTile(
                                 onTap: () {
-                                  data.setModel(model.id);
-                                  Navigator.of(context).pop();
+                                  setState(() {
+                                    newModel = model.id;
+                                  });
                                 },
                                 title: Center(child: Text(model.id)),
                                 titleTextStyle: const TextStyle(
@@ -78,7 +85,7 @@ class ModelDialog extends StatelessWidget {
                                 ),
                                 dense: true,
                                 visualDensity: const VisualDensity(vertical: -4),
-                                tileColor: data.model == model.id
+                                tileColor: newModel == model.id
                                   ? Theme.of(context).colorScheme.inversePrimary
                                   : null,
                               );
@@ -90,26 +97,43 @@ class ModelDialog extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        "Show Preview Models",
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
-                        ),
-                      ),
-                      Checkbox(
-                        onChanged: (value) {
-                          setState(() {
-                            showPreviews = (value)!;
-                          });
+                      TextButton(
+                        child: const Text("Cancel"),
+                        onPressed: () {
+                          Navigator.of(context).pop();
                         },
-                        value: showPreviews,
-                        side: BorderSide(
-                          color: (Colors.grey[500])!,
-                        ),
-                        activeColor: Colors.grey[500],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          const Text(
+                            "Show Preview Models",
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
+                            ),
+                          ),
+                          Checkbox(
+                            onChanged: (value) {
+                              setState(() {
+                                showPreviews = (value)!;
+                              });
+                            },
+                            value: showPreviews,
+                            side: BorderSide(
+                              color: (Colors.grey[500])!,
+                            ),
+                            activeColor: Colors.grey[500],
+                          ),
+                        ],
+                      ),
+                      TextButton(
+                        onPressed: newModel.isEmpty ? null : () {
+                          setModel(newModel);
+                        },
+                        child: const Text("Confirm"),
                       ),
                     ],
                   ),
