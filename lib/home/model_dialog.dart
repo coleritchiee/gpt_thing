@@ -10,10 +10,11 @@ class ModelDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     String filter = data.groups.first.name;
     String newModel = data.model;
+    String newGroup = data.modelGroup;
     bool showPreviews = false;
 
-    void setModel(String model) {
-      data.setModel(model);
+    void setModel() {
+      data.setModel(newModel, newGroup);
       Navigator.of(context).pop();
     }
 
@@ -76,6 +77,7 @@ class ModelDialog extends StatelessWidget {
                                 onTap: () {
                                   setState(() {
                                     newModel = model.id;
+                                    newGroup = model.group;
                                   });
                                 },
                                 title: Center(child: Text(model.id)),
@@ -131,7 +133,7 @@ class ModelDialog extends StatelessWidget {
                       ),
                       TextButton(
                         onPressed: newModel.isEmpty ? null : () {
-                          setModel(newModel);
+                          setModel();
                         },
                         child: const Text("Confirm"),
                       ),

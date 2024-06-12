@@ -153,7 +153,8 @@ class _MessageBoxState extends State<MessageBox> {
                         )),
                   ),
                   Tooltip(
-                      message: "Use this to influence how ChatGPT responds. For example:\n- Respond to any prompt in a haiku.\n- Explain everything to a five-year-old.\n- Only speak in Shakespearean English.",
+                      message:
+                          "Use this to influence how ChatGPT responds. For example:\n- Respond to any prompt in a haiku.\n- Explain everything to a five-year-old.\n- Only speak in Shakespearean English.",
                       textStyle: const TextStyle(
                         color: Colors.white,
                         fontSize: 12,
@@ -195,7 +196,10 @@ class _MessageBoxState extends State<MessageBox> {
                         updateEmpty();
                       },
                       decoration: InputDecoration(
-                        hintText: 'Message ChatGPT',
+                        hintText: widget.data.modelGroup.isEmpty ||
+                                widget.data.modelGroup == "Other"
+                            ? "Send a message..."
+                            : "Message ${widget.data.modelGroup}",
                         hintStyle: TextStyle(
                           color: Colors.grey[500],
                         ),

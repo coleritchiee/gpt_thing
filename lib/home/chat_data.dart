@@ -65,6 +65,7 @@ class ChatData extends ChangeNotifier {
   String organization = "";
   List<Model> models = <Model>[];
   String model = "";
+  String modelGroup = "";
 
   void setKey(String key, String org) {
     apiKey = key;
@@ -89,8 +90,9 @@ class ChatData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setModel(String model) {
+  void setModel(String model, String group) {
     this.model = model;
+    this.modelGroup = group;
     notifyListeners();
   }
 
