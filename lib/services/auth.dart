@@ -5,7 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:gpt_thing/services/user_provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'models.dart' as u;
 
@@ -18,7 +17,6 @@ class AuthService {
       UserCredential userCredential = await FirebaseAuth.instance.signInAnonymously();
       u.User newUser = await u.User.userFromFireBaseUser(userCredential.user!);
       await FirebaseFirestore.instance.collection('users').doc(userCredential.user?.uid).set(newUser.toJson());
-      UserProvider().signIn(newUser);
         } on FirebaseAuthException {
       //handle error
     }
@@ -28,19 +26,16 @@ class AuthService {
     UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
     u.User newUser = await u.User.userFromFireBaseUser(userCredential.user!);
     await FirebaseFirestore.instance.collection('users').doc(userCredential.user?.uid).set(newUser.toJson());
-    UserProvider().signIn(newUser);
   }
 
   Future<void> emailSignup(email, password) async{
     UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
     u.User newUser = await u.User.userFromFireBaseUser(userCredential.user!);
     await FirebaseFirestore.instance.collection('users').doc(userCredential.user?.uid).set(newUser.toJson());
-    UserProvider().signIn(newUser);
   }
 
   Future<void> signOut() async {
     await FirebaseAuth.instance.signOut();
-    UserProvider().signOut();
   }
 
   Future<void> googleLogin() async {
@@ -58,7 +53,6 @@ class AuthService {
       UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(authCredential);
       u.User newUser = await u.User.userFromFireBaseUser(userCredential.user!);
       await FirebaseFirestore.instance.collection('users').doc(userCredential.user?.uid).set(newUser.toJson());
-      UserProvider().signIn(newUser);
     } on FirebaseAuthException catch (e) {
       print('Failed with error code: ${e.code}');
       print(e.message);
@@ -101,7 +95,6 @@ class AuthService {
     UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(oauthCredential);
     u.User newUser = await u.User.userFromFireBaseUser(userCredential.user!);
     await FirebaseFirestore.instance.collection('users').doc(userCredential.user?.uid).set(newUser.toJson());
-    UserProvider().signIn(newUser);
     return userCredential;
   }
 }

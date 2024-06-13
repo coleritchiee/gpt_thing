@@ -6,7 +6,7 @@ part 'chat_data.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class ChatData extends ChangeNotifier {
-  @JsonKey()
+  @JsonKey(includeFromJson: false, includeToJson: false)
   List<OpenAIChatCompletionChoiceMessageModel> messages = [];
   String id = "";
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -43,8 +43,20 @@ class ChatData extends ChangeNotifier {
     notifyListeners();
   }
 
-  factory ChatData.fromJson(Map<String, dynamic> json) => _$ChatDataFromJson(json);
-  Map<String, dynamic> toJson() => _$ChatDataToJson(this);
+  factory ChatData.fromJson(Map<String, dynamic> json) {
+    return ChatData()
+      ..id = json['id'] as String
+      ..messages = (json['messages'] as List)
+          .map((e) => OpenAIChatCompletionChoiceMessageModel.fromMap(e as Map<String, dynamic>))
+          .toList();
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'messages': messages.map((message) => message.toMap()).toList(),
+    };
+  }
 
   static String roleToString(OpenAIChatMessageRole role) {
     switch (role) {

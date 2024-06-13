@@ -6,11 +6,9 @@ part of 'chat_data.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-ChatData _$ChatDataFromJson(Map<String, dynamic> json) => ChatData()
-  ..apiKey = json['apiKey'] as String
-  ..organization = json['organization'] as String;
+ChatData _$ChatDataFromJson(Map<String, dynamic> json) =>
+    ChatData()..id = json['id'] as String;
 
 Map<String, dynamic> _$ChatDataToJson(ChatData instance) => <String, dynamic>{
-      'apiKey': instance.apiKey,
-      'organization': instance.organization,
+      'id': instance.id,
     };
