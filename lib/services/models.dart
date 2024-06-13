@@ -1,13 +1,19 @@
 import 'package:dart_openai/dart_openai.dart';
+import 'package:firebase_auth/firebase_auth.dart' as f;
 import 'package:gpt_thing/home/chat_data.dart';
+import 'package:gpt_thing/services/firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'models.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class User {
-  final String uid;
-  final List<ChatData> chats;
+  String uid;
+  List<ChatData> chats;
+
+  static Future<User> userFromFireBaseUser(f.User user) async{
+    return User(uid: user.uid, chats: await FirestoreService().getChats(user.uid));
+  }
 
   User({required this.uid, required this.chats});
 

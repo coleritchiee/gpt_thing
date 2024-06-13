@@ -6,12 +6,19 @@ part 'chat_data.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class ChatData extends ChangeNotifier {
-  @JsonKey(ignore: true)
+  @JsonKey()
   List<OpenAIChatCompletionChoiceMessageModel> messages = [];
+  String id = "";
+  @JsonKey(includeFromJson: false, includeToJson: false)
   String apiKey = "";
+  @JsonKey(includeFromJson: false, includeToJson: false)
   String organization = "";
 
   ChatData();
+
+  void setId(String id){
+    this.id = id;
+  }
 
   void setKey(String key, String org) {
     apiKey = key;

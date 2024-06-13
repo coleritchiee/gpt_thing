@@ -4,13 +4,14 @@ import 'package:flutter/services.dart';
 import 'package:gpt_thing/home/api_manager.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/key_set_dialog.dart';
+import 'package:gpt_thing/services/firestore.dart';
 
 class MessageBox extends StatefulWidget {
-  final ChatData data;
+  ChatData data;
   final KeySetDialog keyDialog;
   final APIManager api;
 
-  const MessageBox({
+  MessageBox({
     super.key,
     required this.data,
     required this.keyDialog,
@@ -33,6 +34,7 @@ class _MessageBoxState extends State<MessageBox> {
       OpenAIChatMessageRole.assistant,
       (response.choices.first.message.content)!.first.text!
     );
+    widget.data = FirestoreService().updateChat(widget.data);
     setState(() {
       _isWaiting = false;
     });
