@@ -16,6 +16,12 @@ class ChatData extends ChangeNotifier {
 
   ChatData();
 
+  void overwrite(ChatData data){
+    this.id = data.id;
+    this.messages = data.messages;
+    notifyListeners();
+  }
+
   void setId(String id){
     this.id = id;
   }
