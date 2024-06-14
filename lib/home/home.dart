@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gpt_thing/home/api_manager.dart';
 import 'package:gpt_thing/home/chat_data.dart';
+import 'package:gpt_thing/home/chat_id_notifier.dart';
 import 'package:gpt_thing/home/home_drawer.dart';
 import 'package:gpt_thing/home/key_set_dialog.dart';
 import 'package:gpt_thing/services/firestore.dart';
@@ -20,7 +21,7 @@ class HomePage extends StatelessWidget {
     return FutureBuilder<List<String>>(
       future: FirestoreService().getChats(FirebaseAuth.instance.currentUser!.uid),
       builder: (context, snapshot) {
-        var chatIds = snapshot.data!;
+        ChatIdNotifier chatIds = ChatIdNotifier(snapshot.data!);
         return Scaffold(
           appBar: AppBar(
             title: const Text('GPT Thing'),
@@ -30,16 +31,10 @@ class HomePage extends StatelessWidget {
             ids: chatIds,
             onNewChatClick: (){
               data.overwrite(ChatData());
-              chatIds.add(data.id);
             },
             onIdClick: (id) async {
-              print("Clicked " + id);
               ChatData? newData = await FirestoreService().fetchChat(id);
-              if(newData ==null){
-                print("it null");
-              }
-              else{
-                print("not null");
+              if(newData !=null){
                 data.overwrite(newData);
               }
             },
@@ -57,7 +52,7 @@ class HomePage extends StatelessWidget {
                     return Column(
                       children: [
                         ChatWindow(data: data),
-                        MessageBox(data: data, keyDialog: keyDialog, api: api),
+                        MessageBox(data: data, keyDialog: keyDialog, api: api, chatIds: chatIds),
                       ],
                     );
                   },

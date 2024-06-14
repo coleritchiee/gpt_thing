@@ -6,16 +6,20 @@ import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/key_set_dialog.dart';
 import 'package:gpt_thing/services/firestore.dart';
 
+import 'chat_id_notifier.dart';
+
 class MessageBox extends StatefulWidget {
   ChatData data;
   final KeySetDialog keyDialog;
   final APIManager api;
+  ChatIdNotifier chatIds;
 
   MessageBox({
     super.key,
     required this.data,
     required this.keyDialog,
-    required this.api
+    required this.api,
+    required this.chatIds
   });
 
   @override
@@ -34,7 +38,13 @@ class _MessageBoxState extends State<MessageBox> {
       OpenAIChatMessageRole.assistant,
       (response.choices.first.message.content)!.first.text!
     );
-    widget.data = FirestoreService().updateChat(widget.data);
+    if(widget.data.id == ""){
+      widget.data = FirestoreService().updateChat(widget.data);
+      widget.chatIds.addId(widget.data.id);
+    }
+    else {
+      widget.data = FirestoreService().updateChat(widget.data);
+    }
     setState(() {
       _isWaiting = false;
     });

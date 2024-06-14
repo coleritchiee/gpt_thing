@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:gpt_thing/home/chat_id_notifier.dart';
 
 class HomeDrawer extends StatelessWidget{
-  List<String> ids;
+  ChatIdNotifier ids;
   final Function() onNewChatClick;
   final Function(String) onIdClick;
   HomeDrawer({super.key, required this.ids, required this.onNewChatClick,required this.onIdClick});
@@ -36,18 +37,23 @@ class HomeDrawer extends StatelessWidget{
             ),
             const Divider(),
             Expanded(
-              child: ListView.separated(
-                itemCount: ids.length,
-                separatorBuilder: (context, index) => const Divider(),
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(ids[index]),
-                    onTap: () {
-                      onIdClick(ids[index]);
-                      Navigator.pop(context);
+              child: ListenableBuilder(
+                listenable: ids,
+                builder: (context, snapshot) {
+                  return ListView.separated(
+                    itemCount: ids.size(),
+                    separatorBuilder: (context, index) => const Divider(),
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(ids.get(index)),
+                        onTap: () {
+                          onIdClick(ids.get(index));
+                          Navigator.pop(context);
+                        },
+                      );
                     },
                   );
-                },
+                }
               ),
             ),
             const Spacer(), // so the rest of the column shows up at the bottom
