@@ -241,7 +241,10 @@ class _MessageBoxState extends State<MessageBox> {
         SizedBox(
           height: 32,
           child: Padding(
-            padding: EdgeInsets.zero,
+            padding: const EdgeInsets.only(
+              left: 8,
+              right: 8,
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

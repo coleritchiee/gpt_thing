@@ -98,46 +98,52 @@ class ModelDialog extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      TextButton(
-                        child: const Text("Cancel"),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          const Text(
-                            "Show Preview Models",
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 12,
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: 8,
+                      right: 8,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextButton(
+                          child: const Text("Cancel"),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            const Text(
+                              "Show Preview Models",
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12,
+                              ),
                             ),
-                          ),
-                          Checkbox(
-                            onChanged: (value) {
-                              setState(() {
-                                showPreviews = (value)!;
-                              });
-                            },
-                            value: showPreviews,
-                            side: BorderSide(
-                              color: (Colors.grey[500])!,
+                            Checkbox(
+                              onChanged: (value) {
+                                setState(() {
+                                  showPreviews = (value)!;
+                                });
+                              },
+                              value: showPreviews,
+                              side: BorderSide(
+                                color: (Colors.grey[500])!,
+                              ),
+                              activeColor: Colors.grey[500],
                             ),
-                            activeColor: Colors.grey[500],
-                          ),
-                        ],
-                      ),
-                      TextButton(
-                        onPressed: newModel.isEmpty ? null : () {
-                          setModel();
-                        },
-                        child: const Text("Confirm"),
-                      ),
-                    ],
+                          ],
+                        ),
+                        TextButton(
+                          onPressed: newModel.isEmpty ? null : () {
+                            setModel();
+                          },
+                          child: const Text("Confirm"),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               );
