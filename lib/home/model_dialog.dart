@@ -37,6 +37,13 @@ class ModelDialog extends StatelessWidget {
                       fontSize: 18,
                     ),
                   ),
+                  Text(
+                    "Selected: ${newModel.isEmpty ? "None" : newModel}",
+                    style: const TextStyle(
+                      color: Colors.grey,
+                      fontSize: 12,
+                    ),
+                  ),
                   const SizedBox(height: 8),
                   Expanded(
                     child: Row(
