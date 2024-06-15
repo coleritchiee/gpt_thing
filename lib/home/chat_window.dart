@@ -64,7 +64,7 @@ class _ChatWindowState extends State<ChatWindow> {
                       ? Alignment.center
                       : Alignment.centerLeft,
                   child: Text(
-                    msg.message,
+                    ((msg.content)![0].text)!, // TODO: fix later for other content types
                   ),
                 ),
               ],

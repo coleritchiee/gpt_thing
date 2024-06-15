@@ -1,20 +1,28 @@
+import 'dart:io';
+
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gpt_thing/home/api_manager.dart';
 import 'package:gpt_thing/home/chat_data.dart';
+import 'package:gpt_thing/home/chat_info.dart';
 import 'package:gpt_thing/home/key_set_dialog.dart';
+import 'package:gpt_thing/services/firestore.dart';
+
+import 'chat_id_notifier.dart';
 
 class MessageBox extends StatefulWidget {
-  final ChatData data;
+  ChatData data;
   final KeySetDialog keyDialog;
   final APIManager api;
+  ChatIdNotifier chatIds;
 
-  const MessageBox({
+  MessageBox({
     super.key,
     required this.data,
     required this.keyDialog,
-    required this.api
+    required this.api,
+    required this.chatIds
   });
 
   @override
@@ -33,6 +41,16 @@ class _MessageBoxState extends State<MessageBox> {
       OpenAIChatMessageRole.assistant,
       (response.choices.first.message.content)!.first.text!
     );
+    if(widget.data.id == ""){
+      ChatInfo info = ChatInfo(id: widget.data.id, title: widget.data.id, date: DateTime.now());
+      widget.data = FirestoreService().updateChat(widget.data, info);
+      ChatInfo newInfo = ChatInfo(id: widget.data.id, title: widget.data.id, date: DateTime.now());
+      widget.chatIds.addInfo(newInfo);
+    }
+    else {
+      ChatInfo info = widget.chatIds.getById(widget.data.id)!;
+      widget.data = FirestoreService().updateChat(widget.data, info);
+    }
     setState(() {
       _isWaiting = false;
     });

@@ -1,17 +1,30 @@
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-class ChatMessage {
-  OpenAIChatMessageRole role;
-  String message;
+part 'chat_data.g.dart';
 
-  ChatMessage(this.role, this.message);
-}
-
+@JsonSerializable(explicitToJson: true)
 class ChatData extends ChangeNotifier {
-  List<ChatMessage> messages = [];
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  List<OpenAIChatCompletionChoiceMessageModel> messages = [];
+  String id = "";
+  @JsonKey(includeFromJson: false, includeToJson: false)
   String apiKey = "";
+  @JsonKey(includeFromJson: false, includeToJson: false)
   String organization = "";
+
+  ChatData();
+
+  void overwrite(ChatData data){
+    this.id = data.id;
+    this.messages = data.messages;
+    notifyListeners();
+  }
+
+  void setId(String id){
+    this.id = id;
+  }
 
   void setKey(String key, String org) {
     apiKey = key;
@@ -27,8 +40,28 @@ class ChatData extends ChangeNotifier {
   }
 
   void addMessage(OpenAIChatMessageRole role, String message) {
-    messages.add(ChatMessage(role, message));
+    messages.add(OpenAIChatCompletionChoiceMessageModel(
+      role: role,
+      content: [
+        OpenAIChatCompletionChoiceMessageContentItemModel.text(message),
+      ],
+    ));
     notifyListeners();
+  }
+
+  factory ChatData.fromJson(Map<String, dynamic> json) {
+    return ChatData()
+      ..id = json['id'] as String
+      ..messages = (json['messages'] as List)
+          .map((e) => OpenAIChatCompletionChoiceMessageModel.fromMap(e as Map<String, dynamic>))
+          .toList();
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'messages': messages.map((message) => message.toMap()).toList(),
+    };
   }
 
   static String roleToString(OpenAIChatMessageRole role) {
@@ -45,10 +78,12 @@ class ChatData extends ChangeNotifier {
   }
 
   @override
-  String toString() { // really just to be used for debugging
+  String toString() {
+    // really just to be used for debugging
+    // TODO: remove this eventually
     String retStr = "ChatData Contents:";
     for (int i = 0; i < messages.length; i++) {
-      retStr += "\n ${messages[i].role}:\n  ${messages[i].message}";
+      retStr += "\n ${messages[i].role}:\n  ${(messages[i].content)![0].text}";
     }
     return retStr;
   }
