@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gpt_thing/home/api_manager.dart';
 import 'package:gpt_thing/home/chat_data.dart';
+import 'package:gpt_thing/home/chat_info.dart';
 import 'package:gpt_thing/home/key_set_dialog.dart';
 import 'package:gpt_thing/services/firestore.dart';
 
@@ -39,11 +42,14 @@ class _MessageBoxState extends State<MessageBox> {
       (response.choices.first.message.content)!.first.text!
     );
     if(widget.data.id == ""){
-      widget.data = FirestoreService().updateChat(widget.data);
-      widget.chatIds.addId(widget.data.id);
+      ChatInfo info = ChatInfo(id: widget.data.id, title: widget.data.id, date: DateTime.now());
+      widget.data = FirestoreService().updateChat(widget.data, info);
+      ChatInfo newInfo = ChatInfo(id: widget.data.id, title: widget.data.id, date: DateTime.now());
+      widget.chatIds.addInfo(newInfo);
     }
     else {
-      widget.data = FirestoreService().updateChat(widget.data);
+      ChatInfo info = widget.chatIds.getById(widget.data.id)!;
+      widget.data = FirestoreService().updateChat(widget.data, info);
     }
     setState(() {
       _isWaiting = false;

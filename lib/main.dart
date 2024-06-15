@@ -4,6 +4,7 @@ import 'package:gpt_thing/login/login.dart';
 import 'package:gpt_thing/route.dart';
 import 'package:gpt_thing/theme.dart';
 import 'firebase_options.dart';
+import 'home/home.dart';
 
 
 void main() {
@@ -35,7 +36,7 @@ class _AppState extends State<App> {
           return MaterialApp(
                 routes: appRoutes,
                 theme: appTheme,
-                home: LoginPage(),
+                home: const HomePage(),
           );
         }
         return const Text('loading', textDirection: TextDirection.rtl);
