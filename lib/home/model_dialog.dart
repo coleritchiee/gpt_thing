@@ -26,7 +26,7 @@ class ModelDialog extends StatelessWidget {
           maxHeight: 500,
         ),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(0, 16, 0, 8),
+          padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
           child: StatefulBuilder( // so the right column can update from the left
             builder: (context, setState) {
               return Column(
@@ -38,7 +38,7 @@ class ModelDialog extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    "Selected: ${newModel.isEmpty ? "None" : newModel}",
+                    newModel.isEmpty ? "None Selected" : "Selected: $newModel",
                     style: const TextStyle(
                       color: Colors.grey,
                       fontSize: 12,
@@ -89,6 +89,9 @@ class ModelDialog extends StatelessWidget {
                               return ListTile(
                                 onTap: () {
                                   setState(() {
+                                    if (newModel == model.id) {
+                                      setModel(); // detecting "double tap"
+                                    }
                                     newModel = model.id;
                                     newGroup = model.group;
                                   });
