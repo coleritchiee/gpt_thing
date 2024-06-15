@@ -45,6 +45,9 @@ class ModelDialog extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
+                  const Divider(
+                    height: 1,
+                  ),
                   Expanded(
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -67,12 +70,15 @@ class ModelDialog extends StatelessWidget {
                                     fontSize: 12,
                                   ),
                                   tileColor: filter == group.name
-                                    ? Theme.of(context).colorScheme.inversePrimary
+                                    ? Colors.grey[850]
                                     : null,
                                 ),
                               );
                             }).toList(),
                           ),
+                        ),
+                        const VerticalDivider(
+                          width: 1,
                         ),
                         Expanded(
                           child: ListView(
@@ -95,7 +101,7 @@ class ModelDialog extends StatelessWidget {
                                 dense: true,
                                 visualDensity: const VisualDensity(vertical: -4),
                                 tileColor: newModel == model.id
-                                  ? Theme.of(context).colorScheme.inversePrimary
+                                  ? Colors.grey[850]
                                   : null,
                               );
                             }).toList(),
@@ -104,6 +110,7 @@ class ModelDialog extends StatelessWidget {
                       ],
                     ),
                   ),
+                  const Divider(height: 1),
                   const SizedBox(height: 8),
                   Padding(
                     padding: const EdgeInsets.only(
