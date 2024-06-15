@@ -2,17 +2,79 @@ import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part 'chat_data.g.dart';
+class Model {
+  late String id;
+  late String group;
+  late bool preview;
 
+  Model(this.id, List<ModelGroup> groups) {
+    group = "Other";
+    for (ModelGroup mg in groups) {
+      if (id.startsWith(mg.prefix)) {
+        group = mg.name;
+        break;
+      }
+    }
+    preview = id.endsWith("preview");
+  }
+}
+
+class ModelGroup {
+  String name;
+  String prefix;
+  String description;
+
+  ModelGroup({required this.name, required this.prefix, required this.description});
+}
+
+part 'chat_data.g.dart';
 @JsonSerializable(explicitToJson: true)
 class ChatData extends ChangeNotifier {
-  @JsonKey(includeFromJson: false, includeToJson: false)
   List<OpenAIChatCompletionChoiceMessageModel> messages = [];
   String id = "";
   @JsonKey(includeFromJson: false, includeToJson: false)
   String apiKey = "";
   @JsonKey(includeFromJson: false, includeToJson: false)
   String organization = "";
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  List<Model> models = <Model>[];
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  String model = "";
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  String modelGroup = "";
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  final List<ModelGroup> groups = [
+    ModelGroup(
+      name: "ChatGPT",
+      prefix: "gpt",
+      description: "Natural language processing"
+    ),
+    ModelGroup(
+      name: "Dall·E",
+      prefix: "dall-e",
+      description: "Generate and edit images"
+    ),
+    ModelGroup(
+      name: "TTS",
+      prefix: "tts",
+      description: "Convert text to spoken audio"
+    ),
+    ModelGroup(
+      name: "Whisper",
+      prefix: "whisper",
+      description: "Convert audio to text"
+    ),
+    ModelGroup(
+      name: "Embeddings",
+      prefix: "text-embedding",
+      description: "Convert text to a numerical form"
+    ),
+    ModelGroup(
+      name: "Other",
+      prefix: "",
+      description: "Specialized models"
+    ),
+  ];
 
   ChatData();
 
@@ -35,8 +97,32 @@ class ChatData extends ChangeNotifier {
     }
   }
 
+  void resetKey() {
+    apiKey = "";
+    OpenAI.apiKey = "";
+    organization = "";
+    OpenAI.organization = "";
+  }
+
+  void addModels(List<String> ids) {
+    for (String id in ids) {
+      models.add(Model(id, groups));
+    }
+    notifyListeners();
+  }
+
+  void setModel(String model, String group) {
+    this.model = model;
+    this.modelGroup = group;
+    notifyListeners();
+  }
+
   bool keyIsSet() {
     return apiKey.isNotEmpty;
+  }
+
+  bool modelChosen() {
+    return model.isNotEmpty;
   }
 
   void addMessage(OpenAIChatMessageRole role, String message) {

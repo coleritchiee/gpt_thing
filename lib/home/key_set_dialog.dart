@@ -1,15 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:gpt_thing/home/api_manager.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 
-class KeySetDialog extends StatelessWidget{
+class KeySetDialog extends StatelessWidget {
   final ChatData data;
+  final APIManager api;
 
-  const KeySetDialog({super.key, required this.data});
+  const KeySetDialog({super.key, required this.data, required this.api});
 
   @override
   Widget build(BuildContext context) {
     final keyController = TextEditingController();
     final orgController = TextEditingController();
+
+    void setInfo() async {
+      data.setKey(keyController.text, orgController.text);
+      try {
+        data.addModels(await api.getModels());
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              // TODO: change this to something else later
+              content: Text(
+                  "Something went wrong. Check your API key and try again."),
+            ),
+          );
+        }
+        data.resetKey();
+        return;
+      }
+      if (context.mounted) {
+        Navigator.pop(context);
+      }
+    }
 
     return Dialog(
       insetPadding: const EdgeInsets.all(24.0),
@@ -35,35 +59,44 @@ class KeySetDialog extends StatelessWidget{
                   ),
                   const SizedBox(height: 12),
                   TextField(
-                    controller: keyController,
-                    decoration: InputDecoration(
-                      hintText: 'API Key',
-                      hintStyle: TextStyle(
-                        color: Colors.grey[500],
-                      ),
-                      border: const OutlineInputBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(12),
+                      autofocus: true,
+                      controller: keyController,
+                      decoration: InputDecoration(
+                        hintText: 'API Key',
+                        hintStyle: TextStyle(
+                          color: Colors.grey[500],
                         ),
-                      )
-                    ),
-                    onChanged: (text) {setState(() {});}, // make the button update
-                  ),
+                        border: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(12),
+                          ),
+                        ),
+                      ),
+                      style: Theme.of(context).textTheme.bodySmall,
+                      onChanged: (text) {
+                        setState(() {});
+                      }, // make the button update
+                      onSubmitted: (text) {
+                        setInfo();
+                      }),
                   const SizedBox(height: 8),
                   TextField(
-                    controller: orgController,
-                    decoration: InputDecoration(
-                      hintText: 'Organization (Optional)',
-                      hintStyle: TextStyle(
-                        color: Colors.grey[500],
-                      ),
-                      border: const OutlineInputBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(12),
+                      controller: orgController,
+                      decoration: InputDecoration(
+                        hintText: 'Organization (Optional)',
+                        hintStyle: TextStyle(
+                          color: Colors.grey[500],
                         ),
-                      )
-                    ),
-                  ),
+                        border: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(12),
+                          ),
+                        ),
+                      ),
+                      style: Theme.of(context).textTheme.bodySmall,
+                      onSubmitted: (text) {
+                        setInfo();
+                      }),
                   const SizedBox(height: 8),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -75,17 +108,11 @@ class KeySetDialog extends StatelessWidget{
                         child: const Text('Cancel'),
                       ),
                       TextButton(
-                        onPressed: keyController.text.isEmpty ? null : () {
-                          data.setKey(
-                            keyController.text,
-                            orgController.text,
-                          );
-                          Navigator.pop(context);
-                        },
+                        onPressed: keyController.text.isEmpty ? null : setInfo,
                         child: const Text('Set'),
                       ),
-                    ]
-                  )
+                    ],
+                  ),
                 ],
               );
             },

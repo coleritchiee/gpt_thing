@@ -5,8 +5,10 @@ import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/chat_id_notifier.dart';
 import 'package:gpt_thing/home/home_drawer.dart';
 import 'package:gpt_thing/home/key_set_dialog.dart';
+import 'package:gpt_thing/services/auth.dart';
 import 'package:gpt_thing/services/firestore.dart';
 import 'chat_info.dart';
+import 'package:gpt_thing/home/model_dialog.dart';
 import 'chat_window.dart';
 import 'message_box.dart';
 
@@ -17,7 +19,8 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     APIManager api = APIManager();
     ChatData data = ChatData();
-    KeySetDialog keyDialog = KeySetDialog(data: data);
+    KeySetDialog keyDialog = KeySetDialog(data: data, api: api);
+    ModelDialog modelDialog = ModelDialog(data: data);
 
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
@@ -46,6 +49,7 @@ class HomePage extends StatelessWidget {
                   data.overwrite(newData);
                 }
               },
+              onLogoutClick: () {},
             ),
             body: Center(
               child: Padding(
@@ -129,10 +133,14 @@ class HomePage extends StatelessWidget {
                           data.overwrite(newData);
                         }
                       },
+                      onLogoutClick: () {
+                        AuthService().signOut();
+                        data.overwrite(ChatData());
+                      },
                     ),
                     body: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(36.0),
+                      child: Padding (
+                        padding: const EdgeInsets.all(4),
                         child: ConstrainedBox(
                           constraints: const BoxConstraints(
                             maxWidth: 768,
@@ -143,17 +151,20 @@ class HomePage extends StatelessWidget {
                               return Column(
                                 children: [
                                   ChatWindow(data: data),
-                                  MessageBox(data: data,
-                                      keyDialog: keyDialog,
-                                      api: api,
-                                      chatIds: chatIds),
+                                  MessageBox(
+                                    data: data,
+                                    keyDialog: keyDialog,
+                                    modelDialog: modelDialog,
+                                    api: api,
+                                    chatIds: chatIds,
+                                  ),
                                 ],
                               );
-                            },
-                          ),
-                        ),
-                      ),
-                    ),
+                            }
+                          )
+                        )
+                      )
+                    )
                   );
                 }
               }
