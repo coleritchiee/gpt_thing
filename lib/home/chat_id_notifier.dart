@@ -49,6 +49,13 @@ class ChatIdNotifier extends ChangeNotifier{
     notifyListeners();
   }
 
+  void updateInfo(ChatInfo info){
+    _ids.remove(getById(info.id));
+    _ids.add(info);
+    sortByDate();
+    notifyListeners();
+  }
+
   int size(){
     return _ids.length;
   }

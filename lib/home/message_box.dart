@@ -59,8 +59,6 @@ class _MessageBoxState extends State<MessageBox> {
         await widget.api.chatPrompt(widget.data.messages, widget.data.model);
     widget.data.addMessage(OpenAIChatMessageRole.assistant,
         (response.choices.first.message.content)!.first.text!);
-    widget.data.addMessage(OpenAIChatMessageRole.assistant,
-        (response.choices.first.message.content)!.first.text!);
     if (widget.data.id == "") {
       ChatInfo info = ChatInfo(
           id: widget.data.id, title: widget.data.id, date: DateTime.now());
@@ -70,6 +68,7 @@ class _MessageBoxState extends State<MessageBox> {
       widget.chatIds.addInfo(newInfo);
     } else {
       ChatInfo info = widget.chatIds.getById(widget.data.id)!;
+      widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
       widget.data = FirestoreService().updateChat(widget.data, info);
     }
     setState(() {

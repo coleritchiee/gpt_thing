@@ -30,6 +30,7 @@ class FirestoreService {
 
   ChatInfo updateInfo(ChatInfo info){
     CollectionReference chatInfos = _db.collection('users').doc(FirebaseAuth.instance.currentUser?.uid).collection('chatInfos');
+    info.date = DateTime.now();
     chatInfos.doc(info.id).set(info.toJson());
     return info;
   }

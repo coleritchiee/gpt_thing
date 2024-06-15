@@ -9,8 +9,9 @@ import 'package:gpt_thing/services/firestore.dart';
 class HomeDrawer extends StatelessWidget{
   ChatIdNotifier ids;
   final Function() onNewChatClick;
+  final Function() onLogoutClick;
   final Function(ChatInfo) onIdClick;
-  HomeDrawer({super.key, required this.ids, required this.onNewChatClick,required this.onIdClick});
+  HomeDrawer({super.key, required this.ids, required this.onNewChatClick, required this.onIdClick, required this.onLogoutClick});
 
   @override
   Widget build(BuildContext context) {
@@ -142,7 +143,7 @@ class HomeDrawer extends StatelessWidget{
                           ),
                         ),
                         onTap: () async {
-                          AuthService().signOut();
+                          onLogoutClick();
                         },
                       ),
                     );
@@ -188,6 +189,7 @@ class HomeDrawer extends StatelessWidget{
             content: SizedBox(
               width: 300,
               child: TextFormField(
+                autofocus: true,
                 controller: renameController,
                 decoration: const InputDecoration(
                   hintText: "Enter new name",
