@@ -78,7 +78,11 @@ class _MessageBoxState extends State<MessageBox> {
 
   void sendMsg() {
     if (!widget.data.keyIsSet()) {
-      openKeySetDialog();
+      openKeySetDialog().then((value) => {
+        if (widget.data.keyIsSet() && !widget.data.modelChosen()) {
+          openModelDialog()
+        }
+      });
       return;
     }
     if (!widget.data.modelChosen()) {
