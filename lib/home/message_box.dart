@@ -55,21 +55,36 @@ class _MessageBoxState extends State<MessageBox> {
   }
 
   void recMsg(String msg) async {
-    final response =
-        await widget.api.chatPrompt(widget.data.messages, widget.data.model);
-    widget.data.addMessage(OpenAIChatMessageRole.assistant,
-        (response.choices.first.message.content)!.first.text!);
-    if (widget.data.id == "") {
-      ChatInfo info = ChatInfo(
-          id: widget.data.id, title: widget.data.id, date: DateTime.now());
-      widget.data = FirestoreService().updateChat(widget.data, info);
-      ChatInfo newInfo = ChatInfo(
-          id: widget.data.id, title: widget.data.id, date: DateTime.now());
-      widget.chatIds.addInfo(newInfo);
-    } else {
-      ChatInfo info = widget.chatIds.getById(widget.data.id)!;
-      widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
-      widget.data = FirestoreService().updateChat(widget.data, info);
+    switch (widget.data.modelGroup) {
+      case "ChatGPT":
+        final response =
+            await widget.api.chatPrompt(widget.data.messages, widget.data.model);
+        widget.data.addMessage(OpenAIChatMessageRole.assistant,
+            (response.choices.first.message.content)!.first.text!);
+        if (widget.data.id == "") {
+          ChatInfo info = ChatInfo(
+              id: widget.data.id, title: widget.data.id, date: DateTime.now());
+          widget.data = FirestoreService().updateChat(widget.data, info);
+          ChatInfo newInfo = ChatInfo(
+              id: widget.data.id, title: widget.data.id, date: DateTime.now());
+          widget.chatIds.addInfo(newInfo);
+        } else {
+          ChatInfo info = widget.chatIds.getById(widget.data.id)!;
+          widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
+          widget.data = FirestoreService().updateChat(widget.data, info);
+        }
+        break;
+      case "Dall·E":
+        final response = await widget.api.imagePrompt(
+          msg,
+          widget.data.model,
+        );
+        widget.data.addImage(
+          OpenAIChatMessageRole.assistant,
+          (response.data.first.url)!
+        );
+      default:
+        print("No modelGroup match found");
     }
     setState(() {
       _isWaiting = false;

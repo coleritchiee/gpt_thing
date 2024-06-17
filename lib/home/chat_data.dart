@@ -110,6 +110,16 @@ class ChatData extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addImage(OpenAIChatMessageRole role, String url) {
+    messages.add(OpenAIChatCompletionChoiceMessageModel(
+      role: role,
+      content: [
+        OpenAIChatCompletionChoiceMessageContentItemModel.imageUrl(url),
+      ],
+    ));
+    notifyListeners();
+  }
+
   factory ChatData.fromJson(Map<String, dynamic> json) {
     return ChatData()
       ..id = json['id'] as String

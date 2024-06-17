@@ -63,8 +63,17 @@ class _ChatWindowState extends State<ChatWindow> {
                     : msg.role == OpenAIChatMessageRole.system
                       ? Alignment.center
                       : Alignment.centerLeft,
-                  child: Text(
-                    ((msg.content)![0].text)!, // TODO: fix later for other content types
+                  child: Column(
+                    children: [
+                      if ((msg.content)![0].text != null)
+                        Text(
+                          ((msg.content)![0].text)!,
+                        ),
+                      if ((msg.content)![0].imageUrl != null)
+                        Image.network(
+                          ((msg.content)![0].imageUrl)!,
+                        )
+                    ],
                   ),
                 ),
               ],
