@@ -19,6 +19,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     APIManager api = APIManager();
     ChatData data = ChatData();
+    ScrollController scroller = ScrollController();
     KeySetDialog keyDialog = KeySetDialog(data: data, api: api);
     ModelDialog modelDialog = ModelDialog(data: data);
 
@@ -63,7 +64,7 @@ class HomePage extends StatelessWidget {
                     builder: (context, child) {
                       return Column(
                         children: [
-                          ChatWindow(data: data),
+                          ChatWindow(data: data, scroller: scroller),
                           Container(
                             margin: const EdgeInsets.all(16.0),
                             padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
@@ -150,13 +151,14 @@ class HomePage extends StatelessWidget {
                             builder: (context, child) {
                               return Column(
                                 children: [
-                                  ChatWindow(data: data),
+                                  ChatWindow(data: data, scroller: scroller),
                                   MessageBox(
                                     data: data,
                                     keyDialog: keyDialog,
                                     modelDialog: modelDialog,
                                     api: api,
                                     chatIds: chatIds,
+                                    chatScroller: scroller,
                                   ),
                                 ],
                               );

@@ -4,8 +4,9 @@ import 'package:gpt_thing/home/chat_data.dart';
 
 class ChatWindow extends StatefulWidget {
   final ChatData data;
+  final ScrollController scroller;
 
-  const ChatWindow({super.key, required this.data});
+  const ChatWindow({super.key, required this.data, required this.scroller});
 
   @override
   State<ChatWindow> createState() => _ChatWindowState();
@@ -119,6 +120,7 @@ class _ChatWindowState extends State<ChatWindow> {
     return Expanded(
       child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
+        controller: widget.scroller,
         reverse: true,
         children: messages,
       ),

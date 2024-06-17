@@ -16,14 +16,17 @@ class MessageBox extends StatefulWidget {
   final ModelDialog modelDialog;
   final APIManager api;
   ChatIdNotifier chatIds;
+  final ScrollController chatScroller;
 
   MessageBox(
-      {super.key,
-      required this.data,
-      required this.keyDialog,
-      required this.modelDialog,
-      required this.api,
-      required this.chatIds});
+    {super.key,
+    required this.data,
+    required this.keyDialog,
+    required this.modelDialog,
+    required this.api,
+    required this.chatIds,
+    required this.chatScroller,
+  });
 
   @override
   State<MessageBox> createState() => _MessageBoxState();
@@ -50,6 +53,14 @@ class _MessageBoxState extends State<MessageBox> {
       return;
     }
     showDialog(context: context, builder: widget.modelDialog.build);
+  }
+
+  void resetChatScroll() {
+    widget.chatScroller.animateTo(
+      0,
+      duration: const Duration(milliseconds: 750),
+      curve: Curves.easeInOut,
+    );
   }
 
   void recMsg(String msg) async {
@@ -114,6 +125,7 @@ class _MessageBoxState extends State<MessageBox> {
       _isEmpty = true;
       _isWaiting = true;
       widget.data.setThinking(true);
+      resetChatScroll();
     });
   }
 
