@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -88,6 +86,7 @@ class _MessageBoxState extends State<MessageBox> {
     }
     setState(() {
       _isWaiting = false;
+      widget.data.setThinking(false);
     });
   }
 
@@ -114,6 +113,7 @@ class _MessageBoxState extends State<MessageBox> {
     setState(() {
       _isEmpty = true;
       _isWaiting = true;
+      widget.data.setThinking(true);
     });
   }
 

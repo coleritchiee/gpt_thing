@@ -50,12 +50,15 @@ class ChatData extends ChangeNotifier {
       description: "Specialized models"
     ),
   ];
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  bool _thinking = false;
 
   ChatData();
 
   void overwrite(ChatData data){
-    this.id = data.id;
-    this.messages = data.messages;
+    id = data.id;
+    messages = data.messages;
+    _thinking = false;
     notifyListeners();
   }
 
@@ -88,7 +91,7 @@ class ChatData extends ChangeNotifier {
 
   void setModel(String model, String group) {
     this.model = model;
-    this.modelGroup = group;
+    modelGroup = group;
     notifyListeners();
   }
 
@@ -98,6 +101,14 @@ class ChatData extends ChangeNotifier {
 
   bool modelChosen() {
     return model.isNotEmpty;
+  }
+
+  void setThinking(bool t) {
+    _thinking = t;
+  }
+
+  bool isThinking() {
+    return _thinking;
   }
 
   void addMessage(OpenAIChatMessageRole role, String message) {

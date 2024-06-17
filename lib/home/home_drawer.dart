@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:gpt_thing/home/chat_id_notifier.dart';
 import 'package:gpt_thing/home/chat_info.dart';
 import 'package:gpt_thing/home/chat_sidebar_button.dart';
-import 'package:gpt_thing/services/auth.dart';
 import 'package:gpt_thing/services/firestore.dart';
 
 class HomeDrawer extends StatelessWidget{
@@ -198,13 +197,13 @@ class HomeDrawer extends StatelessWidget{
             ),
             actions: <Widget>[
               TextButton(
-                child: Text("Cancel"),
+                child: const Text("Cancel"),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
               ),
               TextButton(
-                child: Text("Save"),
+                child: const Text("Save"),
                 onPressed: () {
                   chatIds.setTitleById(chatInfo.id, renameController.text);
                   FirestoreService().updateInfo(chatIds.getById(chatInfo.id)!);
