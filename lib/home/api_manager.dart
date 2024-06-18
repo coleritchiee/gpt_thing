@@ -16,7 +16,7 @@ class APIManager {
       prompt: prompt,
       n: 1,
       size: OpenAIImageSize.size1024, // the only size supported by both dall-e 2 and 3
-      responseFormat: OpenAIImageResponseFormat.url,
+      responseFormat: OpenAIImageResponseFormat.b64Json,
     );
   }
 
