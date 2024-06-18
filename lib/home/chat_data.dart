@@ -2,21 +2,21 @@ import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part 'chat_data.g.dart';
 @JsonSerializable(explicitToJson: true)
 class ChatData extends ChangeNotifier {
+  // included fields
   List<OpenAIChatCompletionChoiceMessageModel> messages = [];
   String id = "";
+  String model = "";
+  String modelGroup = "";
+
+  // excluded fields
   @JsonKey(includeFromJson: false, includeToJson: false)
   String apiKey = "";
   @JsonKey(includeFromJson: false, includeToJson: false)
   String organization = "";
   @JsonKey(includeFromJson: false, includeToJson: false)
   List<Model> models = <Model>[];
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  String model = "";
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  String modelGroup = "";
   @JsonKey(includeFromJson: false, includeToJson: false)
   final List<ModelGroup> groups = [
     ModelGroup(
@@ -58,6 +58,8 @@ class ChatData extends ChangeNotifier {
   void overwrite(ChatData data){
     id = data.id;
     messages = data.messages;
+    model = data.model;
+    modelGroup = data.modelGroup;
     _thinking = false;
     notifyListeners();
   }
@@ -134,6 +136,8 @@ class ChatData extends ChangeNotifier {
   factory ChatData.fromJson(Map<String, dynamic> json) {
     return ChatData()
       ..id = json['id'] as String
+      ..model = json['model'] as String
+      ..modelGroup = json['modelGroup'] as String
       ..messages = (json['messages'] as List)
           .map((e) => OpenAIChatCompletionChoiceMessageModel.fromMap(e as Map<String, dynamic>))
           .toList();
@@ -142,6 +146,8 @@ class ChatData extends ChangeNotifier {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'model': model,
+      'modelGroup': modelGroup,
       'messages': messages.map((message) => message.toMap()).toList(),
     };
   }

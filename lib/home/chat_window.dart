@@ -44,7 +44,9 @@ class _ChatWindowState extends State<ChatWindow> {
                 ? "You"
                 : msg.role == OpenAIChatMessageRole.system
                   ? "System"
-                  : "ChatGPT",
+                  : widget.data.modelGroup == "Other"
+                    ? "Assistant"
+                    : widget.data.modelGroup,
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -80,8 +82,8 @@ class _ChatWindowState extends State<ChatWindow> {
     if (widget.data.isThinking()) {
       messages.insert(
         0,
-        const Padding(
-          padding: EdgeInsets.only(
+        Padding(
+          padding: const EdgeInsets.only(
             top: 8,
             bottom: 8,
           ),
@@ -90,17 +92,19 @@ class _ChatWindowState extends State<ChatWindow> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  "ChatGPT",
-                  style: TextStyle(
+                  widget.data.modelGroup == "Other"
+                    ? "Assistant"
+                    : widget.data.modelGroup,
+                  style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 4,
               ),
-              Align(
+              const Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
                   "Thinking...",
