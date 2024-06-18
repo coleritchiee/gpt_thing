@@ -373,7 +373,7 @@ class _MessageBoxState extends State<MessageBox> {
                     ]),
                   ),
                 TextButton(
-                  onPressed: () {
+                  onPressed: widget.data.messages.isNotEmpty ? null : () {
                     openModelDialog();
                   },
                   style: TextButton.styleFrom(
