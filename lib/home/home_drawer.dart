@@ -6,11 +6,12 @@ import 'package:gpt_thing/home/chat_sidebar_button.dart';
 import 'package:gpt_thing/services/firestore.dart';
 
 class HomeDrawer extends StatelessWidget{
-  ChatIdNotifier ids;
+  final ChatIdNotifier ids;
   final Function() onNewChatClick;
   final Function() onLogoutClick;
   final Function(ChatInfo) onIdClick;
-  HomeDrawer({super.key, required this.ids, required this.onNewChatClick, required this.onIdClick, required this.onLogoutClick});
+  
+  const HomeDrawer({super.key, required this.ids, required this.onNewChatClick, required this.onIdClick, required this.onLogoutClick});
 
   @override
   Widget build(BuildContext context) {

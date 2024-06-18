@@ -11,14 +11,14 @@ import 'package:gpt_thing/services/firestore.dart';
 import 'chat_id_notifier.dart';
 
 class MessageBox extends StatefulWidget {
-  ChatData data;
+  final ChatData data;
   final KeySetDialog keyDialog;
   final ModelDialog modelDialog;
   final APIManager api;
-  ChatIdNotifier chatIds;
+  final ChatIdNotifier chatIds;
   final ScrollController chatScroller;
 
-  MessageBox(
+  const MessageBox(
     {super.key,
     required this.data,
     required this.keyDialog,
@@ -73,14 +73,14 @@ class _MessageBoxState extends State<MessageBox> {
         if (widget.data.id == "") {
           ChatInfo info = ChatInfo(
               id: widget.data.id, title: widget.data.id, date: DateTime.now());
-          widget.data = FirestoreService().updateChat(widget.data, info);
+          widget.data.overwrite(FirestoreService().updateChat(widget.data, info));
           ChatInfo newInfo = ChatInfo(
               id: widget.data.id, title: widget.data.id, date: DateTime.now());
           widget.chatIds.addInfo(newInfo);
         } else {
           ChatInfo info = widget.chatIds.getById(widget.data.id)!;
           widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
-          widget.data = FirestoreService().updateChat(widget.data, info);
+          widget.data.overwrite(FirestoreService().updateChat(widget.data, info));
         }
         break;
       case "Dall·E":
@@ -97,14 +97,14 @@ class _MessageBoxState extends State<MessageBox> {
         if (widget.data.id == "") {
           ChatInfo info = ChatInfo(
               id: widget.data.id, title: widget.data.id, date: DateTime.now());
-          widget.data = FirestoreService().updateChat(widget.data, info);
+          widget.data.overwrite(FirestoreService().updateChat(widget.data, info));
           ChatInfo newInfo = ChatInfo(
               id: widget.data.id, title: widget.data.id, date: DateTime.now());
           widget.chatIds.addInfo(newInfo);
         } else {
           ChatInfo info = widget.chatIds.getById(widget.data.id)!;
           widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
-          widget.data = FirestoreService().updateChat(widget.data, info);
+          widget.data.overwrite(FirestoreService().updateChat(widget.data, info));
         }
         break;
       default:

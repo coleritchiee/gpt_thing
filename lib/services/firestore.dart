@@ -1,15 +1,10 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:gpt_thing/home/chat_data.dart';
-import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
-import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart';
 
 import '../home/chat_info.dart';
 
@@ -115,26 +110,18 @@ class FirestoreService {
 
   Future<String> uploadImageToStorageFromLink(String b64) async {
     try {
-      print("here");
       Uint8List imageData = base64Decode(b64);
-      print("here2");
       final storageRef = FirebaseStorage.instance.ref();
-      print("here3");
       String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-      print("here4");
       var user = FirebaseAuth.instance.currentUser;
       if (user == null) {
         throw Exception('User not logged in');
       }
       final imageRef = storageRef.child('images/${user.uid}/$fileName.png');
-      print("here5");
 
       final uploadTask = imageRef.putData(imageData);
-      print("here6");
       final snapshot = await uploadTask.whenComplete(() => {});
-      print("here7");
       final downloadUrl = await snapshot.ref.getDownloadURL();
-      print("here8");
 
       return downloadUrl;
     } catch (e) {

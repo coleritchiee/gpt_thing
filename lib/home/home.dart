@@ -132,6 +132,7 @@ class HomePage extends StatelessWidget {
                             info.id);
                         if (newData != null) {
                           data.overwrite(newData);
+                          scroller.jumpTo(0);
                         }
                       },
                       onLogoutClick: () {
