@@ -89,7 +89,6 @@ class _MessageBoxState extends State<MessageBox> {
           widget.data.model,
         );
         String firebaseUrl = await FirestoreService().uploadImageToStorageFromLink(response.data.first.b64Json!);
-        print(firebaseUrl);
         widget.data.addImage(
           OpenAIChatMessageRole.assistant,
           firebaseUrl

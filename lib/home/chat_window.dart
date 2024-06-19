@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:gpt_thing/home/chat_data.dart';
@@ -69,8 +70,17 @@ class _ChatWindowState extends State<ChatWindow> {
                       ((msg.content)![0].text)!,
                     ),
                   if ((msg.content)![0].imageUrl != null)
-                    Image.network(
-                      ((msg.content)![0].imageUrl)!,
+                    CachedNetworkImage(
+                      imageUrl: msg.content![0].imageUrl!,
+                      placeholder: (context, url) => const Text(
+                        "Loading...",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => const Icon(Icons.error),
                     )
                 ],
               ),
