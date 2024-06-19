@@ -66,6 +66,7 @@ class ChatData extends ChangeNotifier {
 
   void setId(String id){
     this.id = id;
+    notifyListeners();
   }
 
   void setKey(String key, String org) {
@@ -75,6 +76,7 @@ class ChatData extends ChangeNotifier {
     if (organization.isNotEmpty) {
       OpenAI.organization = organization;
     }
+    notifyListeners();
   }
 
   void resetKey() {
@@ -82,6 +84,7 @@ class ChatData extends ChangeNotifier {
     OpenAI.apiKey = "";
     organization = "";
     OpenAI.organization = "";
+    notifyListeners();
   }
 
   void addModels(List<String> ids) {
@@ -108,6 +111,7 @@ class ChatData extends ChangeNotifier {
 
   void setThinking(bool t) {
     _thinking = t;
+    notifyListeners();
   }
 
   bool isThinking() {

@@ -79,23 +79,7 @@ class HomeDrawer extends StatelessWidget {
                     );
                   }),
             ),
-            Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: ListTile(
-                title: const Text('Set API Key'),
-                titleTextStyle: Theme.of(context).textTheme.bodySmall,
-                leading: const Icon(Icons.key_rounded),
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(5),
-                  ),
-                ),
-                tileColor: Colors.blue[800],
-                onTap: () {
-                  showDialog(context: context, builder: keyDialog.build);
-                },
-              ),
-            ),
+            const Divider(),
             StreamBuilder<User?>(
               stream: FirebaseAuth.instance.authStateChanges(),
               builder: (context, snapshot) {
@@ -144,21 +128,53 @@ class HomeDrawer extends StatelessWidget {
                       ],
                     );
                   } else {
-                    return Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: ListTile(
-                        title: const Text('Logout'),
-                        titleTextStyle: Theme.of(context).textTheme.bodySmall,
-                        leading: const Icon(Icons.logout_rounded),
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(5),
+                    return Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: ListTile(
+                            title: const Text('Logout'),
+                            titleTextStyle:
+                                Theme.of(context).textTheme.bodySmall,
+                            leading: const Icon(Icons.logout_rounded),
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(5),
+                              ),
+                            ),
+                            onTap: () async {
+                              onLogoutClick();
+                            },
                           ),
                         ),
-                        onTap: () async {
-                          onLogoutClick();
-                        },
-                      ),
+                        StatefulBuilder(builder: (context, setState) {
+                          return Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: ListTile(
+                              title: const Text('Set API Key'),
+                              titleTextStyle:
+                                  Theme.of(context).textTheme.bodySmall,
+                              leading: const Icon(Icons.key_rounded),
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(5),
+                                ),
+                              ),
+                              tileColor: keyDialog.data.keyIsSet()
+                                  ? null
+                                  : Colors.blue[800],
+                              onTap: () {
+                                showDialog(
+                                        context: context,
+                                        builder: keyDialog.build)
+                                    .then((value) {
+                                  setState(() {});
+                                });
+                              },
+                            ),
+                          );
+                        }),
+                      ],
                     );
                   }
                 } else {
