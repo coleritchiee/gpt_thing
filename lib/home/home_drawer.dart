@@ -168,7 +168,7 @@ class HomeDrawer extends StatelessWidget {
                                         context: context,
                                         builder: keyDialog.build)
                                     .then((value) {
-                                  setState(() {});
+                                  setState(() {}); // has to be done in this order
                                 });
                               },
                             ),

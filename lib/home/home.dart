@@ -24,6 +24,8 @@ class HomePage extends StatelessWidget {
     KeySetDialog keyDialog = KeySetDialog(data: data, api: api);
     ModelDialog modelDialog = ModelDialog(data: data);
 
+    bool linkHover = false;
+
     return StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
@@ -86,32 +88,57 @@ class HomePage extends StatelessWidget {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Expanded(
-                                    child: RichText(
-                                      text: TextSpan(
-                                        children: [
-                                          TextSpan(
-                                            text: 'Sign in',
-                                            style: TextStyle(
-                                              color: Theme.of(context).colorScheme.primary,
-                                              fontSize: 16.0,
-                                              decoration: TextDecoration.underline,
-                                            ),
-                                            recognizer: TapGestureRecognizer()
-                                              ..onTap = () {
+                                    child: Row(
+                                      children: [
+                                        const Text(
+                                          "Please ",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16.0,
+                                          ),
+                                        ),
+                                        StatefulBuilder(
+                                            builder: (context, setState) {
+                                          return MouseRegion(
+                                            onEnter: (event) {
+                                              setState(() {
+                                                linkHover = true;
+                                              });
+                                            },
+                                            onExit: (event) {
+                                              setState(() {
+                                                linkHover = false;
+                                              });
+                                            },
+                                            cursor: SystemMouseCursors.click,
+                                            child: GestureDetector(
+                                              onTap: () {
                                                 Navigator.of(context)
                                                     .pushReplacementNamed(
                                                         '/login');
                                               },
-                                          ),
-                                          const TextSpan(
-                                            text: " to access chats.",
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 16.0,
+                                              child: Text(
+                                                'sign in',
+                                                style: TextStyle(
+                                                  color: Colors.blue,
+                                                  fontSize: 16.0,
+                                                  decoration: linkHover
+                                                      ? TextDecoration.underline
+                                                      : null,
+                                                  decorationColor: Colors.blue,
+                                                ),
+                                              ),
                                             ),
+                                          );
+                                        }),
+                                        const Text(
+                                          " to access chats.",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16.0,
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                   const SizedBox(width: 10.0),
