@@ -11,29 +11,13 @@ class KeySetDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final keyController = TextEditingController();
+    final keyFocus = FocusNode();
     final orgController = TextEditingController();
 
-    void setInfo() async {
-      data.setKey(keyController.text, orgController.text);
-      try {
-        data.addModels(await api.getModels());
-      } catch (e) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              // TODO: change this to something else later
-              content: Text(
-                  "Something went wrong. Check your API key and try again."),
-            ),
-          );
-        }
-        data.resetKey();
-        return;
-      }
-      if (context.mounted) {
-        Navigator.pop(context);
-      }
-    }
+    bool isWaiting = false;
+
+    keyController.text = data.apiKey;
+    orgController.text = data.organization;
 
     return Dialog(
       insetPadding: const EdgeInsets.all(24.0),
@@ -45,6 +29,40 @@ class KeySetDialog extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: StatefulBuilder(
             builder: (context, setState) {
+              // i know its ugly but i need this function here to be able to call setState
+              void setInfo() async {
+                data.setKey(keyController.text, orgController.text);
+                setState(() {
+                  isWaiting = true;
+                });
+                try {
+                  data.addModels(await api.getModels());
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        // TODO: change this to something else later
+                        content: Text(
+                            "Something went wrong. Check your API key and try again."),
+                      ),
+                    );
+                  }
+                  data.resetKey();
+                  setState(() {
+                    isWaiting = false;
+                  });
+                  keyFocus.requestFocus();
+                  return;
+                }
+                setState(() {
+                  isWaiting = false;
+                });
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).clearSnackBars();
+                  Navigator.pop(context);
+                }
+              }
+
               return Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -60,6 +78,7 @@ class KeySetDialog extends StatelessWidget {
                   const SizedBox(height: 12),
                   TextField(
                       autofocus: true,
+                      focusNode: keyFocus,
                       controller: keyController,
                       decoration: InputDecoration(
                         hintText: 'API Key',
@@ -76,9 +95,11 @@ class KeySetDialog extends StatelessWidget {
                       onChanged: (text) {
                         setState(() {});
                       }, // make the button update
-                      onSubmitted: (text) {
-                        setInfo();
-                      }),
+                      onSubmitted: keyController.text.isEmpty || isWaiting
+                          ? null
+                          : (text) {
+                              setInfo();
+                            }),
                   const SizedBox(height: 8),
                   TextField(
                       controller: orgController,
@@ -94,9 +115,11 @@ class KeySetDialog extends StatelessWidget {
                         ),
                       ),
                       style: Theme.of(context).textTheme.bodySmall,
-                      onSubmitted: (text) {
-                        setInfo();
-                      }),
+                      onSubmitted: keyController.text.isEmpty || isWaiting
+                          ? null
+                          : (text) {
+                              setInfo();
+                            }),
                   const SizedBox(height: 8),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -107,9 +130,21 @@ class KeySetDialog extends StatelessWidget {
                         },
                         child: const Text('Cancel'),
                       ),
-                      TextButton(
-                        onPressed: keyController.text.isEmpty ? null : setInfo,
-                        child: const Text('Set'),
+                      Row(
+                        children: [
+                          if (isWaiting)
+                            const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(),
+                            ),
+                          TextButton(
+                            onPressed: keyController.text.isEmpty || isWaiting
+                                ? null
+                                : setInfo,
+                            child: const Text('Submit'),
+                          ),
+                        ],
                       ),
                     ],
                   ),

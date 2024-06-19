@@ -85,6 +85,7 @@ class ChatData extends ChangeNotifier {
   }
 
   void addModels(List<String> ids) {
+    models.clear();
     for (String id in ids) {
       models.add(Model(id, groups));
     }
