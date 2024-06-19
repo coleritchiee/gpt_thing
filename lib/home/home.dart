@@ -51,6 +51,7 @@ class HomePage extends StatelessWidget {
                 }
               },
               onLogoutClick: () {},
+              keyDialog: keyDialog,
             ),
             body: Center(
               child: Padding(
@@ -139,6 +140,7 @@ class HomePage extends StatelessWidget {
                         AuthService().signOut();
                         data.overwrite(ChatData());
                       },
+                      keyDialog: keyDialog,
                     ),
                     body: Center(
                       child: Padding (
