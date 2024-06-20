@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:gpt_thing/home/api_manager.dart';
 import 'package:gpt_thing/home/chat_data.dart';

@@ -18,8 +18,8 @@ class MessageBox extends StatefulWidget {
   final ChatIdNotifier chatIds;
   final ScrollController chatScroller;
 
-  const MessageBox(
-    {super.key,
+  const MessageBox({
+    super.key,
     required this.data,
     required this.keyDialog,
     required this.modelDialog,
@@ -66,44 +66,76 @@ class _MessageBoxState extends State<MessageBox> {
   void recMsg(String msg) async {
     switch (widget.data.modelGroup) {
       case "ChatGPT":
-        final response =
-            await widget.api.chatPrompt(widget.data.messages, widget.data.model);
-        widget.data.addMessage(OpenAIChatMessageRole.assistant,
-            (response.choices.first.message.content)!.first.text!);
-        if (widget.data.id == "") {
-          ChatInfo info = ChatInfo(
-              id: widget.data.id, title: widget.data.id, date: DateTime.now());
-          widget.data.overwrite(FirestoreService().updateChat(widget.data, info));
-          ChatInfo newInfo = ChatInfo(
-              id: widget.data.id, title: widget.data.id, date: DateTime.now());
-          widget.chatIds.addInfo(newInfo);
-        } else {
-          ChatInfo info = widget.chatIds.getById(widget.data.id)!;
-          widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
-          widget.data.overwrite(FirestoreService().updateChat(widget.data, info));
-        }
+        final chatStream = widget.api
+            .chatPromptStream(widget.data.messages, widget.data.model);
+        chatStream.listen(
+          (delta) {
+            widget.data.addChatStreamDelta(delta);
+          },
+          onDone: () {
+            final response = widget.data.clearStreamText();
+            widget.data.addMessage(OpenAIChatMessageRole.assistant, response);
+            if (widget.data.id == "") {
+              ChatInfo info = ChatInfo(
+                  id: widget.data.id, title: widget.data.id, date: DateTime.now());
+              widget.data
+                  .overwrite(FirestoreService().updateChat(widget.data, info));
+              ChatInfo newInfo = ChatInfo(
+                  id: widget.data.id, title: widget.data.id, date: DateTime.now());
+              widget.chatIds.addInfo(newInfo);
+            } else {
+              ChatInfo info = widget.chatIds.getById(widget.data.id)!;
+              widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
+              widget.data
+                  .overwrite(FirestoreService().updateChat(widget.data, info));
+            }
+            setState(() {
+              _isWaiting = false;
+              widget.data.setThinking(false);
+            });
+          },
+        );
+
+        // final response = await widget.api
+        //     .chatPrompt(widget.data.messages, widget.data.model);
+        // widget.data.addMessage(OpenAIChatMessageRole.assistant,
+        //     (response.choices.first.message.content)!.first.text!);
+        // if (widget.data.id == "") {
+        //   ChatInfo info = ChatInfo(
+        //       id: widget.data.id, title: widget.data.id, date: DateTime.now());
+        //   widget.data
+        //       .overwrite(FirestoreService().updateChat(widget.data, info));
+        //   ChatInfo newInfo = ChatInfo(
+        //       id: widget.data.id, title: widget.data.id, date: DateTime.now());
+        //   widget.chatIds.addInfo(newInfo);
+        // } else {
+        //   ChatInfo info = widget.chatIds.getById(widget.data.id)!;
+        //   widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
+        //   widget.data
+        //       .overwrite(FirestoreService().updateChat(widget.data, info));
+        // }
         break;
       case "Dall·E":
         final response = await widget.api.imagePrompt(
           msg,
           widget.data.model,
         );
-        String firebaseUrl = await FirestoreService().uploadImageToStorageFromLink(response.data.first.b64Json!);
-        widget.data.addImage(
-          OpenAIChatMessageRole.assistant,
-          firebaseUrl
-        );
+        String firebaseUrl = await FirestoreService()
+            .uploadImageToStorageFromLink(response.data.first.b64Json!);
+        widget.data.addImage(OpenAIChatMessageRole.assistant, firebaseUrl);
         if (widget.data.id == "") {
           ChatInfo info = ChatInfo(
               id: widget.data.id, title: widget.data.id, date: DateTime.now());
-          widget.data.overwrite(FirestoreService().updateChat(widget.data, info));
+          widget.data
+              .overwrite(FirestoreService().updateChat(widget.data, info));
           ChatInfo newInfo = ChatInfo(
               id: widget.data.id, title: widget.data.id, date: DateTime.now());
           widget.chatIds.addInfo(newInfo);
         } else {
           ChatInfo info = widget.chatIds.getById(widget.data.id)!;
           widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
-          widget.data.overwrite(FirestoreService().updateChat(widget.data, info));
+          widget.data
+              .overwrite(FirestoreService().updateChat(widget.data, info));
         }
         break;
       default:
@@ -118,10 +150,9 @@ class _MessageBoxState extends State<MessageBox> {
   void sendMsg() {
     if (!widget.data.keyIsSet()) {
       openKeySetDialog().then((value) => {
-        if (widget.data.keyIsSet() && !widget.data.modelChosen()) {
-          openModelDialog()
-        }
-      });
+            if (widget.data.keyIsSet() && !widget.data.modelChosen())
+              {openModelDialog()}
+          });
       return;
     }
     if (!widget.data.modelChosen()) {
@@ -372,9 +403,11 @@ class _MessageBoxState extends State<MessageBox> {
                     ]),
                   ),
                 TextButton(
-                  onPressed: widget.data.messages.isNotEmpty ? null : () {
-                    openModelDialog();
-                  },
+                  onPressed: widget.data.messages.isNotEmpty
+                      ? null
+                      : () {
+                          openModelDialog();
+                        },
                   style: TextButton.styleFrom(
                     padding: const EdgeInsets.fromLTRB(8, 12, 8, 12),
                     minimumSize: Size.zero,

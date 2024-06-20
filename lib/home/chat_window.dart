@@ -36,18 +36,18 @@ class _ChatWindowState extends State<ChatWindow> {
           children: [
             Align(
               alignment: msg.role == OpenAIChatMessageRole.user
-                ? Alignment.centerRight
-                : msg.role == OpenAIChatMessageRole.system
-                  ? Alignment.center
-                  : Alignment.centerLeft,
+                  ? Alignment.centerRight
+                  : msg.role == OpenAIChatMessageRole.system
+                      ? Alignment.center
+                      : Alignment.centerLeft,
               child: Text(
                 msg.role == OpenAIChatMessageRole.user
-                ? "You"
-                : msg.role == OpenAIChatMessageRole.system
-                  ? "System"
-                  : widget.data.modelGroup == "Other"
-                    ? "Assistant"
-                    : widget.data.modelGroup,
+                    ? "You"
+                    : msg.role == OpenAIChatMessageRole.system
+                        ? "System"
+                        : widget.data.modelGroup == "Other"
+                            ? "Assistant"
+                            : widget.data.modelGroup,
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -59,10 +59,10 @@ class _ChatWindowState extends State<ChatWindow> {
             ),
             Align(
               alignment: msg.role == OpenAIChatMessageRole.user
-                ? Alignment.centerRight
-                : msg.role == OpenAIChatMessageRole.system
-                  ? Alignment.center
-                  : Alignment.centerLeft,
+                  ? Alignment.centerRight
+                  : msg.role == OpenAIChatMessageRole.system
+                      ? Alignment.center
+                      : Alignment.centerLeft,
               child: Column(
                 children: [
                   if ((msg.content)![0].text != null)
@@ -80,7 +80,8 @@ class _ChatWindowState extends State<ChatWindow> {
                           fontStyle: FontStyle.italic,
                         ),
                       ),
-                      errorWidget: (context, url, error) => const Icon(Icons.error),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
                     )
                 ],
               ),
@@ -89,6 +90,7 @@ class _ChatWindowState extends State<ChatWindow> {
         ),
       );
     }).toList();
+
     if (widget.data.isThinking()) {
       messages.insert(
         0,
@@ -103,8 +105,8 @@ class _ChatWindowState extends State<ChatWindow> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   widget.data.modelGroup == "Other"
-                    ? "Assistant"
-                    : widget.data.modelGroup,
+                      ? "Assistant"
+                      : widget.data.modelGroup,
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
@@ -124,6 +126,41 @@ class _ChatWindowState extends State<ChatWindow> {
                     fontStyle: FontStyle.italic,
                   ),
                 ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (widget.data.streamText.isNotEmpty) {
+      messages.insert(
+        0,
+        Padding(
+          padding: const EdgeInsets.only(
+            top: 8,
+            bottom: 8,
+          ),
+          child: Column(
+            children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  widget.data.modelGroup == "Other"
+                      ? "Assistant"
+                      : widget.data.modelGroup,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 4,
+              ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(widget.data.streamText),
               ),
             ],
           ),

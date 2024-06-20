@@ -52,6 +52,8 @@ class ChatData extends ChangeNotifier {
   ];
   @JsonKey(includeFromJson: false, includeToJson: false)
   bool _thinking = false;
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  String streamText = "";
 
   ChatData();
 
@@ -61,6 +63,7 @@ class ChatData extends ChangeNotifier {
     model = data.model;
     modelGroup = data.modelGroup;
     _thinking = false;
+    streamText = "";
     notifyListeners();
   }
 
@@ -116,6 +119,25 @@ class ChatData extends ChangeNotifier {
 
   bool isThinking() {
     return _thinking;
+  }
+
+  void addChatStreamDelta(OpenAIStreamChatCompletionModel delta) {
+    if (delta.choices.first.delta.content != null) {
+      if (delta.choices.first.delta.content!.first != null) {
+        if (delta.choices.first.delta.content!.first!.text != null) {
+          // yes this is ugly but otherwise there's an error
+          streamText += delta.choices.first.delta.content!.first!.text!;
+          notifyListeners();
+        }
+      }
+    }
+  }
+
+  String clearStreamText() {
+    final temp = streamText;
+    streamText = "";
+    notifyListeners();
+    return temp;
   }
 
   void addMessage(OpenAIChatMessageRole role, String message) {

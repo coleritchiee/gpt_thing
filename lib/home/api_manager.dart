@@ -10,6 +10,15 @@ class APIManager {
     );
   }
 
+  Stream<OpenAIStreamChatCompletionModel> chatPromptStream(
+    List<OpenAIChatCompletionChoiceMessageModel> messages, String model) {
+    return OpenAI.instance.chat.createStream(
+      model: model,
+      messages: messages,
+      maxTokens: 1024,
+    );
+  }
+
   Future<OpenAIImageModel> imagePrompt(String prompt, String model) async {
     return await OpenAI.instance.image.create(
       model: model,
