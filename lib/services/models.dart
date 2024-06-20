@@ -1,6 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart' as f;
-import 'package:gpt_thing/home/chat_info.dart';
-import 'package:gpt_thing/services/firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'models.g.dart';
