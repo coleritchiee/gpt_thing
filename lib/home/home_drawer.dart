@@ -11,6 +11,7 @@ class HomeDrawer extends StatelessWidget {
   final Function() onNewChatClick;
   final Function(ChatInfo) onIdClick;
   final Function() onLogoutClick;
+  final Function(int) onDelete;
   final KeySetDialog keyDialog;
 
   const HomeDrawer(
@@ -19,7 +20,8 @@ class HomeDrawer extends StatelessWidget {
       required this.onNewChatClick,
       required this.onIdClick,
       required this.onLogoutClick,
-      required this.keyDialog});
+      required this.keyDialog,
+        required this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -65,10 +67,7 @@ class HomeDrawer extends StatelessWidget {
                                 context, ids.get(index), index, ids);
                           },
                           onDelete: () {
-                            FirestoreService().removeIdFromUserAndDeleteChat(
-                                FirebaseAuth.instance.currentUser!.uid,
-                                ids.get(index).id);
-                            ids.removeInfo(ids.get(index));
+                            onDelete(index);
                           },
                           onClick: () {
                             onIdClick(ids.get(index));
