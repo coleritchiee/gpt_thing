@@ -96,10 +96,9 @@ class FirestoreService {
     DocumentReference chatRef = userRef.collection('chats').doc(chatId);
     DocumentReference chatInfoRef = _db.collection('users').doc(userId).collection('chatInfos').doc(chatId);
     try {
-      DocumentSnapshot chatInfo = await chatInfoRef.get();
-      var data = chatInfo.data() as Map<String, dynamic>;
-      if (data['modelGroup'] == "Dall·E") {
-        print("here");
+      DocumentSnapshot chat = await chatRef.get();
+      var data = chat.data() as Map<String, dynamic>;
+      if (data["modelGroup"] == "Dall·E") {
         deleteImageFromChat(chatId, userId);
       }
     }

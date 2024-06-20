@@ -160,6 +160,7 @@ class HomePage extends StatelessWidget {
                           onDelete: (index){
                             FirestoreService().removeIdFromUserAndDeleteChat(FirebaseAuth.instance.currentUser!.uid, chatIds.get(index).id);
                             chatIds.removeInfo(chatIds.get(index));
+                            data.overwrite(ChatData());
                           },
                           onLogoutClick: () {
                             AuthService().signOut();
