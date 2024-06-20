@@ -2,7 +2,6 @@ import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-@JsonSerializable(explicitToJson: true)
 class ChatData extends ChangeNotifier {
   // included fields
   List<OpenAIChatCompletionChoiceMessageModel> messages = [];
@@ -11,13 +10,9 @@ class ChatData extends ChangeNotifier {
   String modelGroup = "";
 
   // excluded fields
-  @JsonKey(includeFromJson: false, includeToJson: false)
   String apiKey = "";
-  @JsonKey(includeFromJson: false, includeToJson: false)
   String organization = "";
-  @JsonKey(includeFromJson: false, includeToJson: false)
   List<Model> models = <Model>[];
-  @JsonKey(includeFromJson: false, includeToJson: false)
   final List<ModelGroup> groups = [
     ModelGroup(
       name: "ChatGPT",
@@ -50,7 +45,6 @@ class ChatData extends ChangeNotifier {
       description: "Specialized models"
     ),
   ];
-  @JsonKey(includeFromJson: false, includeToJson: false)
   bool _thinking = false;
 
   ChatData();

@@ -95,7 +95,15 @@ class FirestoreService {
     DocumentReference userRef = _db.collection('users').doc(userId);
     DocumentReference chatRef = userRef.collection('chats').doc(chatId);
     DocumentReference chatInfoRef = _db.collection('users').doc(userId).collection('chatInfos').doc(chatId);
-
+    try {
+      DocumentSnapshot chatInfo = await chatInfoRef.get();
+      var data = chatInfo.data() as Map<String, dynamic>;
+      if (data['modelGroup'] == "Dall·E") {
+        print("here");
+        deleteImageFromChat(chatId, userId);
+      }
+    }
+    catch(e){}
     return _db.runTransaction((transaction) async {
       DocumentSnapshot userSnapshot = await transaction.get(userRef);
       if (!userSnapshot.exists) {
@@ -108,7 +116,7 @@ class FirestoreService {
     });
   }
 
-  Future<String> uploadImageToStorageFromLink(String b64) async {
+  Future<String> uploadImageToStorageFromLink(String b64, String chatId) async {
     try {
       Uint8List imageData = base64Decode(b64);
       final storageRef = FirebaseStorage.instance.ref();
@@ -117,8 +125,7 @@ class FirestoreService {
       if (user == null) {
         throw Exception('User not logged in');
       }
-      final imageRef = storageRef.child('images/${user.uid}/$fileName.png');
-
+      final imageRef = storageRef.child('images/${user.uid}/$chatId/$fileName.png');
       final uploadTask = imageRef.putData(imageData);
       final snapshot = await uploadTask.whenComplete(() => {});
       final downloadUrl = await snapshot.ref.getDownloadURL();
@@ -127,6 +134,22 @@ class FirestoreService {
     } catch (e) {
       print('Error occurred while uploading image: $e');
       return '';
+    }
+  }
+
+  Future<void> deleteImageFromChat(String chatId, String userId) async {
+    final storageRef = FirebaseStorage.instance.ref();
+    final chatImagesRef = storageRef.child('images/$userId/$chatId');
+
+    try{
+      final ListResult result = await chatImagesRef.listAll();
+      List<Reference> allFiles = result.items;
+
+      for (var fileRef in allFiles) {
+        await fileRef.delete();
+      }
+    } catch (e) {
+      print('Error occurred while deleting files: $e');
     }
   }
 }
