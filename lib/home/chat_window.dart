@@ -92,80 +92,83 @@ class _ChatWindowState extends State<ChatWindow> {
     }).toList();
 
     if (widget.data.isThinking()) {
-      messages.insert(
-        0,
-        Padding(
-          padding: const EdgeInsets.only(
-            top: 8,
-            bottom: 8,
-          ),
-          child: Column(
-            children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  widget.data.modelGroup == "Other"
-                      ? "Assistant"
-                      : widget.data.modelGroup,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
+      if (widget.data.streamText.isEmpty) {
+        messages.insert(
+          0,
+          Padding(
+            padding: const EdgeInsets.only(
+              top: 8,
+              bottom: 8,
+            ),
+            child: Column(
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    widget.data.modelGroup == "Other"
+                        ? "Assistant"
+                        : widget.data.modelGroup,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(
-                height: 4,
-              ),
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Thinking...",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                    fontStyle: FontStyle.italic,
+                const SizedBox(
+                  height: 4,
+                ),
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Thinking...",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                      fontStyle: FontStyle.italic,
+                    ),
                   ),
                 ),
+              ],
+            ),
+          ),
+        );
+      }
+      else {
+        if (widget.data.streamText.isNotEmpty) {
+          messages.insert(
+            0,
+            Padding(
+              padding: const EdgeInsets.only(
+                top: 8,
+                bottom: 8,
               ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    if (widget.data.streamText.isNotEmpty) {
-      messages.insert(
-        0,
-        Padding(
-          padding: const EdgeInsets.only(
-            top: 8,
-            bottom: 8,
-          ),
-          child: Column(
-            children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  widget.data.modelGroup == "Other"
-                      ? "Assistant"
-                      : widget.data.modelGroup,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
+              child: Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      widget.data.modelGroup == "Other"
+                          ? "Assistant"
+                          : widget.data.modelGroup,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                ),
+                  const SizedBox(
+                    height: 4,
+                  ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(widget.data.streamText),
+                  ),
+                ],
               ),
-              const SizedBox(
-                height: 4,
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(widget.data.streamText),
-              ),
-            ],
-          ),
-        ),
-      );
+            ),
+          );
+        }
+      }
     }
 
     return Expanded(
