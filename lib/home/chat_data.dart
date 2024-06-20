@@ -2,17 +2,22 @@ import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+part 'chat_data.g.dart';
+@JsonSerializable(explicitToJson: true)
 class ChatData extends ChangeNotifier {
-  // included fields
   List<OpenAIChatCompletionChoiceMessageModel> messages = [];
   String id = "";
-  String model = "";
-  String modelGroup = "";
-
-  // excluded fields
+  @JsonKey(includeFromJson: false, includeToJson: false)
   String apiKey = "";
+  @JsonKey(includeFromJson: false, includeToJson: false)
   String organization = "";
+  @JsonKey(includeFromJson: false, includeToJson: false)
   List<Model> models = <Model>[];
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  String model = "";
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  String modelGroup = "";
+  @JsonKey(includeFromJson: false, includeToJson: false)
   final List<ModelGroup> groups = [
     ModelGroup(
       name: "ChatGPT",
@@ -45,22 +50,17 @@ class ChatData extends ChangeNotifier {
       description: "Specialized models"
     ),
   ];
-  bool _thinking = false;
 
   ChatData();
 
   void overwrite(ChatData data){
-    id = data.id;
-    messages = data.messages;
-    model = data.model;
-    modelGroup = data.modelGroup;
-    _thinking = false;
+    this.id = data.id;
+    this.messages = data.messages;
     notifyListeners();
   }
 
   void setId(String id){
     this.id = id;
-    notifyListeners();
   }
 
   void setKey(String key, String org) {
@@ -70,7 +70,6 @@ class ChatData extends ChangeNotifier {
     if (organization.isNotEmpty) {
       OpenAI.organization = organization;
     }
-    notifyListeners();
   }
 
   void resetKey() {
@@ -78,11 +77,9 @@ class ChatData extends ChangeNotifier {
     OpenAI.apiKey = "";
     organization = "";
     OpenAI.organization = "";
-    notifyListeners();
   }
 
   void addModels(List<String> ids) {
-    models.clear();
     for (String id in ids) {
       models.add(Model(id, groups));
     }
@@ -91,7 +88,7 @@ class ChatData extends ChangeNotifier {
 
   void setModel(String model, String group) {
     this.model = model;
-    modelGroup = group;
+    this.modelGroup = group;
     notifyListeners();
   }
 
@@ -101,15 +98,6 @@ class ChatData extends ChangeNotifier {
 
   bool modelChosen() {
     return model.isNotEmpty;
-  }
-
-  void setThinking(bool t) {
-    _thinking = t;
-    notifyListeners();
-  }
-
-  bool isThinking() {
-    return _thinking;
   }
 
   void addMessage(OpenAIChatMessageRole role, String message) {
@@ -122,21 +110,9 @@ class ChatData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addImage(OpenAIChatMessageRole role, String url) {
-    messages.add(OpenAIChatCompletionChoiceMessageModel(
-      role: role,
-      content: [
-        OpenAIChatCompletionChoiceMessageContentItemModel.imageUrl(url),
-      ],
-    ));
-    notifyListeners();
-  }
-
   factory ChatData.fromJson(Map<String, dynamic> json) {
     return ChatData()
       ..id = json['id'] as String
-      ..model = json['model'] as String
-      ..modelGroup = json['modelGroup'] as String
       ..messages = (json['messages'] as List)
           .map((e) => OpenAIChatCompletionChoiceMessageModel.fromMap(e as Map<String, dynamic>))
           .toList();
@@ -145,8 +121,6 @@ class ChatData extends ChangeNotifier {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'model': model,
-      'modelGroup': modelGroup,
       'messages': messages.map((message) => message.toMap()).toList(),
     };
   }

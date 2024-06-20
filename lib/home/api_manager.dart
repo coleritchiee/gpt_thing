@@ -10,16 +10,6 @@ class APIManager {
     );
   }
 
-  Future<OpenAIImageModel> imagePrompt(String prompt, String model) async {
-    return await OpenAI.instance.image.create(
-      model: model,
-      prompt: prompt,
-      n: 1,
-      size: OpenAIImageSize.size1024, // the only size supported by both dall-e 2 and 3
-      responseFormat: OpenAIImageResponseFormat.b64Json,
-    );
-  }
-
   Future<List<String>> getModels() async {
     final result = await OpenAI.instance.model.list();
     result.sort((a, b) => a.id.compareTo(b.id));

@@ -1,9 +1,5 @@
-import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 
 import '../home/chat_info.dart';
@@ -95,14 +91,7 @@ class FirestoreService {
     DocumentReference userRef = _db.collection('users').doc(userId);
     DocumentReference chatRef = userRef.collection('chats').doc(chatId);
     DocumentReference chatInfoRef = _db.collection('users').doc(userId).collection('chatInfos').doc(chatId);
-    try {
-      DocumentSnapshot chat = await chatRef.get();
-      var data = chat.data() as Map<String, dynamic>;
-      if (data["modelGroup"] == "Dall·E") {
-        deleteImageFromChat(chatId, userId);
-      }
-    }
-    catch(e){}
+
     return _db.runTransaction((transaction) async {
       DocumentSnapshot userSnapshot = await transaction.get(userRef);
       if (!userSnapshot.exists) {
@@ -113,42 +102,5 @@ class FirestoreService {
     }).catchError((error) {
       throw Exception('Failed to remove chat ID and delete chat document: $error');
     });
-  }
-
-  Future<String> uploadImageToStorageFromLink(String b64, String chatId) async {
-    try {
-      Uint8List imageData = base64Decode(b64);
-      final storageRef = FirebaseStorage.instance.ref();
-      String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-      var user = FirebaseAuth.instance.currentUser;
-      if (user == null) {
-        throw Exception('User not logged in');
-      }
-      final imageRef = storageRef.child('images/${user.uid}/$chatId/$fileName.png');
-      final uploadTask = imageRef.putData(imageData);
-      final snapshot = await uploadTask.whenComplete(() => {});
-      final downloadUrl = await snapshot.ref.getDownloadURL();
-
-      return downloadUrl;
-    } catch (e) {
-      print('Error occurred while uploading image: $e');
-      return '';
-    }
-  }
-
-  Future<void> deleteImageFromChat(String chatId, String userId) async {
-    final storageRef = FirebaseStorage.instance.ref();
-    final chatImagesRef = storageRef.child('images/$userId/$chatId');
-
-    try{
-      final ListResult result = await chatImagesRef.listAll();
-      List<Reference> allFiles = result.items;
-
-      for (var fileRef in allFiles) {
-        await fileRef.delete();
-      }
-    } catch (e) {
-      print('Error occurred while deleting files: $e');
-    }
   }
 }
