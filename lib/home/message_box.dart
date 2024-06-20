@@ -88,23 +88,23 @@ class _MessageBoxState extends State<MessageBox> {
           msg,
           widget.data.model,
         );
-        String firebaseUrl = await FirestoreService().uploadImageToStorageFromLink(response.data.first.b64Json!);
-        widget.data.addImage(
-          OpenAIChatMessageRole.assistant,
-          firebaseUrl
-        );
         if (widget.data.id == "") {
           ChatInfo info = ChatInfo(
               id: widget.data.id, title: widget.data.id, date: DateTime.now());
-          widget.data.overwrite(FirestoreService().updateChat(widget.data, info));
+          widget.data.overwrite(
+              FirestoreService().updateChat(widget.data, info));
           ChatInfo newInfo = ChatInfo(
               id: widget.data.id, title: widget.data.id, date: DateTime.now());
           widget.chatIds.addInfo(newInfo);
-        } else {
-          ChatInfo info = widget.chatIds.getById(widget.data.id)!;
-          widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
-          widget.data.overwrite(FirestoreService().updateChat(widget.data, info));
         }
+        String firebaseUrl = await FirestoreService().uploadImageToStorageFromLink(response.data.first.b64Json!, widget.data.id);
+        widget.data.addImage(
+            OpenAIChatMessageRole.assistant,
+            firebaseUrl
+        );
+        ChatInfo info = widget.chatIds.getById(widget.data.id)!;
+        widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
+        widget.data.overwrite(FirestoreService().updateChat(widget.data, info));
         break;
       default:
         print("No modelGroup match found");

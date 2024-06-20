@@ -51,6 +51,7 @@ class HomePage extends StatelessWidget {
                     data.overwrite(newData);
                   }
                 },
+                onDelete: (index){},
                 onLogoutClick: () {},
                 keyDialog: keyDialog,
               ),
@@ -155,6 +156,11 @@ class HomePage extends StatelessWidget {
                               data.overwrite(newData);
                               scroller.jumpTo(0);
                             }
+                          },
+                          onDelete: (index){
+                            FirestoreService().removeIdFromUserAndDeleteChat(FirebaseAuth.instance.currentUser!.uid, chatIds.get(index).id);
+                            chatIds.removeInfo(chatIds.get(index));
+                            data.overwrite(ChatData());
                           },
                           onLogoutClick: () {
                             AuthService().signOut();
