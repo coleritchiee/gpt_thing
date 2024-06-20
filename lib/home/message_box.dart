@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,22 +13,19 @@ import 'package:gpt_thing/services/firestore.dart';
 import 'chat_id_notifier.dart';
 
 class MessageBox extends StatefulWidget {
-  final ChatData data;
+  ChatData data;
   final KeySetDialog keyDialog;
   final ModelDialog modelDialog;
   final APIManager api;
-  final ChatIdNotifier chatIds;
-  final ScrollController chatScroller;
+  ChatIdNotifier chatIds;
 
-  const MessageBox(
-    {super.key,
-    required this.data,
-    required this.keyDialog,
-    required this.modelDialog,
-    required this.api,
-    required this.chatIds,
-    required this.chatScroller,
-  });
+  MessageBox(
+      {super.key,
+      required this.data,
+      required this.keyDialog,
+      required this.modelDialog,
+      required this.api,
+      required this.chatIds});
 
   @override
   State<MessageBox> createState() => _MessageBoxState();
@@ -55,73 +54,31 @@ class _MessageBoxState extends State<MessageBox> {
     showDialog(context: context, builder: widget.modelDialog.build);
   }
 
-  void resetChatScroll() {
-    widget.chatScroller.animateTo(
-      0,
-      duration: const Duration(milliseconds: 750),
-      curve: Curves.easeInOut,
-    );
-  }
-
   void recMsg(String msg) async {
-    switch (widget.data.modelGroup) {
-      case "ChatGPT":
-        final response =
-            await widget.api.chatPrompt(widget.data.messages, widget.data.model);
-        widget.data.addMessage(OpenAIChatMessageRole.assistant,
-            (response.choices.first.message.content)!.first.text!);
-        if (widget.data.id == "") {
-          ChatInfo info = ChatInfo(
-              id: widget.data.id, title: widget.data.id, date: DateTime.now());
-          widget.data.overwrite(FirestoreService().updateChat(widget.data, info));
-          ChatInfo newInfo = ChatInfo(
-              id: widget.data.id, title: widget.data.id, date: DateTime.now());
-          widget.chatIds.addInfo(newInfo);
-        } else {
-          ChatInfo info = widget.chatIds.getById(widget.data.id)!;
-          widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
-          widget.data.overwrite(FirestoreService().updateChat(widget.data, info));
-        }
-        break;
-      case "Dall·E":
-        final response = await widget.api.imagePrompt(
-          msg,
-          widget.data.model,
-        );
-        if (widget.data.id == "") {
-          ChatInfo info = ChatInfo(
-              id: widget.data.id, title: widget.data.id, date: DateTime.now());
-          widget.data.overwrite(
-              FirestoreService().updateChat(widget.data, info));
-          ChatInfo newInfo = ChatInfo(
-              id: widget.data.id, title: widget.data.id, date: DateTime.now());
-          widget.chatIds.addInfo(newInfo);
-        }
-        String firebaseUrl = await FirestoreService().uploadImageToStorageFromLink(response.data.first.b64Json!, widget.data.id);
-        widget.data.addImage(
-            OpenAIChatMessageRole.assistant,
-            firebaseUrl
-        );
-        ChatInfo info = widget.chatIds.getById(widget.data.id)!;
-        widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
-        widget.data.overwrite(FirestoreService().updateChat(widget.data, info));
-        break;
-      default:
-        print("No modelGroup match found");
+    final response =
+        await widget.api.chatPrompt(widget.data.messages, widget.data.model);
+    widget.data.addMessage(OpenAIChatMessageRole.assistant,
+        (response.choices.first.message.content)!.first.text!);
+    if (widget.data.id == "") {
+      ChatInfo info = ChatInfo(
+          id: widget.data.id, title: widget.data.id, date: DateTime.now());
+      widget.data = FirestoreService().updateChat(widget.data, info);
+      ChatInfo newInfo = ChatInfo(
+          id: widget.data.id, title: widget.data.id, date: DateTime.now());
+      widget.chatIds.addInfo(newInfo);
+    } else {
+      ChatInfo info = widget.chatIds.getById(widget.data.id)!;
+      widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
+      widget.data = FirestoreService().updateChat(widget.data, info);
     }
     setState(() {
       _isWaiting = false;
-      widget.data.setThinking(false);
     });
   }
 
   void sendMsg() {
     if (!widget.data.keyIsSet()) {
-      openKeySetDialog().then((value) => {
-        if (widget.data.keyIsSet() && !widget.data.modelChosen()) {
-          openModelDialog()
-        }
-      });
+      openKeySetDialog();
       return;
     }
     if (!widget.data.modelChosen()) {
@@ -138,8 +95,6 @@ class _MessageBoxState extends State<MessageBox> {
     setState(() {
       _isEmpty = true;
       _isWaiting = true;
-      widget.data.setThinking(true);
-      resetChatScroll();
     });
   }
 
@@ -372,7 +327,7 @@ class _MessageBoxState extends State<MessageBox> {
                     ]),
                   ),
                 TextButton(
-                  onPressed: widget.data.messages.isNotEmpty ? null : () {
+                  onPressed: () {
                     openModelDialog();
                   },
                   style: TextButton.styleFrom(
