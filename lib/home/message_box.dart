@@ -1,6 +1,7 @@
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:gpt_thing/home/api_manager.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/chat_info.dart';
@@ -273,7 +274,7 @@ class _MessageBoxState extends State<MessageBox> {
             maxWidth: 768,
           ),
           child: Container(
-            padding: const EdgeInsets.only(right: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
               border: Border.all(color: (Colors.grey[800])!),
               borderRadius: const BorderRadius.all(
@@ -282,6 +283,28 @@ class _MessageBoxState extends State<MessageBox> {
             ),
             child: Row(
               children: [
+                Tooltip(
+                  message: "Upload files",
+                  textStyle: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.grey[850],
+                  ),
+                  child: IconButton(
+                    icon: const Icon(Icons.file_present_rounded),
+                    onPressed: () {}, // UPLOAD FILES HERE
+                    color: Colors.white,
+                    style: ButtonStyle(
+                      overlayColor: WidgetStateProperty.all(Colors.transparent),
+                    ),
+                    iconSize: 26,
+                    padding: const EdgeInsets.all(2),
+                    constraints: const BoxConstraints(),
+                  ),
+                ),
                 Expanded(
                   child: TextField(
                       style: Theme.of(context).textTheme.bodySmall,
@@ -299,11 +322,9 @@ class _MessageBoxState extends State<MessageBox> {
                         hintStyle: TextStyle(
                           color: Colors.grey[500],
                         ),
-                        contentPadding: const EdgeInsets.only(
-                          left: 22.0,
-                          right: 8.0,
-                          top: 12.0,
-                          bottom: 12.0,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 8.0,
+                          vertical: 12.0,
                         ),
                         border: InputBorder.none,
                       )),
