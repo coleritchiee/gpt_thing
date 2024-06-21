@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,6 +9,7 @@ import 'package:gpt_thing/home/chat_info.dart';
 import 'package:gpt_thing/home/file_bar.dart';
 import 'package:gpt_thing/home/key_set_dialog.dart';
 import 'package:gpt_thing/home/model_dialog.dart';
+import 'package:gpt_thing/home/user_file.dart';
 import 'package:gpt_thing/services/firestore.dart';
 
 import 'chat_id_notifier.dart';
@@ -36,7 +39,6 @@ class MessageBox extends StatefulWidget {
 class _MessageBoxState extends State<MessageBox> {
   final msgController = TextEditingController();
   final sysController = TextEditingController();
-  final files = <Icon>[];
   bool _isEmpty = true;
   bool _isWaiting = false;
   bool _showSysPrompt = false;
@@ -181,7 +183,52 @@ class _MessageBoxState extends State<MessageBox> {
 
   void uploadFile() {
     setState(() {
-      files.add(const Icon(Icons.outlined_flag_rounded));
+      final possibleFiles = [ // this is just for fun
+        UserFile(
+          name: "plane.pln",
+          icon: Icons.flight_takeoff_rounded,
+        ),
+        UserFile(
+          name: "macos.iso",
+          icon: Icons.apple_rounded,
+        ),
+        UserFile(
+          name: "family.png",
+          icon: Icons.family_restroom_rounded,
+        ),
+        UserFile(
+          name: "code.c",
+          icon: Icons.code_rounded,
+        ),
+        UserFile(
+          name: "cookie.virus",
+          icon: Icons.cookie_rounded,
+        ),
+        UserFile(
+          name: "ramen.bowl",
+          icon: Icons.ramen_dining_rounded,
+        ),
+        UserFile(
+          name: "zip_bomb.zip",
+          icon: Icons.folder_zip_rounded,
+        ),
+        UserFile(
+          name: "chat.gpt",
+          icon: Icons.chat_rounded,
+        ),
+        UserFile(
+          name: "api_key.txt",
+          icon: Icons.key_rounded,
+        ),
+        UserFile(
+          name: "not_a_virus.exe",
+          icon: Icons.bug_report_rounded,
+        ),
+      ];
+
+      Random rand  = Random();
+
+      widget.data.addUserFile(possibleFiles[rand.nextInt(possibleFiles.length)]);
       // UPLOAD FILE HERE
     });
   }
@@ -294,11 +341,11 @@ class _MessageBoxState extends State<MessageBox> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (files.isNotEmpty) FileBar(files: files),
+                if (widget.data.hasUserFiles()) FileBar(data: widget.data),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   decoration: BoxDecoration(
-                    border: files.isNotEmpty
+                    border: widget.data.hasUserFiles()
                         ? Border(
                             top: BorderSide(
                               color: (Colors.grey[800])!,

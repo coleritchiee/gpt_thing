@@ -1,6 +1,6 @@
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
-import 'package:json_annotation/json_annotation.dart';
+import 'package:gpt_thing/home/user_file.dart';
 
 class ChatData extends ChangeNotifier {
   // included fields
@@ -46,8 +46,8 @@ class ChatData extends ChangeNotifier {
     ),
   ];
   bool _thinking = false;
-  @JsonKey(includeFromJson: false, includeToJson: false)
   String streamText = "";
+  List<UserFile> userFiles = <UserFile>[];
 
   ChatData();
 
@@ -58,6 +58,7 @@ class ChatData extends ChangeNotifier {
     modelGroup = data.modelGroup;
     _thinking = false;
     streamText = "";
+    userFiles.clear();
     notifyListeners();
   }
 
@@ -152,6 +153,25 @@ class ChatData extends ChangeNotifier {
       ],
     ));
     notifyListeners();
+  }
+
+  void addUserFile(UserFile file) {
+    userFiles.add(file);
+    notifyListeners();
+  }
+
+  void removeUserFile(UserFile file) {
+    userFiles.remove(file);
+    notifyListeners();
+  }
+
+  void clearUserFiles() {
+    userFiles.clear();
+    notifyListeners();
+  }
+
+  bool hasUserFiles() {
+    return userFiles.isNotEmpty;
   }
 
   factory ChatData.fromJson(Map<String, dynamic> json) {

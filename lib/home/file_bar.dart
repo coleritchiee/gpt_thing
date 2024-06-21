@@ -1,19 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:gpt_thing/home/chat_data.dart';
 
-class FileBar extends StatelessWidget {
+class FileBar extends StatefulWidget {
   const FileBar({
     super.key,
-    required this.files,
+    required this.data,
   });
 
-  final List<Icon> files;
+  final ChatData data;
 
+  @override
+  State<FileBar> createState() => _FileBarState();
+}
+
+class _FileBarState extends State<FileBar> {
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: Row(
-        children: files.map((e) => e).toList(),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: widget.data.userFiles.map((file) {
+            return Tooltip(
+              message: file.name,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    widget.data.removeUserFile(file);
+                  });
+                },
+                child: Icon(
+                  file.icon,
+                  color: file.color,
+                ),
+              ),
+            );
+          }).toList(),
+        ),
       ),
     );
   }
