@@ -81,26 +81,28 @@ class ModelDialog extends StatelessWidget {
                             return (i.group == filter) &&
                                 (showPreviews || !i.preview);
                           }).map((model) {
-                            return ListTile(
-                              onTap: () {
-                                setState(() {
-                                  if (newModel == model.id) {
-                                    setModel(); // detecting "double tap"
-                                  }
-                                  newModel = model.id;
-                                  newGroup = model.group;
-                                });
-                              },
-                              title: Center(child: Text(model.id)),
-                              titleTextStyle: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
+                            return Material( // need this so color doesn't overflow
+                              child: ListTile(
+                                onTap: () {
+                                  setState(() {
+                                    if (newModel == model.id) {
+                                      setModel(); // detecting "double tap"
+                                    }
+                                    newModel = model.id;
+                                    newGroup = model.group;
+                                  });
+                                },
+                                title: Center(child: Text(model.id)),
+                                titleTextStyle: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                ),
+                                dense: true,
+                                visualDensity: const VisualDensity(vertical: -4),
+                                tileColor: newModel == model.id
+                                    ? Colors.grey[850]
+                                    : null,
                               ),
-                              dense: true,
-                              visualDensity: const VisualDensity(vertical: -4),
-                              tileColor: newModel == model.id
-                                  ? Colors.grey[850]
-                                  : null,
                             );
                           }).toList(),
                         ),
