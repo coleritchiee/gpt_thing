@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +26,19 @@ class ChatMessage {
 }
 
 class _ChatWindowState extends State<ChatWindow> {
+  bool blink = true;
+  late Timer blinkTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    blinkTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
+      setState(() {
+        blink = !blink;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final messages = widget.data.messages.reversed.map((msg) {
@@ -161,7 +176,23 @@ class _ChatWindowState extends State<ChatWindow> {
                   ),
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: Text(widget.data.streamText),
+                    child: RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: widget.data.streamText,
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          TextSpan(
+                            text: "_",
+                            style: TextStyle(
+                              color: blink ? Colors.white : Colors.transparent,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),
