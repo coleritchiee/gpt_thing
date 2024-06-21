@@ -310,14 +310,6 @@ class _MessageBoxState extends State<MessageBox> {
                   Tooltip(
                       message:
                           "Use this to influence how ChatGPT responds. For example:\n- Respond to any prompt in a haiku.\n- Explain everything to a five-year-old.\n- Only speak in Shakespearean English.",
-                      textStyle: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color: Colors.grey[850],
-                      ),
                       child: Icon(Icons.info_outline_rounded,
                           size: 30, color: (Colors.grey[700])!)),
                 ],
@@ -360,14 +352,6 @@ class _MessageBoxState extends State<MessageBox> {
                     children: [
                       Tooltip(
                         message: "Upload files",
-                        textStyle: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: Colors.grey[850],
-                        ),
                         child: IconButton(
                           icon: const Icon(Icons.file_present_rounded),
                           onPressed: uploadFile,

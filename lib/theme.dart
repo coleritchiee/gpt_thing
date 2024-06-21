@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -27,6 +26,16 @@ var appTheme = ThemeData(
       color: Colors.grey,
     ),
   ),
+  tooltipTheme: TooltipThemeData(
+    textStyle: const TextStyle(
+      color: Colors.white,
+      fontSize: 12,
+    ),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(8),
+      color: Colors.grey[850],
+    ),
+  )
 );
 
 class NoTransitionsBuilder extends PageTransitionsBuilder {
