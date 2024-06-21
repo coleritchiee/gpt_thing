@@ -1,10 +1,10 @@
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:gpt_thing/home/api_manager.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/chat_info.dart';
+import 'package:gpt_thing/home/file_bar.dart';
 import 'package:gpt_thing/home/key_set_dialog.dart';
 import 'package:gpt_thing/home/model_dialog.dart';
 import 'package:gpt_thing/services/firestore.dart';
@@ -36,6 +36,7 @@ class MessageBox extends StatefulWidget {
 class _MessageBoxState extends State<MessageBox> {
   final msgController = TextEditingController();
   final sysController = TextEditingController();
+  final files = <Icon>[];
   bool _isEmpty = true;
   bool _isWaiting = false;
   bool _showSysPrompt = false;
@@ -78,11 +79,15 @@ class _MessageBoxState extends State<MessageBox> {
             widget.data.addMessage(OpenAIChatMessageRole.assistant, response);
             if (widget.data.id == "") {
               ChatInfo info = ChatInfo(
-                  id: widget.data.id, title: widget.data.id, date: DateTime.now());
+                  id: widget.data.id,
+                  title: widget.data.id,
+                  date: DateTime.now());
               widget.data
                   .overwrite(FirestoreService().updateChat(widget.data, info));
               ChatInfo newInfo = ChatInfo(
-                  id: widget.data.id, title: widget.data.id, date: DateTime.now());
+                  id: widget.data.id,
+                  title: widget.data.id,
+                  date: DateTime.now());
               widget.chatIds.addInfo(newInfo);
             } else {
               ChatInfo info = widget.chatIds.getById(widget.data.id)!;
@@ -124,17 +129,16 @@ class _MessageBoxState extends State<MessageBox> {
         if (widget.data.id == "") {
           ChatInfo info = ChatInfo(
               id: widget.data.id, title: widget.data.id, date: DateTime.now());
-          widget.data.overwrite(
-              FirestoreService().updateChat(widget.data, info));
+          widget.data
+              .overwrite(FirestoreService().updateChat(widget.data, info));
           ChatInfo newInfo = ChatInfo(
               id: widget.data.id, title: widget.data.id, date: DateTime.now());
           widget.chatIds.addInfo(newInfo);
         }
-        String firebaseUrl = await FirestoreService().uploadImageToStorageFromLink(response.data.first.b64Json!, widget.data.id);
-        widget.data.addImage(
-            OpenAIChatMessageRole.assistant,
-            firebaseUrl
-        );
+        String firebaseUrl = await FirestoreService()
+            .uploadImageToStorageFromLink(
+                response.data.first.b64Json!, widget.data.id);
+        widget.data.addImage(OpenAIChatMessageRole.assistant, firebaseUrl);
         ChatInfo info = widget.chatIds.getById(widget.data.id)!;
         widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
         widget.data.overwrite(FirestoreService().updateChat(widget.data, info));
@@ -172,6 +176,13 @@ class _MessageBoxState extends State<MessageBox> {
       _isWaiting = true;
       widget.data.setThinking(true);
       resetChatScroll();
+    });
+  }
+
+  void uploadFile() {
+    setState(() {
+      files.add(const Icon(Icons.outlined_flag_rounded));
+      // UPLOAD FILE HERE
     });
   }
 
@@ -274,82 +285,104 @@ class _MessageBoxState extends State<MessageBox> {
             maxWidth: 768,
           ),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
               border: Border.all(color: (Colors.grey[800])!),
               borderRadius: const BorderRadius.all(
                 Radius.circular(18),
               ),
             ),
-            child: Row(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Tooltip(
-                  message: "Upload files",
-                  textStyle: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                  ),
+                if (files.isNotEmpty) FileBar(files: files),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: Colors.grey[850],
-                  ),
-                  child: IconButton(
-                    icon: const Icon(Icons.file_present_rounded),
-                    onPressed: () {}, // UPLOAD FILES HERE
-                    color: Colors.white,
-                    style: ButtonStyle(
-                      overlayColor: WidgetStateProperty.all(Colors.transparent),
+                    border: files.isNotEmpty
+                        ? Border(
+                            top: BorderSide(
+                              color: (Colors.grey[800])!,
+                            ),
+                          )
+                        : null,
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(18),
                     ),
-                    iconSize: 26,
-                    padding: const EdgeInsets.all(2),
-                    constraints: const BoxConstraints(),
                   ),
-                ),
-                Expanded(
-                  child: TextField(
-                      style: Theme.of(context).textTheme.bodySmall,
-                      maxLines: null,
-                      focusNode: msgFocusNode,
-                      controller: msgController,
-                      onChanged: (val) {
-                        updateEmpty();
-                      },
-                      decoration: InputDecoration(
-                        hintText: widget.data.modelGroup.isEmpty ||
-                                widget.data.modelGroup == "Other"
-                            ? "Send a message..."
-                            : "Message ${widget.data.modelGroup}",
-                        hintStyle: TextStyle(
-                          color: Colors.grey[500],
+                  child: Row(
+                    children: [
+                      Tooltip(
+                        message: "Upload files",
+                        textStyle: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
                         ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 8.0,
-                          vertical: 12.0,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.grey[850],
                         ),
-                        border: InputBorder.none,
-                      )),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.arrow_upward_rounded),
-                  onPressed: _isWaiting || _isEmpty ? null : sendMsg,
-                  color: Colors.grey[900],
-                  disabledColor: Colors.grey[900],
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all<Color>(
-                        _isWaiting || _isEmpty
-                            ? (Colors.grey[800])!
-                            : Colors.white),
-                    shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                      const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(8),
+                        child: IconButton(
+                          icon: const Icon(Icons.file_present_rounded),
+                          onPressed: uploadFile,
+                          color: Colors.white,
+                          style: ButtonStyle(
+                            overlayColor:
+                                WidgetStateProperty.all(Colors.transparent),
+                          ),
+                          iconSize: 26,
+                          padding: const EdgeInsets.all(2),
+                          constraints: const BoxConstraints(),
                         ),
                       ),
-                    ),
+                      Expanded(
+                        child: TextField(
+                            style: Theme.of(context).textTheme.bodySmall,
+                            maxLines: null,
+                            focusNode: msgFocusNode,
+                            controller: msgController,
+                            onChanged: (val) {
+                              updateEmpty();
+                            },
+                            decoration: InputDecoration(
+                              hintText: widget.data.modelGroup.isEmpty ||
+                                      widget.data.modelGroup == "Other"
+                                  ? "Send a message..."
+                                  : "Message ${widget.data.modelGroup}",
+                              hintStyle: TextStyle(
+                                color: Colors.grey[500],
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 8.0,
+                                vertical: 12.0,
+                              ),
+                              border: InputBorder.none,
+                            )),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.arrow_upward_rounded),
+                        onPressed: _isWaiting || _isEmpty ? null : sendMsg,
+                        color: Colors.grey[900],
+                        disabledColor: Colors.grey[900],
+                        style: ButtonStyle(
+                          backgroundColor: WidgetStateProperty.all<Color>(
+                              _isWaiting || _isEmpty
+                                  ? (Colors.grey[800])!
+                                  : Colors.white),
+                          shape:
+                              WidgetStateProperty.all<RoundedRectangleBorder>(
+                            const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(8),
+                              ),
+                            ),
+                          ),
+                        ),
+                        iconSize: 26,
+                        padding: const EdgeInsets.all(2),
+                        constraints: const BoxConstraints(),
+                      ),
+                    ],
                   ),
-                  iconSize: 26,
-                  padding: const EdgeInsets.all(2),
-                  constraints: const BoxConstraints(),
                 ),
               ],
             ),
