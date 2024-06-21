@@ -40,6 +40,12 @@ class _ChatWindowState extends State<ChatWindow> {
   }
 
   @override
+  void dispose() {
+    blinkTimer.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final messages = widget.data.messages.reversed.map((msg) {
       return Padding(
