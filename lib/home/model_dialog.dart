@@ -175,11 +175,11 @@ class ModelDialog extends StatelessWidget {
                                     ],
                                   ),
                                 TextButton(
-                                  onPressed: newModel.isEmpty
-                                      ? null
-                                      : () {
+                                  onPressed: newModel.isNotEmpty && newGroup == filter
+                                      ? () {
                                           setModel();
-                                        },
+                                        }
+                                      : null,
                                   child: const Text("Confirm"),
                                 ),
                               ],
