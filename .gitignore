@@ -43,6 +43,6 @@ app.*.map.json
 /android/app/release
 
 # API keys and whatnot
-assets/.env
+.env
 ios/Runner/GoogleService-Info.plist
 app/google-services.json
