@@ -8,7 +8,7 @@ class ModelDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String filter = data.groups.first.name;
+    String filter = "";
     String newModel = data.model;
     String newGroup = data.modelGroup;
     bool showPreviews = false;
@@ -18,61 +18,91 @@ class ModelDialog extends StatelessWidget {
       data.setModel(newModel, newGroup);
       Navigator.of(context).pop();
     }
-
+    
     return Dialog(
       insetPadding: const EdgeInsets.all(24.0),
+      clipBehavior: Clip.antiAlias,
       child: ConstrainedBox(
         constraints: const BoxConstraints(
           maxWidth: 400,
-          maxHeight: 500,
+          maxHeight: 600,
         ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: StatefulBuilder(builder: (context, setState) {
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  "Choose a Model",
-                  style: TextStyle(
-                    fontSize: 18,
-                  ),
-                ),
-                Text(
-                  newModel.isEmpty ? "None Selected" : "Selected: $newModel",
-                  style: const TextStyle(
-                    color: Colors.grey,
-                    fontSize: 12,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                const Divider(
-                  height: 1,
-                ),
-                !groupSelected
-                    ? Column(
+        child: StatefulBuilder(
+          builder: (context, setState) {
+            if (!groupSelected) { // group selection
+              return Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        "Choose a Model",
+                        style: TextStyle(
+                          fontSize: 18,
+                        ),
+                      ),
+                      Text(
+                        newModel.isEmpty ? "None Selected" : "Selected: $newModel",
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Divider(
+                        height: 1,
+                      ),
+                      Column(
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: data.groups.map((group) {
-                          return ListTile(
-                            onTap: () {
-                              setState(() {
-                                filter = group.name;
-                                groupSelected = true;
-                              });
-                            },
-                            title: Text(group.name),
-                            subtitle: Text(group.description),
-                            subtitleTextStyle: const TextStyle(
-                              color: Colors.grey,
-                              fontSize: 12,
+                          return Material( // avoiding color overflow
+                            child: ListTile(
+                              onTap: () {
+                                setState(() {
+                                  filter = group.name;
+                                  groupSelected = true;
+                                });
+                              },
+                              title: Text(group.name),
+                              subtitle: Text(group.description),
+                              subtitleTextStyle: const TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12,
+                              ),
+                              tileColor:
+                                  filter == group.name ? Colors.grey[850] : null,
                             ),
-                            tileColor:
-                                filter == group.name ? Colors.grey[850] : null,
                           );
                         }).toList(),
                       )
-                    : ConstrainedBox(
+                    ],
+                ),
+              );
+            } else { // model selection
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        filter,
+                        style: const TextStyle(
+                          fontSize: 18,
+                        ),
+                      ),
+                      Text(
+                        newModel.isEmpty ? "None Selected" : "Selected: $newModel",
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Divider(
+                        height: 1,
+                      ),
+                      ConstrainedBox(
                         constraints: const BoxConstraints(
                           maxHeight: 300,
                         ),
@@ -107,66 +137,69 @@ class ModelDialog extends StatelessWidget {
                           }).toList(),
                         ),
                       ),
-                if (groupSelected)
-                  Column(
-                    children: [
-                      const Divider(height: 1),
-                      const SizedBox(height: 8),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          left: 8,
-                          right: 8,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            TextButton(
-                              child: const Text("Cancel"),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
+                      Column(
+                        children: [
+                          const Divider(height: 1),
+                          const SizedBox(height: 8),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 8,
+                              right: 8,
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text(
-                                  "Preview Models",
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                                Checkbox(
-                                  onChanged: (value) {
+                                TextButton(
+                                  child: const Text("Back"),
+                                  onPressed: () {
                                     setState(() {
-                                      showPreviews = (value)!;
+                                      groupSelected = false;
                                     });
                                   },
-                                  value: showPreviews,
-                                  side: BorderSide(
-                                    color: (Colors.grey[500])!,
-                                  ),
-                                  activeColor: Colors.grey[500],
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    const Text(
+                                      "Preview Models",
+                                      style: TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                    Checkbox(
+                                      onChanged: (value) {
+                                        setState(() {
+                                          showPreviews = (value)!;
+                                        });
+                                      },
+                                      value: showPreviews,
+                                      side: BorderSide(
+                                        color: (Colors.grey[500])!,
+                                      ),
+                                      activeColor: Colors.grey[500],
+                                    ),
+                                  ],
+                                ),
+                                TextButton(
+                                  onPressed: newModel.isEmpty
+                                      ? null
+                                      : () {
+                                          setModel();
+                                        },
+                                  child: const Text("Confirm"),
                                 ),
                               ],
                             ),
-                            TextButton(
-                              onPressed: newModel.isEmpty
-                                  ? null
-                                  : () {
-                                      setModel();
-                                    },
-                              child: const Text("Confirm"),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ],
-                  ),
-              ],
-            );
-          }),
-        ),
+                ),
+              );
+            }
+          }
+        )
       ),
     );
   }
