@@ -2,6 +2,31 @@ import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+class Model {
+  late String id;
+  late String group;
+  late bool preview;
+
+  Model(this.id, List<ModelGroup> groups) {
+    group = "";
+    for (ModelGroup mg in groups) {
+      if (id.startsWith(mg.prefix)) {
+        group = mg.name;
+        break;
+      }
+    }
+    preview = id.endsWith("preview");
+  }
+}
+
+class ModelGroup {
+  String name;
+  String prefix;
+  String description;
+
+  ModelGroup({required this.name, required this.prefix, required this.description});
+}
+
 class ChatData extends ChangeNotifier {
   // included fields
   List<OpenAIChatCompletionChoiceMessageModel> messages = [];
@@ -24,26 +49,26 @@ class ChatData extends ChangeNotifier {
       prefix: "dall-e",
       description: "Generate and edit images"
     ),
-    ModelGroup(
-      name: "TTS",
-      prefix: "tts",
-      description: "Convert text to spoken audio"
-    ),
-    ModelGroup(
-      name: "Whisper",
-      prefix: "whisper",
-      description: "Convert audio to text"
-    ),
-    ModelGroup(
-      name: "Embeddings",
-      prefix: "text-embedding",
-      description: "Convert text to a numerical form"
-    ),
-    ModelGroup(
-      name: "Other",
-      prefix: "",
-      description: "Specialized models"
-    ),
+    // ModelGroup(
+    //   name: "TTS",
+    //   prefix: "tts",
+    //   description: "Convert text to spoken audio"
+    // ),
+    // ModelGroup(
+    //   name: "Whisper",
+    //   prefix: "whisper",
+    //   description: "Convert audio to text"
+    // ),
+    // ModelGroup(
+    //   name: "Embeddings",
+    //   prefix: "text-embedding",
+    //   description: "Convert text to a numerical form"
+    // ),
+    // ModelGroup(
+    //   name: "Other",
+    //   prefix: "",
+    //   description: "Specialized models"
+    // ),
   ];
   bool _thinking = false;
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -196,29 +221,4 @@ class ChatData extends ChangeNotifier {
     }
     return retStr;
   }
-}
-
-class Model {
-  late String id;
-  late String group;
-  late bool preview;
-
-  Model(this.id, List<ModelGroup> groups) {
-    group = "Other";
-    for (ModelGroup mg in groups) {
-      if (id.startsWith(mg.prefix)) {
-        group = mg.name;
-        break;
-      }
-    }
-    preview = id.endsWith("preview");
-  }
-}
-
-class ModelGroup {
-  String name;
-  String prefix;
-  String description;
-
-  ModelGroup({required this.name, required this.prefix, required this.description});
 }

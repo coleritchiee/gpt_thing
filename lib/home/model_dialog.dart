@@ -21,7 +21,7 @@ class ModelDialog extends StatelessWidget {
     
     return Dialog(
       insetPadding: const EdgeInsets.all(24.0),
-      clipBehavior: Clip.antiAlias,
+      clipBehavior: Clip.antiAlias, // fixes rounded corner issue with ListTile
       child: ConstrainedBox(
         constraints: const BoxConstraints(
           maxWidth: 400,
