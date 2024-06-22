@@ -1,30 +1,23 @@
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
+import 'package:gpt_thing/home/model_group.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 class Model {
   late String id;
-  late String group;
+  ModelGroup group = ModelGroup.other;
   late bool preview;
 
   Model(this.id, List<ModelGroup> groups) {
-    group = "";
     for (ModelGroup mg in groups) {
       if (id.startsWith(mg.prefix)) {
-        group = mg.name;
+        group = mg;
         break;
       }
     }
+
     preview = id.endsWith("preview");
   }
-}
-
-class ModelGroup {
-  String name;
-  String prefix;
-  String description;
-
-  ModelGroup({required this.name, required this.prefix, required this.description});
 }
 
 class ChatData extends ChangeNotifier {
@@ -32,43 +25,19 @@ class ChatData extends ChangeNotifier {
   List<OpenAIChatCompletionChoiceMessageModel> messages = [];
   String id = "";
   String model = "";
-  String modelGroup = "";
+  ModelGroup modelGroup = ModelGroup.other;
 
   // excluded fields
   String apiKey = "";
   String organization = "";
   List<Model> models = <Model>[];
   final List<ModelGroup> groups = [
-    ModelGroup(
-      name: "ChatGPT",
-      prefix: "gpt",
-      description: "Natural language processing"
-    ),
-    ModelGroup(
-      name: "Dall·E",
-      prefix: "dall-e",
-      description: "Generate and edit images"
-    ),
-    // ModelGroup(
-    //   name: "TTS",
-    //   prefix: "tts",
-    //   description: "Convert text to spoken audio"
-    // ),
-    // ModelGroup(
-    //   name: "Whisper",
-    //   prefix: "whisper",
-    //   description: "Convert audio to text"
-    // ),
-    // ModelGroup(
-    //   name: "Embeddings",
-    //   prefix: "text-embedding",
-    //   description: "Convert text to a numerical form"
-    // ),
-    // ModelGroup(
-    //   name: "Other",
-    //   prefix: "",
-    //   description: "Specialized models"
-    // ),
+    ModelGroup.chatGPT,
+    ModelGroup.dalle,
+    ModelGroup.tts,
+    ModelGroup.whisper,
+    ModelGroup.embeddings,
+    ModelGroup.other,
   ];
   bool _thinking = false;
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -76,7 +45,7 @@ class ChatData extends ChangeNotifier {
 
   ChatData();
 
-  void overwrite(ChatData data){
+  void overwrite(ChatData data) {
     id = data.id;
     messages = data.messages;
     model = data.model;
@@ -86,7 +55,7 @@ class ChatData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setId(String id){
+  void setId(String id) {
     this.id = id;
     notifyListeners();
   }
@@ -117,7 +86,7 @@ class ChatData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setModel(String model, String group) {
+  void setModel(String model, ModelGroup group) {
     this.model = model;
     modelGroup = group;
     notifyListeners();
@@ -183,9 +152,10 @@ class ChatData extends ChangeNotifier {
     return ChatData()
       ..id = json['id'] as String
       ..model = json['model'] as String
-      ..modelGroup = json['modelGroup'] as String
+      ..modelGroup = json['modelGroup'] as ModelGroup
       ..messages = (json['messages'] as List)
-          .map((e) => OpenAIChatCompletionChoiceMessageModel.fromMap(e as Map<String, dynamic>))
+          .map((e) => OpenAIChatCompletionChoiceMessageModel.fromMap(
+              e as Map<String, dynamic>))
           .toList();
   }
 

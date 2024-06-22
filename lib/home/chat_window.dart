@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:gpt_thing/home/chat_data.dart';
+import 'package:gpt_thing/home/model_group.dart';
 
 class ChatWindow extends StatefulWidget {
   final ChatData data;
@@ -66,9 +67,9 @@ class _ChatWindowState extends State<ChatWindow> {
                     ? "You"
                     : msg.role == OpenAIChatMessageRole.system
                         ? "System"
-                        : widget.data.modelGroup == "Other"
+                        : widget.data.modelGroup == ModelGroup.other
                             ? "Assistant"
-                            : widget.data.modelGroup,
+                            : widget.data.modelGroup.name,
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -126,9 +127,9 @@ class _ChatWindowState extends State<ChatWindow> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    widget.data.modelGroup == "Other"
+                    widget.data.modelGroup == ModelGroup.other
                         ? "Assistant"
-                        : widget.data.modelGroup,
+                        : widget.data.modelGroup.name,
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -168,9 +169,9 @@ class _ChatWindowState extends State<ChatWindow> {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      widget.data.modelGroup == "Other"
+                      widget.data.modelGroup == ModelGroup.other
                           ? "Assistant"
-                          : widget.data.modelGroup,
+                          : widget.data.modelGroup.name,
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,

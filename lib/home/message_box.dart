@@ -6,6 +6,7 @@ import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/chat_info.dart';
 import 'package:gpt_thing/home/key_set_dialog.dart';
 import 'package:gpt_thing/home/model_dialog.dart';
+import 'package:gpt_thing/home/model_group.dart';
 import 'package:gpt_thing/services/firestore.dart';
 
 import 'chat_id_notifier.dart';
@@ -65,7 +66,7 @@ class _MessageBoxState extends State<MessageBox> {
 
   void recMsg(String msg) async {
     switch (widget.data.modelGroup) {
-      case "ChatGPT":
+      case ModelGroup.chatGPT:
         final chatStream = widget.api
             .chatPromptStream(widget.data.messages, widget.data.model);
         chatStream.listen(
@@ -115,7 +116,7 @@ class _MessageBoxState extends State<MessageBox> {
         //       .overwrite(FirestoreService().updateChat(widget.data, info));
         // }
         break;
-      case "Dall·E":
+      case ModelGroup.dalle:
         final response = await widget.api.imagePrompt(
           msg,
           widget.data.model,
@@ -292,10 +293,9 @@ class _MessageBoxState extends State<MessageBox> {
                         updateEmpty();
                       },
                       decoration: InputDecoration(
-                        hintText: widget.data.modelGroup.isEmpty ||
-                                widget.data.modelGroup == "Other"
+                        hintText: widget.data.modelGroup == ModelGroup.other
                             ? "Send a message..."
-                            : "Message ${widget.data.modelGroup}",
+                            : "Message ${widget.data.modelGroup.name}",
                         hintStyle: TextStyle(
                           color: Colors.grey[500],
                         ),
