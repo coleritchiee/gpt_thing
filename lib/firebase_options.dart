@@ -47,8 +47,8 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static FirebaseOptions web = FirebaseOptions(
-    apiKey: dotenv.env['FIREBASE_WEB_KEY']!,
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: const String.fromEnvironment("FIREBASE_WEB_KEY"),
     appId: '1:202585147455:web:90d85427998c730715508a',
     messagingSenderId: '202585147455',
     projectId: 'gptthing-a25d7',
