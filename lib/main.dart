@@ -9,7 +9,7 @@ import 'home/home.dart';
 
 
 Future<void> main() async{
-  await dotenv.load(fileName: ".env");
+  await dotenv.load(fileName: "dotenv");
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
   const App(),
