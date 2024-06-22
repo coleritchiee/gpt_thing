@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:gpt_thing/login/login.dart';
 import 'package:gpt_thing/route.dart';
 import 'package:gpt_thing/theme.dart';
@@ -7,7 +8,8 @@ import 'firebase_options.dart';
 import 'home/home.dart';
 
 
-void main() {
+Future<void> main() async{
+  await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
   const App(),

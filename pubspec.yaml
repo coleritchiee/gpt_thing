@@ -48,6 +48,7 @@ dependencies:
   flutter_markdown: ^0.7.1
   dart_openai: ^5.1.0
   font_awesome_flutter: ^10.6.0
+  flutter_dotenv: ^5.1.0
 
 dev_dependencies:
   flutter_test:
