@@ -47,8 +47,6 @@ class FirestoreService {
       var doc = chats.doc();
       data.setId(doc.id);
       doc.set(data.toJson());
-      info.date = DateTime.now();
-      info.title = data.id;
       info.id = data.id;
       var infoDoc = chatInfos.doc(data.id);
       infoDoc.set(info.toJson());

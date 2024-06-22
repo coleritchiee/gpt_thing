@@ -148,6 +148,15 @@ class ChatData extends ChangeNotifier {
     notifyListeners();
   }
 
+  String firstUserMessage() {
+    for (OpenAIChatCompletionChoiceMessageModel msg in messages) {
+      if (msg.role == OpenAIChatMessageRole.user) {
+        return msg.content!.first.text!;
+      }
+    }
+    return id;
+  }
+
   factory ChatData.fromJson(Map<String, dynamic> json) {
     return ChatData()
       ..id = json['id'] as String

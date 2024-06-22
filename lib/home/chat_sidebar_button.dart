@@ -31,6 +31,8 @@ class _ChatSidebarButtonState extends State<ChatSidebarButton> {
           widget.title,
           overflow: TextOverflow.ellipsis,
         ),
+        titleTextStyle: Theme.of(context).textTheme.bodySmall,
+        visualDensity: const VisualDensity(vertical: -4),
         trailing: _isHovered
             ? PopupMenuButton<String>(
                 itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
@@ -47,7 +49,10 @@ class _ChatSidebarButtonState extends State<ChatSidebarButton> {
                     },
                   ),
                 ],
-                icon: const Icon(Icons.more_vert),
+                icon: const Icon(Icons.more_vert_rounded),
+                iconSize: 20,
+                padding: EdgeInsets.zero,
+                splashRadius: 10,
               )
             : null,
         onTap: () {
