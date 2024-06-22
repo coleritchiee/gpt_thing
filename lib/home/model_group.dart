@@ -58,4 +58,21 @@ class ModelGroup {
   bool isSupported() {
     return supported;
   }
+
+  static ModelGroup getByName(String name) {
+    switch (name) {
+      case "ChatGPT":
+        return ModelGroup.chatGPT;
+      case "Dall·E":
+        return ModelGroup.dalle;
+      case "TTS":
+        return ModelGroup.tts;
+      case "Whisper":
+        return ModelGroup.whisper;
+      case "Embeddings":
+        return ModelGroup.embeddings;
+      default:
+        return ModelGroup.other;
+    }
+  }
 }

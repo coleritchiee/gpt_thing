@@ -152,7 +152,7 @@ class ChatData extends ChangeNotifier {
     return ChatData()
       ..id = json['id'] as String
       ..model = json['model'] as String
-      ..modelGroup = json['modelGroup'] as ModelGroup
+      ..modelGroup = ModelGroup.getByName(json['modelGroup'] as String)
       ..messages = (json['messages'] as List)
           .map((e) => OpenAIChatCompletionChoiceMessageModel.fromMap(
               e as Map<String, dynamic>))
@@ -163,7 +163,7 @@ class ChatData extends ChangeNotifier {
     return {
       'id': id,
       'model': model,
-      'modelGroup': modelGroup,
+      'modelGroup': modelGroup.name,
       'messages': messages.map((message) => message.toMap()).toList(),
     };
   }

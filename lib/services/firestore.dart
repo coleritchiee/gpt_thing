@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:gpt_thing/home/chat_data.dart';
+import 'package:gpt_thing/home/model_group.dart';
 
 import '../home/chat_info.dart';
 
@@ -98,7 +99,7 @@ class FirestoreService {
     try {
       DocumentSnapshot chat = await chatRef.get();
       var data = chat.data() as Map<String, dynamic>;
-      if (data["modelGroup"] == "Dall·E") {
+      if (ModelGroup.getByName(data["modelGroup"]) == ModelGroup.dalle) {
         deleteImageFromChat(chatId, userId);
       }
     }
