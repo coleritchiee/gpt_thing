@@ -27,21 +27,29 @@ class _ChatSidebarButtonState extends State<ChatSidebarButton> {
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
       child: ListTile(
-        title: Text(widget.title),
+        title: Text(
+          widget.title,
+          overflow: TextOverflow.ellipsis,
+        ),
         trailing: _isHovered
             ? PopupMenuButton<String>(
-          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-            PopupMenuItem<String>(
-              child: const Text('Rename'),
-              onTap: (){widget.onRename();},
-            ),
-            PopupMenuItem<String>(
-              child: const Text('Delete'),
-              onTap: (){widget.onDelete();},
-            ),
-          ],
-          icon: const Icon(Icons.more_vert),
-        ) : null,
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                  PopupMenuItem<String>(
+                    child: const Text('Rename'),
+                    onTap: () {
+                      widget.onRename();
+                    },
+                  ),
+                  PopupMenuItem<String>(
+                    child: const Text('Delete'),
+                    onTap: () {
+                      widget.onDelete();
+                    },
+                  ),
+                ],
+                icon: const Icon(Icons.more_vert),
+              )
+            : null,
         onTap: () {
           widget.onClick();
         },
