@@ -119,7 +119,7 @@ class _MessageBoxState extends State<MessageBox> {
         );
         if (widget.data.id == "") {
           ChatInfo info = ChatInfo(
-              id: widget.data.id, title: widget.data.id, date: DateTime.now());
+              id: widget.data.id, title: widget.data.firstUserMessage(), date: DateTime.now());
           widget.data.overwrite(
               FirestoreService().updateChat(widget.data, info));
           widget.chatIds.addInfo(info);
