@@ -1,7 +1,6 @@
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:gpt_thing/home/model_group.dart';
-import 'package:json_annotation/json_annotation.dart';
 
 class Model {
   late String id;
@@ -40,7 +39,6 @@ class ChatData extends ChangeNotifier {
     ModelGroup.other,
   ];
   bool _thinking = false;
-  @JsonKey(includeFromJson: false, includeToJson: false)
   String streamText = "";
 
   ChatData();

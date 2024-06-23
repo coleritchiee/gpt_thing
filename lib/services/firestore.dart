@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/model_group.dart';
+import 'package:gpt_thing/home/user_settings.dart';
 
 import '../home/chat_info.dart';
 
@@ -21,6 +22,20 @@ class FirestoreService {
       return chats;
     } catch (e) {
       return [];
+    }
+  }
+
+  Future<UserSettings> getSettings(String uid) async {
+    try {
+      final settings = (await FirebaseFirestore.instance.collection('users').doc(uid).get()).data()!['settings'];
+      if (settings == null) {
+        final newSettings = UserSettings();
+        FirebaseFirestore.instance.collection('users').doc(uid).update({"settings": newSettings.toJson()});
+        return newSettings;
+      }
+      return UserSettings.fromJson(settings);
+    } catch (e) {
+      return await getSettings(uid);
     }
   }
 

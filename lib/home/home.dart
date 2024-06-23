@@ -5,6 +5,7 @@ import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/chat_id_notifier.dart';
 import 'package:gpt_thing/home/home_drawer.dart';
 import 'package:gpt_thing/home/key_set_dialog.dart';
+import 'package:gpt_thing/home/user_settings.dart';
 import 'package:gpt_thing/services/auth.dart';
 import 'package:gpt_thing/services/firestore.dart';
 import 'chat_info.dart';
@@ -52,7 +53,7 @@ class HomePage extends StatelessWidget {
                     data.overwrite(newData);
                   }
                 },
-                onDelete: (index){},
+                onDelete: (index) {},
                 onLogoutClick: () {},
                 keyDialog: keyDialog,
               ),
@@ -154,73 +155,87 @@ class HomePage extends StatelessWidget {
               ),
             );
           } else {
-            return FutureBuilder<List<ChatInfo>>(
+            return FutureBuilder<UserSettings>(
                 future: FirestoreService()
-                    .getChats(FirebaseAuth.instance.currentUser!.uid),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Scaffold(
-                      appBar: AppBar(title: const Text('GPT Thing')),
-                      body: const Center(child: CircularProgressIndicator()),
-                    );
-                  } else {
-                    ChatIdNotifier chatIds = ChatIdNotifier(snapshot.data!);
-                    return Scaffold(
-                        appBar: AppBar(
-                          title: const Text('GPT Thing'),
-                          forceMaterialTransparency: true,
-                        ),
-                        drawer: HomeDrawer(
-                          ids: chatIds,
-                          onNewChatClick: () {
-                            data.overwrite(ChatData());
-                          },
-                          onIdClick: (info) async {
-                            ChatData? newData =
-                                await FirestoreService().fetchChat(info.id);
-                            if (newData != null) {
-                              data.overwrite(newData);
-                              scroller.jumpTo(0);
-                            }
-                          },
-                          onDelete: (index){
-                            FirestoreService().removeIdFromUserAndDeleteChat(FirebaseAuth.instance.currentUser!.uid, chatIds.get(index).id);
-                            chatIds.removeInfo(chatIds.get(index));
-                            data.overwrite(ChatData());
-                          },
-                          onLogoutClick: () {
-                            AuthService().signOut();
-                            data.overwrite(ChatData());
-                          },
-                          keyDialog: keyDialog,
-                        ),
-                        body: Center(
-                            child: Padding(
-                                padding: const EdgeInsets.all(4),
-                                child: ConstrainedBox(
-                                    constraints: const BoxConstraints(
-                                      maxWidth: 768,
-                                    ),
-                                    child: ListenableBuilder(
-                                        listenable: data,
-                                        builder: (context, child) {
-                                          return Column(
-                                            children: [
-                                              ChatWindow(
-                                                  data: data,
-                                                  scroller: scroller),
-                                              MessageBox(
-                                                data: data,
-                                                keyDialog: keyDialog,
-                                                modelDialog: modelDialog,
-                                                api: api,
-                                                chatIds: chatIds,
-                                                chatScroller: scroller,
-                                              ),
-                                            ],
-                                          );
-                                        })))));
-                  }
+                    .getSettings(FirebaseAuth.instance.currentUser!.uid),
+                builder: (context, settings) {
+                  return FutureBuilder<List<ChatInfo>>(
+                      future: FirestoreService()
+                          .getChats(FirebaseAuth.instance.currentUser!.uid),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                                ConnectionState.waiting ||
+                            settings.connectionState ==
+                                ConnectionState.waiting) {
+                          return Scaffold(
+                            appBar: AppBar(title: const Text('GPT Thing')),
+                            body: const Center(
+                                child: CircularProgressIndicator()),
+                          );
+                        } else {
+                          ChatIdNotifier chatIds =
+                              ChatIdNotifier(snapshot.data!);
+                          return Scaffold(
+                              appBar: AppBar(
+                                title: const Text('GPT Thing'),
+                                forceMaterialTransparency: true,
+                              ),
+                              drawer: HomeDrawer(
+                                ids: chatIds,
+                                onNewChatClick: () {
+                                  data.overwrite(ChatData());
+                                },
+                                onIdClick: (info) async {
+                                  ChatData? newData = await FirestoreService()
+                                      .fetchChat(info.id);
+                                  if (newData != null) {
+                                    data.overwrite(newData);
+                                    scroller.jumpTo(0);
+                                  }
+                                },
+                                onDelete: (index) {
+                                  FirestoreService()
+                                      .removeIdFromUserAndDeleteChat(
+                                          FirebaseAuth
+                                              .instance.currentUser!.uid,
+                                          chatIds.get(index).id);
+                                  chatIds.removeInfo(chatIds.get(index));
+                                  data.overwrite(ChatData());
+                                },
+                                onLogoutClick: () {
+                                  AuthService().signOut();
+                                  data.overwrite(ChatData());
+                                },
+                                keyDialog: keyDialog,
+                              ),
+                              body: Center(
+                                  child: Padding(
+                                      padding: const EdgeInsets.all(4),
+                                      child: ConstrainedBox(
+                                          constraints: const BoxConstraints(
+                                            maxWidth: 768,
+                                          ),
+                                          child: ListenableBuilder(
+                                              listenable: data,
+                                              builder: (context, child) {
+                                                return Column(
+                                                  children: [
+                                                    ChatWindow(
+                                                        data: data,
+                                                        scroller: scroller),
+                                                    MessageBox(
+                                                      data: data,
+                                                      keyDialog: keyDialog,
+                                                      modelDialog: modelDialog,
+                                                      api: api,
+                                                      chatIds: chatIds,
+                                                      chatScroller: scroller,
+                                                    ),
+                                                  ],
+                                                );
+                                              })))));
+                        }
+                      });
                 });
           }
         });
