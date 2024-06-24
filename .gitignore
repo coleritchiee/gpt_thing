@@ -46,3 +46,4 @@ app.*.map.json
 dotenv
 ios/Runner/GoogleService-Info.plist
 app/google-services.json
+.vercel
