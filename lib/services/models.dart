@@ -9,39 +9,27 @@ part 'models.g.dart';
 @JsonSerializable(explicitToJson: true)
 class User extends ChangeNotifier{
 
-  static User NOT_SIGNED_IN = User(uid: "", name: "", streamResponse: false, generateTitles: false, showSystemPrompt: false);
+  static User NOT_SIGNED_IN = User(uid: "", name: "", settings: UserSettings(streamResponse: false, generateTitles: false, showSystemPrompt: false));
 
   String uid;
   String name;
-  bool streamResponse;
-  bool generateTitles;
-  bool showSystemPrompt;
+  UserSettings settings;
 
   User({
     required this.uid,
     required this.name,
-    required this.streamResponse,
-    required this.generateTitles,
-    required this.showSystemPrompt,
+    required this.settings
   });
 
-  UserSettings getSettings(){
-    return UserSettings(streamResponse: streamResponse, generateTitles: generateTitles, showSystemPrompt: showSystemPrompt);
-  }
-
   void updateSettings(UserSettings settings){
-    this.streamResponse = settings.streamResponse;
-    this.generateTitles = settings.generateTitles;
-    this.showSystemPrompt = settings.showSystemPrompt;
+    this.settings = settings;
     notifyListeners();
   }
 
   void overwrite(User user){
     this.name = user.name;
     this.uid = user.uid;
-    this.showSystemPrompt = user.showSystemPrompt;
-    this.generateTitles = user.generateTitles;
-    this.streamResponse = user.streamResponse;
+    this.settings = user.settings;
     notifyListeners();
   }
 

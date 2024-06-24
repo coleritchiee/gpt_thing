@@ -158,91 +158,82 @@ class HomePage extends StatelessWidget {
               ),
             );
           } else {
-            return FutureBuilder<UserSettings>(
-                future: FirestoreService().getSettings(FirebaseAuth.instance.currentUser!.uid),
-                builder: (context, settings) {
-                  return FutureBuilder<List<ChatInfo>>(
-                      future: FirestoreService()
-                          .getChats(FirebaseAuth.instance.currentUser!.uid),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                                ConnectionState.waiting ||
-                            settings.connectionState ==
-                                ConnectionState.waiting) {
+            return FutureBuilder<List<ChatInfo>>(
+                future: FirestoreService()
+                    .getChats(FirebaseAuth.instance.currentUser!.uid),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Scaffold(
+                      appBar: AppBar(title: const Text('GPT Thing')),
+                      body: const Center(child: CircularProgressIndicator()),
+                    );
+                  } else {
+                    ChatIdNotifier chatIds = ChatIdNotifier(snapshot.data!);
+                    return ListenableBuilder(
+                        listenable: user,
+                        builder: (context, snapshot) {
                           return Scaffold(
-                            appBar: AppBar(title: const Text('GPT Thing')),
-                            body: const Center(
-                                child: CircularProgressIndicator()),
-                          );
-                        } else {
-                          ChatIdNotifier chatIds =
-                              ChatIdNotifier(snapshot.data!);
-                          return ListenableBuilder(
-                              listenable: user,
-                              builder: (context, snapshot) {
-                              return Scaffold(
-                                  appBar: AppBar(
-                                    title: Text("GPT Thing ${user.name}"),
-                                    forceMaterialTransparency: true,
-                                  ),
-                                  drawer: HomeDrawer(
-                                    ids: chatIds,
-                                    onNewChatClick: () {
-                                      data.overwrite(ChatData());
-                                    },
-                                    onIdClick: (info) async {
-                                      ChatData? newData = await FirestoreService()
-                                          .fetchChat(info.id);
-                                      if (newData != null) {
-                                        data.overwrite(newData);
-                                        scroller.jumpTo(0);
-                                      }
-                                    },
-                                    onDelete: (index) {
-                                      FirestoreService()
-                                          .removeIdFromUserAndDeleteChat(
-                                              FirebaseAuth
-                                                  .instance.currentUser!.uid,
-                                              chatIds.get(index).id);
-                                      chatIds.removeInfo(chatIds.get(index));
-                                      data.overwrite(ChatData());
-                                    },
-                                    onLogoutClick: () {
-                                      AuthService().signOut();
-                                      data.overwrite(ChatData());
-                                    },
-                                    keyDialog: keyDialog,
-                                  ),
-                                  body: Center(
-                                      child: Padding(
-                                          padding: const EdgeInsets.all(4),
-                                          child: ConstrainedBox(
-                                              constraints: const BoxConstraints(
-                                                maxWidth: 768,
-                                              ),
-                                              child: ListenableBuilder(
-                                                  listenable: data,
-                                                  builder: (context, child) {
-                                                    return Column(
-                                                      children: [
-                                                        ChatWindow(
-                                                            data: data,
-                                                            scroller: scroller),
-                                                        MessageBox(
-                                                          data: data,
-                                                          keyDialog: keyDialog,
-                                                          modelDialog: modelDialog,
-                                                          api: api,
-                                                          chatIds: chatIds,
-                                                          chatScroller: scroller,
-                                                        ),
-                                                      ],
-                                                    );
-                                                  })))));
-                            }
-                          );
-                        }
-                      });
+                              appBar: AppBar(
+                                title: Text("GPT Thing ${user.name}"),
+                                forceMaterialTransparency: true,
+                              ),
+                              drawer: HomeDrawer(
+                                ids: chatIds,
+                                onNewChatClick: () {
+                                  data.overwrite(ChatData());
+                                },
+                                onIdClick: (info) async {
+                                  ChatData? newData = await FirestoreService()
+                                      .fetchChat(info.id);
+                                  if (newData != null) {
+                                    data.overwrite(newData);
+                                    scroller.jumpTo(0);
+                                  }
+                                },
+                                onDelete: (index) {
+                                  FirestoreService()
+                                      .removeIdFromUserAndDeleteChat(
+                                          FirebaseAuth
+                                              .instance.currentUser!.uid,
+                                          chatIds.get(index).id);
+                                  chatIds.removeInfo(chatIds.get(index));
+                                  data.overwrite(ChatData());
+                                },
+                                onLogoutClick: () {
+                                  AuthService().signOut();
+                                  data.overwrite(ChatData());
+                                },
+                                keyDialog: keyDialog,
+                              ),
+                              body: Center(
+                                  child: Padding(
+                                      padding: const EdgeInsets.all(4),
+                                      child: ConstrainedBox(
+                                          constraints: const BoxConstraints(
+                                            maxWidth: 768,
+                                          ),
+                                          child: ListenableBuilder(
+                                              listenable: data,
+                                              builder: (context, child) {
+                                                return Column(
+                                                  children: [
+                                                    ChatWindow(
+                                                        data: data,
+                                                        scroller: scroller),
+                                                    MessageBox(
+                                                      data: data,
+                                                      keyDialog: keyDialog,
+                                                      modelDialog: modelDialog,
+                                                      api: api,
+                                                      chatIds: chatIds,
+                                                      chatScroller: scroller,
+                                                    ),
+                                                  ],
+                                                );
+                                              }
+                                              )))));
+                        });
+                  }
                 });
           }
         });

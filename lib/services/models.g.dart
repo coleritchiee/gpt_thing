@@ -9,15 +9,11 @@ part of 'models.dart';
 User _$UserFromJson(Map<String, dynamic> json) => User(
       uid: json['uid'] as String,
       name: json['name'] as String,
-      streamResponse: json['streamResponse'] as bool,
-      generateTitles: json['generateTitles'] as bool,
-      showSystemPrompt: json['showSystemPrompt'] as bool,
+      settings: UserSettings.fromJson(json['settings'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
       'uid': instance.uid,
       'name': instance.name,
-      'streamResponse': instance.streamResponse,
-      'generateTitles': instance.generateTitles,
-      'showSystemPrompt': instance.showSystemPrompt,
+      'settings': instance.settings.toJson(),
     };

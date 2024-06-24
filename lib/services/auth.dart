@@ -16,7 +16,7 @@ class AuthService {
   Future<void> anonLogin() async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance.signInAnonymously();
-      u.User? newUser = await FirestoreService().getUserfromId(userCredential.user!.uid);
+      u.User? newUser = await FirestoreService().getUserFromId(userCredential.user!.uid);
       FirestoreService().updateUser(newUser!);
         } on FirebaseAuthException {
       //handle error
@@ -25,13 +25,13 @@ class AuthService {
 
   Future<void> emailLogin(email, password) async{
     UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
-    u.User? newUser = await FirestoreService().getUserfromId(userCredential.user!.uid);
+    u.User? newUser = await FirestoreService().getUserFromId(userCredential.user!.uid);
     FirestoreService().updateUser(newUser!);
   }
 
   Future<void> emailSignup(email, password) async{
     UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
-    u.User? newUser = await FirestoreService().getUserfromId(userCredential.user!.uid);
+    u.User? newUser = await FirestoreService().getUserFromId(userCredential.user!.uid);
     FirestoreService().updateUser(newUser!);
   }
 
@@ -52,7 +52,7 @@ class AuthService {
       );
 
       UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(authCredential);
-      u.User? newUser = await FirestoreService().getUserfromId(userCredential.user!.uid);
+      u.User? newUser = await FirestoreService().getUserFromId(userCredential.user!.uid);
       FirestoreService().updateUser(newUser!);
     } on FirebaseAuthException catch (e) {
       print('Failed with error code: ${e.code}');
@@ -94,7 +94,7 @@ class AuthService {
     // Sign in the user with Firebase. If the nonce we generated earlier does
     // not match the nonce in `appleCredential.identityToken`, sign in will fail.
     UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(oauthCredential);
-    u.User? newUser = await FirestoreService().getUserfromId(userCredential.user!.uid);
+    u.User? newUser = await FirestoreService().getUserFromId(userCredential.user!.uid);
     FirestoreService().updateUser(newUser!);
     return userCredential;
   }

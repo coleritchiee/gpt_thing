@@ -7,7 +7,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/model_group.dart';
 import 'package:gpt_thing/home/user_settings.dart';
-import 'package:path/path.dart';
 import 'models.dart' as u;
 import '../home/chat_info.dart';
 import 'package:get_it/get_it.dart';
@@ -15,13 +14,13 @@ import 'package:get_it/get_it.dart';
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  Future<u.User?> getUserfromId(String uid) async{
+  Future<u.User?> getUserFromId(String uid) async{
     try {
       DocumentSnapshot userSnapshot = await _db.collection('users').doc(uid).get();
       return u.User.fromJson(userSnapshot.data() as Map<String, dynamic>);
     }
     catch(e){
-      return u.User(uid: uid, name: "", streamResponse: false, generateTitles: false, showSystemPrompt: false);
+      return u.User(uid: uid, name: "", settings: UserSettings.DEFAULT);
     }
   }
 
@@ -43,19 +42,6 @@ class FirestoreService {
       GetIt.I<u.User>().overwrite(user);
     }
     catch(e){}
-  }
-
-  Future<UserSettings> getSettings(String uid) async {
-    try {
-      final settings = (await FirebaseFirestore.instance.collection('users')
-          .doc(uid)
-          .get()).data()!['settings'];
-        final newSettings = UserSettings(streamResponse: false, generateTitles: false, showSystemPrompt: false);
-        //FirebaseFirestore.instance.collection('users').doc(uid).update({"settings": newSettings.toJson()});
-        return newSettings;
-    } catch (e) {
-      return await getSettings(uid);
-    }
   }
 
   Future<void> addChatInfoToUser(String userId, ChatInfo chatInfo) async {
