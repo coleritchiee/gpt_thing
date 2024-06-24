@@ -7,11 +7,24 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/model_group.dart';
 import 'package:gpt_thing/home/user_settings.dart';
-
+import 'package:gpt_thing/services/user_notifier.dart';
+import 'package:path/path.dart';
+import 'models.dart' as u;
 import '../home/chat_info.dart';
+import 'package:get_it/get_it.dart';
 
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
+
+  Future<u.User?> getUserfromId(String uid) async{
+    try {
+      DocumentSnapshot userSnapshot = await _db.collection('users').doc(uid).get();
+      return u.User.fromJson(userSnapshot.data() as Map<String, dynamic>);
+    }
+    catch(e){
+      return u.User(uid: uid, name: "", streamResponse: false, generateTitles: false, showSystemPrompt: false);
+    }
+  }
 
   Future<List<ChatInfo>> getChats(String uid) async {
     try {
@@ -25,15 +38,24 @@ class FirestoreService {
     }
   }
 
+  Future<void> updateUser(u.User user) async {
+    try{
+      print(user.name);
+      await _db.collection('users').doc(user.uid).set(user.toJson());
+      GetIt.I<UserNotifier>().updateUser(user);
+      print(GetIt.I<UserNotifier>().getUser().name);
+    }
+    catch(e){}
+  }
+
   Future<UserSettings> getSettings(String uid) async {
     try {
-      final settings = (await FirebaseFirestore.instance.collection('users').doc(uid).get()).data()!['settings'];
-      if (settings == null) {
-        final newSettings = UserSettings();
-        FirebaseFirestore.instance.collection('users').doc(uid).update({"settings": newSettings.toJson()});
+      final settings = (await FirebaseFirestore.instance.collection('users')
+          .doc(uid)
+          .get()).data()!['settings'];
+        final newSettings = UserSettings(streamResponse: false, generateTitles: false, showSystemPrompt: false);
+        //FirebaseFirestore.instance.collection('users').doc(uid).update({"settings": newSettings.toJson()});
         return newSettings;
-      }
-      return UserSettings.fromJson(settings);
     } catch (e) {
       return await getSettings(uid);
     }
