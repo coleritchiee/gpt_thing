@@ -9,7 +9,6 @@ import 'package:gpt_thing/home/key_set_dialog.dart';
 import 'package:gpt_thing/home/user_settings.dart';
 import 'package:gpt_thing/services/auth.dart';
 import 'package:gpt_thing/services/firestore.dart';
-import '../services/user_notifier.dart';
 import 'chat_info.dart';
 import 'package:gpt_thing/home/model_dialog.dart';
 import '../services/models.dart' as u;
@@ -26,7 +25,7 @@ class HomePage extends StatelessWidget {
     ScrollController scroller = ScrollController();
     KeySetDialog keyDialog = KeySetDialog(data: data, api: api);
     ModelDialog modelDialog = ModelDialog(data: data);
-    UserNotifier userNotifier = GetIt.I<UserNotifier>();
+    u.User user = GetIt.I<u.User>();
 
     bool linkHover = false;
 
@@ -179,11 +178,11 @@ class HomePage extends StatelessWidget {
                           ChatIdNotifier chatIds =
                               ChatIdNotifier(snapshot.data!);
                           return ListenableBuilder(
-                              listenable: userNotifier,
+                              listenable: user,
                               builder: (context, snapshot) {
                               return Scaffold(
                                   appBar: AppBar(
-                                    title: Text("GPT Thing ${userNotifier.getUser().name}"),
+                                    title: Text("GPT Thing ${user.name}"),
                                     forceMaterialTransparency: true,
                                   ),
                                   drawer: HomeDrawer(

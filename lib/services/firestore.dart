@@ -7,7 +7,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/model_group.dart';
 import 'package:gpt_thing/home/user_settings.dart';
-import 'package:gpt_thing/services/user_notifier.dart';
 import 'package:path/path.dart';
 import 'models.dart' as u;
 import '../home/chat_info.dart';
@@ -40,10 +39,8 @@ class FirestoreService {
 
   Future<void> updateUser(u.User user) async {
     try{
-      print(user.name);
       await _db.collection('users').doc(user.uid).set(user.toJson());
-      GetIt.I<UserNotifier>().updateUser(user);
-      print(GetIt.I<UserNotifier>().getUser().name);
+      GetIt.I<u.User>().overwrite(user);
     }
     catch(e){}
   }
