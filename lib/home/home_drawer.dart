@@ -21,7 +21,7 @@ class HomeDrawer extends StatelessWidget {
       required this.onIdClick,
       required this.onLogoutClick,
       required this.keyDialog,
-        required this.onDelete});
+      required this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +64,8 @@ class HomeDrawer extends StatelessWidget {
                   return ListView.separated(
                     padding: EdgeInsets.zero,
                     itemCount: ids.size(),
-                    separatorBuilder: (context, index) => const Divider(height: 1),
+                    separatorBuilder: (context, index) =>
+                        const Divider(height: 1),
                     itemBuilder: (context, index) {
                       return Material(
                         color: Colors.transparent,
@@ -167,33 +168,25 @@ class HomeDrawer extends StatelessWidget {
                     }
                   },
                 ),
-                StatefulBuilder(builder: (context, setState) {
-                  return Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: ListTile(
-                      title: const Text('Set API Key'),
-                      titleTextStyle:
-                          Theme.of(context).textTheme.bodySmall,
-                      leading: const Icon(Icons.key_rounded),
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(5),
-                        ),
+                Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: ListTile(
+                    title: const Text('Set API Key'),
+                    titleTextStyle: Theme.of(context).textTheme.bodySmall,
+                    leading: const Icon(Icons.key_rounded),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(5),
                       ),
-                      tileColor: keyDialog.data.keyIsSet()
-                          ? null
-                          : Colors.blue[800],
-                      onTap: () {
-                        showDialog(
-                                context: context,
-                                builder: keyDialog.build)
-                            .then((value) {
-                          setState(() {}); // has to be done in this order
-                        });
-                      },
                     ),
-                  );
-                }),
+                    tileColor:
+                        keyDialog.data.keyIsSet() ? null : Colors.blue[800],
+                    onTap: () {
+                      Navigator.pop(context);
+                      showDialog(context: context, builder: keyDialog.build);
+                    },
+                  ),
+                ),
                 Padding(
                   padding: const EdgeInsets.all(4.0),
                   child: ListTile(
