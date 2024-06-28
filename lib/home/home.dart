@@ -194,32 +194,34 @@ class HomePage extends StatelessWidget {
                           },
                           keyDialog: keyDialog,
                         ),
-                        body: Center(
-                            child: Padding(
-                                padding: const EdgeInsets.all(4),
-                                child: ConstrainedBox(
-                                    constraints: const BoxConstraints(
-                                      maxWidth: 768,
-                                    ),
-                                    child: ListenableBuilder(
-                                        listenable: data,
-                                        builder: (context, child) {
-                                          return Column(
-                                            children: [
-                                              ChatWindow(
+                        body: SafeArea(
+                          child: Center(
+                              child: Padding(
+                                  padding: const EdgeInsets.all(4),
+                                  child: ConstrainedBox(
+                                      constraints: const BoxConstraints(
+                                        maxWidth: 768,
+                                      ),
+                                      child: ListenableBuilder(
+                                          listenable: data,
+                                          builder: (context, child) {
+                                            return Column(
+                                              children: [
+                                                ChatWindow(
+                                                    data: data,
+                                                    scroller: scroller),
+                                                MessageBox(
                                                   data: data,
-                                                  scroller: scroller),
-                                              MessageBox(
-                                                data: data,
-                                                keyDialog: keyDialog,
-                                                modelDialog: modelDialog,
-                                                api: api,
-                                                chatIds: chatIds,
-                                                chatScroller: scroller,
-                                              ),
-                                            ],
-                                          );
-                                        })))));
+                                                  keyDialog: keyDialog,
+                                                  modelDialog: modelDialog,
+                                                  api: api,
+                                                  chatIds: chatIds,
+                                                  chatScroller: scroller,
+                                                ),
+                                              ],
+                                            );
+                                          })))),
+                        ));
                   }
                 });
           }
