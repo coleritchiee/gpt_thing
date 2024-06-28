@@ -94,6 +94,7 @@ class ModelDialog extends StatelessWidget {
                           maxHeight: 300,
                         ),
                         child: ListView(
+                          padding: EdgeInsets.zero,
                           children: data.models.where((model) {
                             if (model.group == filter && model.preview) {
                               hasPreviews = true;

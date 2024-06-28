@@ -61,6 +61,7 @@ class _ChatWindowState extends State<ChatWindow> {
 
     return Expanded(
       child: ListView(
+        padding: EdgeInsets.zero,
         physics: const AlwaysScrollableScrollPhysics(),
         controller: widget.scroller,
         reverse: true,

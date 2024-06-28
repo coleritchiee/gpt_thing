@@ -62,6 +62,7 @@ class HomeDrawer extends StatelessWidget {
                 listenable: ids,
                 builder: (context, snapshot) {
                   return ListView.separated(
+                    padding: EdgeInsets.zero,
                     itemCount: ids.size(),
                     separatorBuilder: (context, index) => const Divider(height: 1),
                     itemBuilder: (context, index) {
