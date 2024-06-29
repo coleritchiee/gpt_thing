@@ -78,7 +78,9 @@ class _MessageBoxState extends State<MessageBox> {
             widget.data.addMessage(OpenAIChatMessageRole.assistant, response);
             if (widget.data.id == "") {
               ChatInfo info = ChatInfo(
-                  id: widget.data.id, title: widget.data.firstUserMessage(), date: DateTime.now());
+                  id: widget.data.id,
+                  title: widget.data.firstUserMessage(),
+                  date: DateTime.now());
               widget.data
                   .overwrite(FirestoreService().updateChat(widget.data, info));
               widget.chatIds.addInfo(info);
@@ -119,16 +121,17 @@ class _MessageBoxState extends State<MessageBox> {
         );
         if (widget.data.id == "") {
           ChatInfo info = ChatInfo(
-              id: widget.data.id, title: widget.data.firstUserMessage(), date: DateTime.now());
-          widget.data.overwrite(
-              FirestoreService().updateChat(widget.data, info));
+              id: widget.data.id,
+              title: widget.data.firstUserMessage(),
+              date: DateTime.now());
+          widget.data
+              .overwrite(FirestoreService().updateChat(widget.data, info));
           widget.chatIds.addInfo(info);
         }
-        String firebaseUrl = await FirestoreService().uploadImageToStorageFromLink(response.data.first.b64Json!, widget.data.id);
-        widget.data.addImage(
-            OpenAIChatMessageRole.assistant,
-            firebaseUrl
-        );
+        String firebaseUrl = await FirestoreService()
+            .uploadImageToStorageFromLink(
+                response.data.first.b64Json!, widget.data.id);
+        widget.data.addImage(OpenAIChatMessageRole.assistant, firebaseUrl);
         ChatInfo info = widget.chatIds.getById(widget.data.id)!;
         widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
         widget.data.overwrite(FirestoreService().updateChat(widget.data, info));
