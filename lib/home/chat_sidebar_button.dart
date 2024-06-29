@@ -73,20 +73,24 @@ class _ChatSidebarButtonState extends State<ChatSidebarButton> {
   showOptionsMenu() {
     showModalBottomSheet(
         context: context,
+        shape: const LinearBorder(),
         builder: (context) {
           return SafeArea(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Text(widget.title, overflow: TextOverflow.ellipsis)),
                 ListTile(
-                  title: const Text('Rename'),
+                  title: const Text('Rename Chat'),
                   onTap: () {
                     Navigator.pop(context);
                     widget.onRename();
                   },
                 ),
                 ListTile(
-                  title: const Text('Delete'),
+                  title: const Text('Delete Chat'),
                   onTap: () {
                     Navigator.pop(context);
                     widget.onDelete();
