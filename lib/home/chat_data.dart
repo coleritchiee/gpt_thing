@@ -142,6 +142,12 @@ class ChatData extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addTokenUsage(int input, int output) {
+    inputTokens += input;
+    outputTokens += output;
+    notifyListeners();
+  }
+
   void addImage(OpenAIChatMessageRole role, String url) {
     messages.add(OpenAIChatCompletionChoiceMessageModel(
       role: role,
