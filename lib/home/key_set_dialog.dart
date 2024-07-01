@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gpt_thing/home/api_manager.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 
@@ -72,54 +73,97 @@ class KeySetDialog extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    "This is sensitive info, we know. Don't worry—we don't save any of it.",
+                    "This info isn't saved unless you allow it to be in Options.",
                     style: Theme.of(context).textTheme.labelSmall,
+                    textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 12),
-                  TextField(
-                      autofocus: true,
-                      focusNode: keyFocus,
-                      controller: keyController,
-                      decoration: InputDecoration(
-                        hintText: 'API Key',
-                        hintStyle: TextStyle(
-                          color: Colors.grey[500],
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey[800]!),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                              autofocus: true,
+                              focusNode: keyFocus,
+                              controller: keyController,
+                              decoration: const InputDecoration(
+                                hintText: 'API Key',
+                                hintStyle: TextStyle(
+                                  color: Colors.grey,
+                                ),
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.all(10),
+                              ),
+                              style: Theme.of(context).textTheme.bodySmall,
+                              onChanged: (text) {
+                                setState(() {});
+                              }, // make the button update
+                              onSubmitted:
+                                  keyController.text.isEmpty || isWaiting
+                                      ? null
+                                      : (text) {
+                                          setInfo();
+                                        }),
                         ),
-                        border: const OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(12),
-                          ),
+                        IconButton(
+                          icon: const Icon(Icons.paste_rounded),
+                          color: Colors.grey[600]!,
+                          onPressed: () async {
+                            final data =
+                                await Clipboard.getData(Clipboard.kTextPlain);
+                            setState(() {
+                              keyController.text = data!.text!;
+                            });
+                          },
                         ),
-                      ),
-                      style: Theme.of(context).textTheme.bodySmall,
-                      onChanged: (text) {
-                        setState(() {});
-                      }, // make the button update
-                      onSubmitted: keyController.text.isEmpty || isWaiting
-                          ? null
-                          : (text) {
-                              setInfo();
-                            }),
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 8),
-                  TextField(
-                      controller: orgController,
-                      decoration: InputDecoration(
-                        hintText: 'Organization (Optional)',
-                        hintStyle: TextStyle(
-                          color: Colors.grey[500],
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey[800]!),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                              controller: orgController,
+                              decoration: const InputDecoration(
+                                hintText: 'Organization (Optional)',
+                                hintStyle: TextStyle(
+                                  color: Colors.grey,
+                                ),
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.all(10),
+                              ),
+                              style: Theme.of(context).textTheme.bodySmall,
+                              onSubmitted:
+                                  keyController.text.isEmpty || isWaiting
+                                      ? null
+                                      : (text) {
+                                          setInfo();
+                                        }),
                         ),
-                        border: const OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(12),
-                          ),
+                        IconButton(
+                          icon: const Icon(Icons.paste_rounded),
+                          color: Colors.grey[600]!,
+                          onPressed: () async {
+                            final data =
+                                await Clipboard.getData(Clipboard.kTextPlain);
+                            setState(() {
+                              orgController.text = data!.text!;
+                            });
+                          },
                         ),
-                      ),
-                      style: Theme.of(context).textTheme.bodySmall,
-                      onSubmitted: keyController.text.isEmpty || isWaiting
-                          ? null
-                          : (text) {
-                              setInfo();
-                            }),
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 8),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -127,6 +171,7 @@ class KeySetDialog extends StatelessWidget {
                       TextButton(
                         onPressed: () {
                           Navigator.pop(context);
+                          ScaffoldMessenger.of(context).clearSnackBars();
                         },
                         child: const Text('Cancel'),
                       ),
