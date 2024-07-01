@@ -38,7 +38,6 @@ class _MessageBoxState extends State<MessageBox> {
   final sysController = TextEditingController();
   bool _isEmpty = true;
   bool _isWaiting = false;
-  bool _showSysPrompt = false;
 
   Future openKeySetDialog() {
     return showDialog(context: context, builder: widget.keyDialog.build);
@@ -157,7 +156,7 @@ class _MessageBoxState extends State<MessageBox> {
       openModelDialog();
       return;
     }
-    if (sysController.text.isNotEmpty && _showSysPrompt) {
+    if (sysController.text.isNotEmpty) {
       widget.data.addMessage(OpenAIChatMessageRole.system, sysController.text);
     }
     widget.data.addMessage(OpenAIChatMessageRole.user, msgController.text);
@@ -211,32 +210,6 @@ class _MessageBoxState extends State<MessageBox> {
     return Column(
       children: [
         if (widget.data.messages.isEmpty)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                "System Prompt",
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 12,
-                ),
-              ),
-              Checkbox(
-                onChanged: (value) {
-                  setState(() {
-                    _showSysPrompt = (value)!;
-                  });
-                },
-                value: _showSysPrompt,
-                side: BorderSide(
-                  color: (Colors.grey[500])!,
-                ),
-                activeColor: Colors.grey[500],
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-            ],
-          ),
-        if (widget.data.messages.isEmpty && _showSysPrompt)
           ConstrainedBox(
             constraints: const BoxConstraints(
               maxHeight: 215,
@@ -250,29 +223,27 @@ class _MessageBoxState extends State<MessageBox> {
                   Radius.circular(18),
                 ),
               ),
-              child: Expanded(
-                child: TextField(
-                    style: Theme.of(context).textTheme.bodySmall,
-                    maxLines: null,
-                    focusNode: sysFocusNode,
-                    controller: sysController,
-                    decoration: InputDecoration(
-                      hintText: 'System Prompt (Optional)',
-                      hintStyle: TextStyle(
-                        color: Colors.grey[500],
-                      ),
-                      contentPadding: const EdgeInsets.only(
-                        left: 22.0,
-                        right: 8.0,
-                        top: 12.0,
-                        bottom: 12.0,
-                      ),
-                      border: InputBorder.none,
-                    )),
-              ),
+              child: TextField(
+                  style: Theme.of(context).textTheme.bodySmall,
+                  maxLines: null,
+                  focusNode: sysFocusNode,
+                  controller: sysController,
+                  decoration: InputDecoration(
+                    hintText: 'System Prompt (Optional)',
+                    hintStyle: TextStyle(
+                      color: Colors.grey[500],
+                    ),
+                    contentPadding: const EdgeInsets.only(
+                      left: 22.0,
+                      right: 8.0,
+                      top: 12.0,
+                      bottom: 12.0,
+                    ),
+                    border: InputBorder.none,
+                  )),
             ),
           ),
-        if (widget.data.messages.isEmpty && _showSysPrompt)
+        if (widget.data.messages.isEmpty)
           const SizedBox(height: 8.0),
         ConstrainedBox(
           constraints: const BoxConstraints(
