@@ -334,80 +334,65 @@ class _MessageBoxState extends State<MessageBox> {
         SizedBox(
           height: 32,
           child: Padding(
-            padding: const EdgeInsets.only(
-              left: 8,
-              right: 8,
+            padding: const EdgeInsets.symmetric(
+              horizontal: 8,
+              vertical: 4,
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                if (!widget.data.keyIsSet())
-                  TextButton(
-                    onPressed: () {
-                      openKeySetDialog();
-                    },
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.fromLTRB(4, 10, 8, 10),
-                      minimumSize: Size.zero,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(8),
-                        ),
-                      ),
-                    ),
-                    child: Row(children: [
-                      Icon(
-                        Icons.close_rounded,
-                        color: Theme.of(context).colorScheme.primary,
-                        size: 20,
-                      ),
-                      Text(
-                        "API Key",
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.primary,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ]),
-                  )
-                else
-                  TextButton(
-                    onPressed: () {
-                      openKeySetDialog();
-                    },
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.fromLTRB(4, 10, 8, 10),
-                      minimumSize: Size.zero,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(8),
-                        ),
-                      ),
-                    ),
-                    child: const Row(children: [
-                      Icon(
-                        Icons.check_rounded,
-                        color: Colors.grey,
-                        size: 20,
-                      ),
-                      Text(
-                        "API Key",
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ]),
-                  ),
                 TextButton(
+                  // api key button
+                  onPressed: () {
+                    openKeySetDialog();
+                  },
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.only(
+                      left: 4,
+                      right: 8,
+                    ),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(8),
+                      ),
+                    ),
+                  ),
+                  child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        if (!widget.data.keyIsSet())
+                          Icon(
+                            Icons.close_rounded,
+                            color: Theme.of(context).colorScheme.primary,
+                            size: 20,
+                          )
+                        else
+                          const Icon(
+                            Icons.check_rounded,
+                            color: Colors.grey,
+                            size: 20,
+                          ),
+                        Text(
+                          "API Key",
+                          style: TextStyle(
+                            color: widget.data.keyIsSet()
+                                ? Colors.grey
+                                : Theme.of(context).colorScheme.primary,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ]),
+                ),
+                TextButton(
+                  // api key button
                   onPressed: widget.data.messages.isNotEmpty
                       ? null
                       : () {
                           openModelDialog();
                         },
                   style: TextButton.styleFrom(
-                    padding: const EdgeInsets.fromLTRB(8, 12, 8, 12),
-                    minimumSize: Size.zero,
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
                     shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(
                         Radius.circular(8),
