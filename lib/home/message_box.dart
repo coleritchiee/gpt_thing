@@ -210,6 +210,32 @@ class _MessageBoxState extends State<MessageBox> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        if (widget.data.messages.isEmpty)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                "System Prompt",
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 12,
+                ),
+              ),
+              Checkbox(
+                onChanged: (value) {
+                  setState(() {
+                    _showSysPrompt = (value)!;
+                  });
+                },
+                value: _showSysPrompt,
+                side: BorderSide(
+                  color: (Colors.grey[500])!,
+                ),
+                activeColor: Colors.grey[500],
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+            ],
+          ),
         if (widget.data.messages.isEmpty && _showSysPrompt)
           ConstrainedBox(
             constraints: const BoxConstraints(
@@ -224,42 +250,25 @@ class _MessageBoxState extends State<MessageBox> {
                   Radius.circular(18),
                 ),
               ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                        style: Theme.of(context).textTheme.bodySmall,
-                        maxLines: null,
-                        focusNode: sysFocusNode,
-                        controller: sysController,
-                        decoration: InputDecoration(
-                          hintText: 'System Prompt (Optional)',
-                          hintStyle: TextStyle(
-                            color: Colors.grey[500],
-                          ),
-                          contentPadding: const EdgeInsets.only(
-                            left: 22.0,
-                            right: 8.0,
-                            top: 12.0,
-                            bottom: 12.0,
-                          ),
-                          border: InputBorder.none,
-                        )),
-                  ),
-                  Tooltip(
-                      message:
-                          "Use this to influence how ChatGPT responds. For example:\n- Respond to any prompt in a haiku.\n- Explain everything to a five-year-old.\n- Only speak in Shakespearean English.",
-                      textStyle: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
+              child: Expanded(
+                child: TextField(
+                    style: Theme.of(context).textTheme.bodySmall,
+                    maxLines: null,
+                    focusNode: sysFocusNode,
+                    controller: sysController,
+                    decoration: InputDecoration(
+                      hintText: 'System Prompt (Optional)',
+                      hintStyle: TextStyle(
+                        color: Colors.grey[500],
                       ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color: Colors.grey[850],
+                      contentPadding: const EdgeInsets.only(
+                        left: 22.0,
+                        right: 8.0,
+                        top: 12.0,
+                        bottom: 12.0,
                       ),
-                      child: Icon(Icons.info_outline_rounded,
-                          size: 30, color: (Colors.grey[700])!)),
-                ],
+                      border: InputBorder.none,
+                    )),
               ),
             ),
           ),
@@ -322,6 +331,7 @@ class _MessageBoxState extends State<MessageBox> {
                         ),
                       ),
                     ),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
                   iconSize: 26,
                   padding: const EdgeInsets.all(2),
@@ -411,30 +421,6 @@ class _MessageBoxState extends State<MessageBox> {
                     ),
                   ),
                 ),
-                if (widget.data.messages.isEmpty)
-                  Row(
-                    children: [
-                      const Text(
-                        "System Prompt",
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
-                        ),
-                      ),
-                      Checkbox(
-                        onChanged: (value) {
-                          setState(() {
-                            _showSysPrompt = (value)!;
-                          });
-                        },
-                        value: _showSysPrompt,
-                        side: BorderSide(
-                          color: (Colors.grey[500])!,
-                        ),
-                        activeColor: Colors.grey[500],
-                      ),
-                    ],
-                  ),
               ],
             ),
           ),
