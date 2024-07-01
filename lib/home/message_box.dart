@@ -99,6 +99,7 @@ class _MessageBoxState extends State<MessageBox> {
         //     .chatPrompt(widget.data.messages, widget.data.model);
         // widget.data.addMessage(OpenAIChatMessageRole.assistant,
         //     (response.choices.first.message.content)!.first.text!);
+        // widget.data.addTokenUsage(response.usage.promptTokens, response.usage.completionTokens);
         // if (widget.data.id == "") {
         //   ChatInfo info = ChatInfo(
         //       id: widget.data.id, title: widget.data.id, date: DateTime.now());
