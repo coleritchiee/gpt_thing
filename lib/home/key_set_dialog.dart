@@ -73,7 +73,7 @@ class KeySetDialog extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    "This info isn't saved unless you allow it to be in Options.",
+                    "This info will not be saved.",
                     style: Theme.of(context).textTheme.labelSmall,
                     textAlign: TextAlign.center,
                   ),
@@ -109,16 +109,22 @@ class KeySetDialog extends StatelessWidget {
                                           setInfo();
                                         }),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.paste_rounded),
-                          color: Colors.grey[600]!,
-                          onPressed: () async {
-                            final data =
-                                await Clipboard.getData(Clipboard.kTextPlain);
-                            setState(() {
-                              keyController.text = data!.text!;
-                            });
-                          },
+                        Padding(
+                          padding: const EdgeInsets.all(4),
+                          child: IconButton(
+                            icon: const Icon(Icons.paste_rounded),
+                            color: Colors.grey[600]!,
+                            style: const ButtonStyle(
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            onPressed: () async {
+                              final data =
+                                  await Clipboard.getData(Clipboard.kTextPlain);
+                              setState(() {
+                                keyController.text = data!.text!;
+                              });
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -150,16 +156,22 @@ class KeySetDialog extends StatelessWidget {
                                           setInfo();
                                         }),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.paste_rounded),
-                          color: Colors.grey[600]!,
-                          onPressed: () async {
-                            final data =
-                                await Clipboard.getData(Clipboard.kTextPlain);
-                            setState(() {
-                              orgController.text = data!.text!;
-                            });
-                          },
+                        Padding(
+                          padding: const EdgeInsets.all(4),
+                          child: IconButton(
+                            icon: const Icon(Icons.paste_rounded),
+                            color: Colors.grey[600]!,
+                            style: const ButtonStyle(
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            onPressed: () async {
+                              final data =
+                                  await Clipboard.getData(Clipboard.kTextPlain);
+                              setState(() {
+                                orgController.text = data!.text!;
+                              });
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -173,6 +185,9 @@ class KeySetDialog extends StatelessWidget {
                           Navigator.pop(context);
                           ScaffoldMessenger.of(context).clearSnackBars();
                         },
+                        style: const ButtonStyle(
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
                         child: const Text('Cancel'),
                       ),
                       Row(
@@ -187,6 +202,9 @@ class KeySetDialog extends StatelessWidget {
                             onPressed: keyController.text.isEmpty || isWaiting
                                 ? null
                                 : setInfo,
+                            style: const ButtonStyle(
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
                             child: const Text('Submit'),
                           ),
                         ],
