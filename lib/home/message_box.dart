@@ -38,7 +38,6 @@ class _MessageBoxState extends State<MessageBox> {
   final sysController = TextEditingController();
   bool _isEmpty = true;
   bool _isWaiting = false;
-  bool _showSysPrompt = false;
 
   Future openKeySetDialog() {
     return showDialog(context: context, builder: widget.keyDialog.build);
@@ -78,7 +77,9 @@ class _MessageBoxState extends State<MessageBox> {
             widget.data.addMessage(OpenAIChatMessageRole.assistant, response);
             if (widget.data.id == "") {
               ChatInfo info = ChatInfo(
-                  id: widget.data.id, title: widget.data.firstUserMessage(), date: DateTime.now());
+                  id: widget.data.id,
+                  title: widget.data.firstUserMessage(),
+                  date: DateTime.now());
               widget.data
                   .overwrite(FirestoreService().updateChat(widget.data, info));
               widget.chatIds.addInfo(info);
@@ -120,16 +121,17 @@ class _MessageBoxState extends State<MessageBox> {
         );
         if (widget.data.id == "") {
           ChatInfo info = ChatInfo(
-              id: widget.data.id, title: widget.data.firstUserMessage(), date: DateTime.now());
-          widget.data.overwrite(
-              FirestoreService().updateChat(widget.data, info));
+              id: widget.data.id,
+              title: widget.data.firstUserMessage(),
+              date: DateTime.now());
+          widget.data
+              .overwrite(FirestoreService().updateChat(widget.data, info));
           widget.chatIds.addInfo(info);
         }
-        String firebaseUrl = await FirestoreService().uploadImageToStorageFromLink(response.data.first.b64Json!, widget.data.id);
-        widget.data.addImage(
-            OpenAIChatMessageRole.assistant,
-            firebaseUrl
-        );
+        String firebaseUrl = await FirestoreService()
+            .uploadImageToStorageFromLink(
+                response.data.first.b64Json!, widget.data.id);
+        widget.data.addImage(OpenAIChatMessageRole.assistant, firebaseUrl);
         ChatInfo info = widget.chatIds.getById(widget.data.id)!;
         widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
         widget.data.overwrite(FirestoreService().updateChat(widget.data, info));
@@ -155,7 +157,7 @@ class _MessageBoxState extends State<MessageBox> {
       openModelDialog();
       return;
     }
-    if (sysController.text.isNotEmpty && _showSysPrompt) {
+    if (sysController.text.isNotEmpty) {
       widget.data.addMessage(OpenAIChatMessageRole.system, sysController.text);
     }
     widget.data.addMessage(OpenAIChatMessageRole.user, msgController.text);
@@ -208,7 +210,7 @@ class _MessageBoxState extends State<MessageBox> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (widget.data.messages.isEmpty && _showSysPrompt)
+        if (widget.data.messages.isEmpty)
           ConstrainedBox(
             constraints: const BoxConstraints(
               maxHeight: 215,
@@ -222,46 +224,27 @@ class _MessageBoxState extends State<MessageBox> {
                   Radius.circular(18),
                 ),
               ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                        style: Theme.of(context).textTheme.bodySmall,
-                        maxLines: null,
-                        focusNode: sysFocusNode,
-                        controller: sysController,
-                        decoration: InputDecoration(
-                          hintText: 'System Prompt (Optional)',
-                          hintStyle: TextStyle(
-                            color: Colors.grey[500],
-                          ),
-                          contentPadding: const EdgeInsets.only(
-                            left: 22.0,
-                            right: 8.0,
-                            top: 12.0,
-                            bottom: 12.0,
-                          ),
-                          border: InputBorder.none,
-                        )),
-                  ),
-                  Tooltip(
-                      message:
-                          "Use this to influence how ChatGPT responds. For example:\n- Respond to any prompt in a haiku.\n- Explain everything to a five-year-old.\n- Only speak in Shakespearean English.",
-                      textStyle: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color: Colors.grey[850],
-                      ),
-                      child: Icon(Icons.info_outline_rounded,
-                          size: 30, color: (Colors.grey[700])!)),
-                ],
-              ),
+              child: TextField(
+                  style: Theme.of(context).textTheme.bodySmall,
+                  maxLines: null,
+                  focusNode: sysFocusNode,
+                  controller: sysController,
+                  decoration: InputDecoration(
+                    hintText: 'System Prompt (Optional)',
+                    hintStyle: TextStyle(
+                      color: Colors.grey[500],
+                    ),
+                    contentPadding: const EdgeInsets.only(
+                      left: 22.0,
+                      right: 8.0,
+                      top: 12.0,
+                      bottom: 12.0,
+                    ),
+                    border: InputBorder.none,
+                  )),
             ),
           ),
-        if (widget.data.messages.isEmpty && _showSysPrompt)
+        if (widget.data.messages.isEmpty)
           const SizedBox(height: 8.0),
         ConstrainedBox(
           constraints: const BoxConstraints(
@@ -320,6 +303,7 @@ class _MessageBoxState extends State<MessageBox> {
                         ),
                       ),
                     ),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
                   iconSize: 26,
                   padding: const EdgeInsets.all(2),
@@ -332,80 +316,65 @@ class _MessageBoxState extends State<MessageBox> {
         SizedBox(
           height: 32,
           child: Padding(
-            padding: const EdgeInsets.only(
-              left: 8,
-              right: 8,
+            padding: const EdgeInsets.symmetric(
+              horizontal: 8,
+              vertical: 4,
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                if (!widget.data.keyIsSet())
-                  TextButton(
-                    onPressed: () {
-                      openKeySetDialog();
-                    },
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.fromLTRB(4, 10, 8, 10),
-                      minimumSize: Size.zero,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(8),
-                        ),
-                      ),
-                    ),
-                    child: Row(children: [
-                      Icon(
-                        Icons.close_rounded,
-                        color: Theme.of(context).colorScheme.primary,
-                        size: 20,
-                      ),
-                      Text(
-                        "API Key",
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.primary,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ]),
-                  )
-                else
-                  TextButton(
-                    onPressed: () {
-                      openKeySetDialog();
-                    },
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.fromLTRB(4, 10, 8, 10),
-                      minimumSize: Size.zero,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(8),
-                        ),
-                      ),
-                    ),
-                    child: const Row(children: [
-                      Icon(
-                        Icons.check_rounded,
-                        color: Colors.grey,
-                        size: 20,
-                      ),
-                      Text(
-                        "API Key",
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ]),
-                  ),
                 TextButton(
+                  // api key button
+                  onPressed: () {
+                    openKeySetDialog();
+                  },
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.only(
+                      left: 4,
+                      right: 8,
+                    ),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(8),
+                      ),
+                    ),
+                  ),
+                  child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        if (!widget.data.keyIsSet())
+                          Icon(
+                            Icons.close_rounded,
+                            color: Theme.of(context).colorScheme.primary,
+                            size: 20,
+                          )
+                        else
+                          const Icon(
+                            Icons.check_rounded,
+                            color: Colors.grey,
+                            size: 20,
+                          ),
+                        Text(
+                          "API Key",
+                          style: TextStyle(
+                            color: widget.data.keyIsSet()
+                                ? Colors.grey
+                                : Theme.of(context).colorScheme.primary,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ]),
+                ),
+                TextButton(
+                  // api key button
                   onPressed: widget.data.messages.isNotEmpty
                       ? null
                       : () {
                           openModelDialog();
                         },
                   style: TextButton.styleFrom(
-                    padding: const EdgeInsets.fromLTRB(8, 12, 8, 12),
-                    minimumSize: Size.zero,
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
                     shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(
                         Radius.circular(8),
@@ -424,30 +393,6 @@ class _MessageBoxState extends State<MessageBox> {
                     ),
                   ),
                 ),
-                if (widget.data.messages.isEmpty)
-                  Row(
-                    children: [
-                      const Text(
-                        "System Prompt",
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
-                        ),
-                      ),
-                      Checkbox(
-                        onChanged: (value) {
-                          setState(() {
-                            _showSysPrompt = (value)!;
-                          });
-                        },
-                        value: _showSysPrompt,
-                        side: BorderSide(
-                          color: (Colors.grey[500])!,
-                        ),
-                        activeColor: Colors.grey[500],
-                      ),
-                    ],
-                  ),
               ],
             ),
           ),

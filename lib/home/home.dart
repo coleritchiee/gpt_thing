@@ -42,17 +42,9 @@ class HomePage extends StatelessWidget {
               ),
               drawer: HomeDrawer(
                 ids: ChatIdNotifier([]),
-                onNewChatClick: () {
-                  data.overwrite(ChatData());
-                },
-                onIdClick: (info) async {
-                  ChatData? newData =
-                      await FirestoreService().fetchChat(info.id);
-                  if (newData != null) {
-                    data.overwrite(newData);
-                  }
-                },
-                onDelete: (index){},
+                onNewChatClick: () {},
+                onIdClick: (info) {},
+                onDelete: (index) {},
                 onLogoutClick: () {},
                 keyDialog: keyDialog,
               ),
@@ -173,9 +165,15 @@ class HomePage extends StatelessWidget {
                         drawer: HomeDrawer(
                           ids: chatIds,
                           onNewChatClick: () {
+                            if (data.isThinking()) {
+                              return;
+                            }
                             data.overwrite(ChatData());
                           },
                           onIdClick: (info) async {
+                            if (data.isThinking()) {
+                              return;
+                            }
                             ChatData? newData =
                                 await FirestoreService().fetchChat(info.id);
                             if (newData != null) {
@@ -194,32 +192,34 @@ class HomePage extends StatelessWidget {
                           },
                           keyDialog: keyDialog,
                         ),
-                        body: Center(
-                            child: Padding(
-                                padding: const EdgeInsets.all(4),
-                                child: ConstrainedBox(
-                                    constraints: const BoxConstraints(
-                                      maxWidth: 768,
-                                    ),
-                                    child: ListenableBuilder(
-                                        listenable: data,
-                                        builder: (context, child) {
-                                          return Column(
-                                            children: [
-                                              ChatWindow(
+                        body: SafeArea(
+                          child: Center(
+                              child: Padding(
+                                  padding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
+                                  child: ConstrainedBox(
+                                      constraints: const BoxConstraints(
+                                        maxWidth: 768,
+                                      ),
+                                      child: ListenableBuilder(
+                                          listenable: data,
+                                          builder: (context, child) {
+                                            return Column(
+                                              children: [
+                                                ChatWindow(
+                                                    data: data,
+                                                    scroller: scroller),
+                                                MessageBox(
                                                   data: data,
-                                                  scroller: scroller),
-                                              MessageBox(
-                                                data: data,
-                                                keyDialog: keyDialog,
-                                                modelDialog: modelDialog,
-                                                api: api,
-                                                chatIds: chatIds,
-                                                chatScroller: scroller,
-                                              ),
-                                            ],
-                                          );
-                                        })))));
+                                                  keyDialog: keyDialog,
+                                                  modelDialog: modelDialog,
+                                                  api: api,
+                                                  chatIds: chatIds,
+                                                  chatScroller: scroller,
+                                                ),
+                                              ],
+                                            );
+                                          })))),
+                        ));
                   }
                 });
           }
