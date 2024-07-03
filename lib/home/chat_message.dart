@@ -57,20 +57,46 @@ class ChatMessage extends StatelessWidget {
                 if (text.isNotEmpty)
                   SelectionArea(
                       child: Text(
-                          text)), // use SelectionArea to avoid multiple highlights
+                    text,
+                    textAlign: role == OpenAIChatMessageRole.user
+                        ? TextAlign.right
+                        : role == OpenAIChatMessageRole.system
+                            ? TextAlign.center
+                            : TextAlign.left,
+                  )), // use SelectionArea to avoid multiple highlights
                 if (imageUrl.isNotEmpty)
-                  CachedNetworkImage(
-                    imageUrl: imageUrl,
-                    placeholder: (context, url) => const Text(
-                      "Loading...",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey,
-                        fontStyle: FontStyle.italic,
+                  FractionallySizedBox(
+                    widthFactor: 0.7,
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          decoration: BoxDecoration(color: Colors.grey[900]!),
+                          child: CachedNetworkImage(
+                            imageUrl: imageUrl,
+                            placeholder: (context, url) => Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.image_rounded,
+                                    color: Colors.grey[700]),
+                                const Text(
+                                  "Loading image...",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey,
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            errorWidget: (context, url, error) => Center(
+                              child: Icon(Icons.error, color: Colors.red[200]!),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
                   ),
                 if (text.isEmpty && imageUrl.isEmpty)
                   const Text(
