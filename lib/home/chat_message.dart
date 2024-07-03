@@ -1,7 +1,14 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dart_openai/dart_openai.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:gal/gal.dart';
 import 'package:gpt_thing/home/model_group.dart';
+import 'package:universal_html/html.dart' as html;
 
 class ChatMessage extends StatelessWidget {
   const ChatMessage({
@@ -106,12 +113,67 @@ class ChatMessage extends StatelessWidget {
                       color: Colors.grey,
                       fontStyle: FontStyle.italic,
                     ),
-                  ),
+                  )
               ],
             ),
           ),
+          if (role == OpenAIChatMessageRole.assistant)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  if (text.isNotEmpty)
+                    ChatMessageButton(
+                        icon: const Icon(Icons.copy_rounded),
+                        function: () {
+                          Clipboard.setData(ClipboardData(text: text));
+                        }),
+                  if (imageUrl.isNotEmpty)
+                    ChatMessageButton(
+                      icon: const Icon(Icons.file_download_rounded),
+                      function: () {
+                        saveImage(imageUrl);
+                      },
+                    ),
+                ],
+              ),
+            ),
         ],
       ),
+    );
+  }
+}
+
+void saveImage(String url) async {
+  if (kIsWeb) {
+    html.AnchorElement anchor = html.AnchorElement(href: url);
+    anchor.download = url;
+    anchor.click();
+    anchor.remove();
+  } else {
+    final imagePath = '${Directory.systemTemp.path}/image.jpg';
+    await Dio().download(url, imagePath);
+    await Gal.putImage(imagePath);
+  }
+}
+
+class ChatMessageButton extends StatelessWidget {
+  const ChatMessageButton({
+    super.key,
+    required this.icon,
+    required this.function,
+  });
+
+  final Icon icon;
+  final Function() function;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: icon,
+      onPressed: function,
     );
   }
 }

@@ -57,5 +57,10 @@
 		</array>
 	</dict>
 	</array>
+
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Photo Library access is required to save generated images.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Photo Library access is required to save generated images.</string>
 </dict>
 </plist>
