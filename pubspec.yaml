@@ -59,6 +59,7 @@ dependencies:
   image_downloader:
     git:
       url: https://github.com/ko2ic/image_downloader
+  share_plus: ^9.0.0
 
 dev_dependencies:
   flutter_test:

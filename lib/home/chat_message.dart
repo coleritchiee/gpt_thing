@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:gal/gal.dart';
 import 'package:gpt_thing/home/model_group.dart';
 import 'package:image_downloader/image_downloader.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:universal_html/html.dart' as html;
 
 class ChatMessage extends StatelessWidget {
@@ -121,24 +122,36 @@ class ChatMessage extends StatelessWidget {
           if (role == OpenAIChatMessageRole.assistant)
             Align(
               alignment: Alignment.centerLeft,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  if (text.isNotEmpty)
-                    ChatMessageButton(
-                        icon: const Icon(Icons.copy_rounded),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    if (text.isNotEmpty)
+                      ChatMessageButton(
+                          icon: const Icon(Icons.copy_rounded),
+                          function: () {
+                            Clipboard.setData(ClipboardData(text: text));
+                          }),
+                    if (imageUrl.isNotEmpty)
+                      ChatMessageButton(
+                        icon: const Icon(Icons.file_download_rounded),
                         function: () {
-                          Clipboard.setData(ClipboardData(text: text));
-                        }),
-                  if (imageUrl.isNotEmpty)
-                    ChatMessageButton(
-                      icon: const Icon(Icons.file_download_rounded),
-                      function: () {
-                        saveImage(imageUrl);
-                      },
-                    ),
-                ],
+                          saveImage(imageUrl);
+                        },
+                      ),
+                    if (imageUrl.isNotEmpty && !kIsWeb)
+                      ChatMessageButton(
+                        icon: Platform.isAndroid
+                            ? const Icon(Icons.share_rounded)
+                            : const Icon(Icons.ios_share_rounded),
+                        function: () {
+                          shareImage(imageUrl);
+                        },
+                      ),
+                  ],
+                ),
               ),
             ),
         ],
@@ -164,6 +177,14 @@ void saveImage(String url) async {
   }
 }
 
+void shareImage(String url) async {
+  if (!kIsWeb) {
+    final imagePath = '${Directory.systemTemp.path}/image.png';
+    await Dio().download(url, imagePath);
+    Share.shareXFiles([XFile(imagePath)]);
+  }
+}
+
 class ChatMessageButton extends StatelessWidget {
   const ChatMessageButton({
     super.key,
@@ -179,6 +200,11 @@ class ChatMessageButton extends StatelessWidget {
     return IconButton(
       icon: icon,
       onPressed: function,
+      style: const ButtonStyle(
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
+      padding: const EdgeInsets.all(4),
+      constraints: const BoxConstraints(),
     );
   }
 }
