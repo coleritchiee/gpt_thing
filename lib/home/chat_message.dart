@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:gal/gal.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:gpt_thing/home/markdown_code.dart';
 import 'package:gpt_thing/home/model_group.dart';
 import 'package:image_downloader/image_downloader.dart';
 import 'package:share_plus/share_plus.dart';
@@ -72,6 +73,9 @@ class ChatMessage extends StatelessWidget {
                           ? MarkdownBody(
                               data: text,
                               styleSheet: gptStyle,
+                              builders: {
+                                'code': MarkdownCode(),
+                              }
                             )
                           : Text(
                               text,
@@ -212,11 +216,11 @@ final gptStyle = MarkdownStyleSheet(
     backgroundColor: Colors.grey.shade900,
   ),
   // codeblockAlign: null,
-  codeblockDecoration: BoxDecoration(
-    color: Colors.grey.shade900,
-    borderRadius: BorderRadius.circular(8),
-    border: Border.all(color: Colors.grey.shade800),
-  ),
+  // codeblockDecoration: BoxDecoration(
+  //   color: Colors.grey.shade900,
+  //   borderRadius: BorderRadius.circular(8),
+  //   border: Border.all(color: Colors.grey.shade800),
+  // ),
   // codeblockPadding: null,
   // del: null,
   // em: null,
