@@ -44,7 +44,7 @@ dependencies:
   google_sign_in: ^6.2.1
   rxdart: ^0.27.7
   json_annotation: ^4.9.0
-  flutter_markdown: ^0.7.1
+  flutter_markdown: ^0.7.3
   dart_openai: ^5.1.0
   font_awesome_flutter: ^10.6.0
   firebase_storage: ^11.7.7

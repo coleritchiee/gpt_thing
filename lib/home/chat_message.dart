@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dart_openai/dart_openai.dart';
@@ -6,7 +7,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:gal/gal.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:gpt_thing/home/model_group.dart';
 import 'package:image_downloader/image_downloader.dart';
 import 'package:share_plus/share_plus.dart';
@@ -65,14 +68,17 @@ class ChatMessage extends StatelessWidget {
               children: [
                 if (text.isNotEmpty)
                   SelectionArea(
-                      child: Text(
-                    text,
-                    textAlign: role == OpenAIChatMessageRole.user
-                        ? TextAlign.right
-                        : role == OpenAIChatMessageRole.system
-                            ? TextAlign.center
-                            : TextAlign.left,
-                  )), // use SelectionArea to avoid multiple highlights
+                      child: role == OpenAIChatMessageRole.assistant
+                          ? MarkdownBody(
+                              data: text,
+                              styleSheet: gptStyle,
+                            )
+                          : Text(
+                              text,
+                              textAlign: role == OpenAIChatMessageRole.user
+                                  ? TextAlign.right
+                                  : TextAlign.center,
+                            )), // use SelectionArea to avoid multiple highlights
                 if (imageUrl.isNotEmpty)
                   FractionallySizedBox(
                     widthFactor: 0.7,
@@ -184,6 +190,77 @@ void shareImage(String url) async {
     Share.shareXFiles([XFile(imagePath)]);
   }
 }
+
+final gptStyle = MarkdownStyleSheet(
+  // a: null,
+  // blockSpacing: null,
+  blockquote: null,
+  // blockquoteAlign: null,
+  blockquoteDecoration: BoxDecoration(
+      border: Border(
+          left: BorderSide(
+    color: Colors.grey.shade800,
+    width: 5,
+  ))),
+  blockquotePadding: const EdgeInsets.only(
+    left: 16,
+    top: 4,
+    bottom: 4,
+  ),
+  // checkbox: null,
+  code: GoogleFonts.robotoMono(
+    backgroundColor: Colors.grey.shade900,
+  ),
+  // codeblockAlign: null,
+  codeblockDecoration: BoxDecoration(
+    color: Colors.grey.shade900,
+    borderRadius: BorderRadius.circular(8),
+    border: Border.all(color: Colors.grey.shade800),
+  ),
+  // codeblockPadding: null,
+  // del: null,
+  // em: null,
+  // h1: null,
+  // h1Align: null,
+  // h1Padding: null,
+  // h2: null,
+  // h2Align: null,
+  // h2Padding: null,
+  // h3: null,
+  // h3Align: null,
+  // h3Padding: null,
+  // h4: null,
+  // h4Align: null,
+  // h4Padding: null,
+  // h5: null,
+  // h5Align: null,
+  // h5Padding: null,
+  // h6: null,
+  // h6Align: null,
+  // h6Padding: null,
+  // horizontalRuleDecoration: null,
+  // img: null,
+  // listBullet: null,
+  // listBulletPadding: null,
+  // listIndent: null,
+  // orderedListAlign: null,
+  // p: null,
+  // pPadding: null,
+  // strong: null,
+  // superscriptFontFeatureTag: null,
+  // tableBody: null,
+  // tableBorder: null,
+  // tableCellsDecoration: null,
+  // tableCellsPadding: null,
+  // tableColumnWidth: null,
+  // tableHead: null,
+  // tableHeadAlign: null,
+  // tablePadding: null,
+  // tableVerticalAlignment: null,
+  // textAlign: null,
+  // textScaler: null,
+  // unorderedListAlign: null,
+);
 
 class ChatMessageButton extends StatelessWidget {
   const ChatMessageButton({
