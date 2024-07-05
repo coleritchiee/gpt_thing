@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_highlighter/flutter_highlighter.dart';
@@ -55,31 +57,51 @@ class MarkdownCode extends MarkdownElementBuilder {
             ),
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-            if (language.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(8, 0, 4, 0),
-                child: Text(
-                  language,
-                  style: const TextStyle(
-                    color: Colors.grey,
-                    fontSize: 14,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                if (language.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 0, 4, 0),
+                    child: Text(
+                      language,
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 14,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            IconButton(
-              icon: const Icon(Icons.copy_rounded),
-              onPressed: () {
-                Clipboard.setData(ClipboardData(text: code));
-              },
-              color: Colors.grey,
-              iconSize: 20,
-              padding: const EdgeInsets.all(4),
-              constraints: const BoxConstraints(),
-            ),
-          ]),
+                StatefulBuilder(builder: (context, setState) {
+                  return MouseRegion(
+                    onEnter: (val) {
+                      setState(() {
+                        codeCopied = false;
+                      });
+                    },
+                    child: IconButton(
+                      icon: codeCopied
+                          ? const Icon(Icons.check_rounded)
+                          : const Icon(Icons.copy_rounded),
+                      tooltip: "Copy code",
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: code));
+                        setState(() {
+                          codeCopied = true;
+                          Timer(const Duration(seconds: 3), () {
+                            setState(() {
+                              codeCopied = false;
+                            });
+                          });
+                        });
+                      },
+                      color: Colors.grey,
+                      iconSize: 20,
+                      padding: const EdgeInsets.all(4),
+                      constraints: const BoxConstraints(),
+                    ),
+                  );
+                }),
+              ]),
         ],
       );
     }
