@@ -11,7 +11,6 @@ class MarkdownCode extends MarkdownElementBuilder {
       TextStyle? preferredStyle, TextStyle? parentStyle) {
     var language = '';
     var code = element.textContent.trim();
-    var mouseHover = false;
     var codeCopied = false;
 
     if (element.attributes['class'] != null) {
@@ -32,77 +31,57 @@ class MarkdownCode extends MarkdownElementBuilder {
       );
     } else {
       ScrollController scroller = ScrollController();
-      return StatefulBuilder(builder: (context, setState) {
-        return MouseRegion(
-          onEnter: (val) {
-            setState(() {
-              mouseHover = true;
-            });
-          },
-          onExit: (val) {
-            setState(() {
-              mouseHover = false;
-              codeCopied = false;
-            });
-          },
-          child: Stack(
-            alignment: Alignment.topRight,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: Scrollbar(
+              controller: scroller,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                controller: scroller,
+                child: HighlightView(
+                  code,
+                  language: language,
+                  theme: irBlackModifiedTheme,
+                  padding: const EdgeInsets.all(8),
+                  textStyle: GoogleFonts.robotoMono(),
                 ),
-                clipBehavior: Clip.antiAlias,
-                child: Scrollbar(
-                  controller: scroller,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    controller: scroller,
-                    child: HighlightView(
-                      code,
-                      language: language,
-                      theme: irBlackModifiedTheme,
-                      padding: const EdgeInsets.all(8),
-                      textStyle: GoogleFonts.robotoMono(),
-                    ),
+              ),
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+            if (language.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 4, 0),
+                child: Text(
+                  language,
+                  style: const TextStyle(
+                    color: Colors.grey,
+                    fontSize: 14,
                   ),
                 ),
               ),
-              if (mouseHover && codeCopied)
-                IconButton(
-                  icon: const Icon(Icons.check_rounded),
-                  onPressed: () {
-                    Clipboard.setData(ClipboardData(text: code));
-                  },
-                  color: Colors.grey,
-                )
-              else if (mouseHover)
-                IconButton(
-                  icon: const Icon(Icons.copy_rounded),
-                  onPressed: () {
-                    Clipboard.setData(ClipboardData(text: code));
-                    setState(() {
-                      codeCopied = true;
-                    });
-                  },
-                  color: Colors.grey,
-                )
-              else
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  child: Text(
-                    language,
-                    style: const TextStyle(
-                      color: Colors.grey,
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        );
-      });
+            IconButton(
+              icon: const Icon(Icons.copy_rounded),
+              onPressed: () {
+                Clipboard.setData(ClipboardData(text: code));
+              },
+              color: Colors.grey,
+              iconSize: 20,
+              padding: const EdgeInsets.all(4),
+              constraints: const BoxConstraints(),
+            ),
+          ]),
+        ],
+      );
     }
   }
 }
