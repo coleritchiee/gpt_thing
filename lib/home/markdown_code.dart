@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_highlighter/flutter_highlighter.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:gpt_thing/home/copy_button.dart';
+import 'package:gpt_thing/home/compact_icon_button.dart';
 import 'package:markdown/markdown.dart' as md;
 
 class MarkdownCode extends MarkdownElementBuilder {
@@ -86,27 +87,26 @@ class MarkdownCode extends MarkdownElementBuilder {
                         ),
                       ),
                     ),
-                  CopyButton(
-                    text: code,
+                  CompactIconButton(
+                    icon: const Icon(Icons.copy_rounded),
                     tooltip: "Copy code",
                     color: Colors.grey,
                     iconSize: 20,
+                    onPressed: () {
+                      Clipboard.setData(ClipboardData(text: code));
+                    },
                   ),
-                  IconButton(
+                  CompactIconButton(
                     icon: const Icon(Icons.wrap_text_rounded),
                     tooltip: "Wrap code",
                     color: Colors.grey,
                     iconSize: 20,
+                    showConfirm: false,
                     onPressed: () {
                       setState(() {
                         wrapCode = !wrapCode;
                       });
                     },
-                    padding: const EdgeInsets.all(4),
-                    constraints: const BoxConstraints(),
-                    style: const ButtonStyle(
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
                   ),
                 ]),
           ],

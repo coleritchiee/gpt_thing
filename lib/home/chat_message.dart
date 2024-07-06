@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:gal/gal.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:gpt_thing/home/copy_button.dart';
+import 'package:gpt_thing/home/compact_icon_button.dart';
 import 'package:gpt_thing/home/markdown_code.dart';
 import 'package:gpt_thing/home/model_group.dart';
 import 'package:share_plus/share_plus.dart';
@@ -138,23 +138,27 @@ class ChatMessage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     if (text.isNotEmpty)
-                      CopyButton(
-                        text: text,
+                      CompactIconButton(
+                        icon: const Icon(Icons.copy_rounded),
                         tooltip: "Copy message", 
+                        onPressed: () {
+                          Clipboard.setData(ClipboardData(text: text));
+                        },
                       ),
                     if (imageUrl.isNotEmpty)
-                      ChatMessageButton(
+                      CompactIconButton(
                         icon: const Icon(Icons.file_download_rounded),
-                        function: () {
+                        tooltip: "Save image",
+                        onPressed: () {
                           saveImage(imageUrl);
                         },
                       ),
                     if (imageUrl.isNotEmpty && !kIsWeb)
-                      ChatMessageButton(
+                      CompactIconButton(
                         icon: Platform.isAndroid
                             ? const Icon(Icons.share_rounded)
                             : const Icon(Icons.ios_share_rounded),
-                        function: () {
+                        onPressed: () {
                           shareImage(imageUrl);
                         },
                       ),
@@ -259,27 +263,3 @@ final gptStyle = MarkdownStyleSheet(
   // textScaler: null,
   // unorderedListAlign: null,
 );
-
-class ChatMessageButton extends StatelessWidget {
-  const ChatMessageButton({
-    super.key,
-    required this.icon,
-    required this.function,
-  });
-
-  final Icon icon;
-  final Function() function;
-
-  @override
-  Widget build(BuildContext context) {
-    return IconButton(
-      icon: icon,
-      onPressed: function,
-      style: const ButtonStyle(
-        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      ),
-      padding: const EdgeInsets.all(4),
-      constraints: const BoxConstraints(),
-    );
-  }
-}
