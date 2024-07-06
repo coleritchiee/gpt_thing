@@ -12,6 +12,8 @@ class MarkdownCode extends MarkdownElementBuilder {
     var language = '';
     var code = element.textContent.trim();
 
+    var wrapCode = false;
+
     if (element.attributes['class'] != null) {
       language = (element.attributes['class'] as String).substring(9);
     }
@@ -30,57 +32,86 @@ class MarkdownCode extends MarkdownElementBuilder {
       );
     } else {
       ScrollController scroller = ScrollController();
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              color: Colors.black,
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: Scrollbar(
-              controller: scroller,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                controller: scroller,
-                child: HighlightView(
-                  code,
-                  language: language,
-                  theme: irBlackModifiedTheme,
-                  padding: const EdgeInsets.all(8),
-                  textStyle: GoogleFonts.robotoMono(
-                    fontSize: MediaQuery.of(context).textScaler.scale(
-                        14), // must do this or it won't scale with mobile accessibility
-                  ),
-                ),
+      return StatefulBuilder(builder: (context, setState) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                color: Colors.black,
               ),
-            ),
-          ),
-          Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                if (language.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 0, 4, 0),
-                    child: Text(
-                      language,
-                      style: const TextStyle(
-                        color: Colors.grey,
-                        fontSize: 14,
+              clipBehavior: Clip.antiAlias,
+              child: wrapCode
+                  ? HighlightView(
+                      code,
+                      language: language,
+                      theme: irBlackModifiedTheme,
+                      padding: const EdgeInsets.all(8),
+                      textStyle: GoogleFonts.robotoMono(
+                        fontSize: MediaQuery.of(context).textScaler.scale(
+                            14), // must do this or it won't scale with mobile accessibility
+                      ),
+                    )
+                  : Scrollbar(
+                      controller: scroller,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        controller: scroller,
+                        child: HighlightView(
+                          code,
+                          language: language,
+                          theme: irBlackModifiedTheme,
+                          padding: const EdgeInsets.all(8),
+                          textStyle: GoogleFonts.robotoMono(
+                            fontSize: MediaQuery.of(context).textScaler.scale(
+                                14), // must do this or it won't scale with mobile accessibility
+                          ),
+                        ),
                       ),
                     ),
+            ),
+            Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  if (language.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 0, 4, 0),
+                      child: Text(
+                        language,
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  CopyButton(
+                    text: code,
+                    tooltip: "Copy code",
+                    color: Colors.grey,
+                    iconSize: 20,
                   ),
-                CopyButton(
-                  text: code,
-                  tooltip: "Copy code",
-                  color: Colors.grey,
-                  iconSize: 20,
-                ),
-              ]),
-        ],
-      );
+                  IconButton(
+                    icon: const Icon(Icons.wrap_text_rounded),
+                    tooltip: "Wrap code",
+                    color: Colors.grey,
+                    iconSize: 20,
+                    onPressed: () {
+                      setState(() {
+                        wrapCode = !wrapCode;
+                      });
+                    },
+                    padding: const EdgeInsets.all(4),
+                    constraints: const BoxConstraints(),
+                    style: const ButtonStyle(
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                  ),
+                ]),
+          ],
+        );
+      });
     }
   }
 }
