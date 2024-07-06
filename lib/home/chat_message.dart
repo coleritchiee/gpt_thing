@@ -15,21 +15,32 @@ import 'package:gpt_thing/home/model_group.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:universal_html/html.dart' as html;
 
-class ChatMessage extends StatelessWidget {
+class ChatMessage extends StatefulWidget {
   const ChatMessage({
     super.key,
     required this.role,
     required this.modelGroup,
     this.text = "",
     this.imageUrl = "",
-    this.blink = false,
   });
 
   final OpenAIChatMessageRole role;
   final ModelGroup modelGroup;
   final String text;
   final String imageUrl;
-  final bool blink;
+
+  @override
+  State<ChatMessage> createState() => _ChatMessageState();
+}
+
+class _ChatMessageState extends State<ChatMessage> {
+  late bool markdown;
+
+  @override
+  void initState() {
+    super.initState();
+    markdown = true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,19 +49,19 @@ class ChatMessage extends StatelessWidget {
       child: Column(
         children: [
           Align(
-            alignment: role == OpenAIChatMessageRole.user
+            alignment: widget.role == OpenAIChatMessageRole.user
                 ? Alignment.centerRight
-                : role == OpenAIChatMessageRole.system
+                : widget.role == OpenAIChatMessageRole.system
                     ? Alignment.center
                     : Alignment.centerLeft,
             child: Text(
-              role == OpenAIChatMessageRole.user
+              widget.role == OpenAIChatMessageRole.user
                   ? "You"
-                  : role == OpenAIChatMessageRole.system
+                  : widget.role == OpenAIChatMessageRole.system
                       ? "System"
-                      : modelGroup == ModelGroup.other
+                      : widget.modelGroup == ModelGroup.other
                           ? "Assistant"
-                          : modelGroup.name,
+                          : widget.modelGroup.name,
               style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
@@ -59,30 +70,34 @@ class ChatMessage extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Align(
-            alignment: role == OpenAIChatMessageRole.user
+            alignment: widget.role == OpenAIChatMessageRole.user
                 ? Alignment.centerRight
-                : role == OpenAIChatMessageRole.system
+                : widget.role == OpenAIChatMessageRole.system
                     ? Alignment.center
                     : Alignment.centerLeft,
             child: Column(
               children: [
-                if (text.isNotEmpty)
+                if (widget.text.isNotEmpty)
                   SelectionArea(
-                      child: role == OpenAIChatMessageRole.assistant
-                          ? MarkdownBody(
-                              data: text,
-                              styleSheet: gptStyle,
-                              builders: {
-                                'code': MarkdownCode(),
-                              }
-                            )
+                      child: widget.role == OpenAIChatMessageRole.assistant
+                          ? markdown
+                              ? MarkdownBody(
+                                  data: widget.text,
+                                  styleSheet: gptStyle,
+                                  builders: {
+                                      'code': MarkdownCode(),
+                                    })
+                              : Text(
+                                  widget.text,
+                                  textAlign: TextAlign.left,
+                                )
                           : Text(
-                              text,
-                              textAlign: role == OpenAIChatMessageRole.user
+                              widget.text,
+                              textAlign: widget.role == OpenAIChatMessageRole.user
                                   ? TextAlign.right
                                   : TextAlign.center,
                             )), // use SelectionArea to avoid multiple highlights
-                if (imageUrl.isNotEmpty)
+                if (widget.imageUrl.isNotEmpty)
                   FractionallySizedBox(
                     widthFactor: 0.7,
                     child: AspectRatio(
@@ -92,7 +107,7 @@ class ChatMessage extends StatelessWidget {
                         child: Container(
                           decoration: BoxDecoration(color: Colors.grey[900]!),
                           child: CachedNetworkImage(
-                            imageUrl: imageUrl,
+                            imageUrl: widget.imageUrl,
                             placeholder: (context, url) => Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -109,14 +124,15 @@ class ChatMessage extends StatelessWidget {
                               ],
                             ),
                             errorWidget: (context, url, error) => Center(
-                              child: Icon(Icons.error, color: Colors.red[200]!),
+                              child:
+                                  Icon(Icons.error, color: Colors.red[200]!),
                             ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                if (text.isEmpty && imageUrl.isEmpty)
+                if (widget.text.isEmpty && widget.imageUrl.isEmpty)
                   const Text(
                     "Thinking...",
                     style: TextStyle(
@@ -128,7 +144,7 @@ class ChatMessage extends StatelessWidget {
               ],
             ),
           ),
-          if (role == OpenAIChatMessageRole.assistant)
+          if (widget.role == OpenAIChatMessageRole.assistant)
             Align(
               alignment: Alignment.centerLeft,
               child: Padding(
@@ -137,29 +153,50 @@ class ChatMessage extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    if (text.isNotEmpty)
+                    if (widget.text.isNotEmpty)
                       CompactIconButton(
                         icon: const Icon(Icons.copy_rounded),
-                        tooltip: "Copy message", 
+                        tooltip: "Copy message",
                         onPressed: () {
-                          Clipboard.setData(ClipboardData(text: text));
+                          Clipboard.setData(ClipboardData(text: widget.text));
                         },
                       ),
-                    if (imageUrl.isNotEmpty)
+                    if (widget.text.isNotEmpty)
+                      if (markdown)
+                        CompactIconButton(
+                            icon: const Icon(Icons.code_off_rounded),
+                            tooltip: "View without formatting",
+                            showConfirm: false,
+                            onPressed: () {
+                              setState(() {
+                                markdown = false;
+                              });
+                            })
+                      else
+                        CompactIconButton(
+                            icon: const Icon(Icons.code_rounded),
+                            tooltip: "View with Markdown",
+                            showConfirm: false,
+                            onPressed: () {
+                              setState(() {
+                                markdown = true;
+                              });
+                            }),
+                    if (widget.imageUrl.isNotEmpty)
                       CompactIconButton(
                         icon: const Icon(Icons.file_download_rounded),
                         tooltip: "Save image",
                         onPressed: () {
-                          saveImage(imageUrl);
+                          saveImage(widget.imageUrl);
                         },
                       ),
-                    if (imageUrl.isNotEmpty && !kIsWeb)
+                    if (widget.imageUrl.isNotEmpty && !kIsWeb)
                       CompactIconButton(
                         icon: Platform.isAndroid
                             ? const Icon(Icons.share_rounded)
                             : const Icon(Icons.ios_share_rounded),
                         onPressed: () {
-                          shareImage(imageUrl);
+                          shareImage(widget.imageUrl);
                         },
                       ),
                   ],
