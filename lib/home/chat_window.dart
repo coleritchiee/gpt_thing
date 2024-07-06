@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -17,25 +15,7 @@ class ChatWindow extends StatefulWidget {
 }
 
 class _ChatWindowState extends State<ChatWindow> {
-  bool blink = true;
-  late Timer blinkTimer;
   final FocusNode nothing = FocusNode();
-
-  @override
-  void initState() {
-    super.initState();
-    blinkTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
-      setState(() {
-        blink = !blink;
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    blinkTimer.cancel();
-    super.dispose();
-  }
 
   void unfocus() {
     FocusScope.of(context).requestFocus(nothing);
@@ -43,7 +23,7 @@ class _ChatWindowState extends State<ChatWindow> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> messages = widget.data.messages.reversed.map((msg) {
+    final List<Widget> messages = widget.data.messages.map((msg) {
       return ChatMessage(
         role: msg.role,
         modelGroup: widget.data.modelGroup,
@@ -55,8 +35,7 @@ class _ChatWindowState extends State<ChatWindow> {
     }).toList();
 
     if (widget.data.isThinking()) {
-      messages.insert(
-        0,
+      messages.add(
         ChatMessage(
           role: OpenAIChatMessageRole.assistant,
           modelGroup: widget.data.modelGroup,
@@ -73,12 +52,14 @@ class _ChatWindowState extends State<ChatWindow> {
           }
           return true;
         },
-        child: ListView(
+        child: SingleChildScrollView(
           padding: EdgeInsets.zero,
           physics: const AlwaysScrollableScrollPhysics(),
           controller: widget.scroller,
           reverse: true,
-          children: messages,
+          child: Column(
+            children: messages,
+          )
         ),
       ),
     );
