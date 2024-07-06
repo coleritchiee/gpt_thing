@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:gal/gal.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:gpt_thing/home/chat_image.dart';
 import 'package:gpt_thing/home/compact_icon_button.dart';
 import 'package:gpt_thing/home/markdown_code.dart';
 import 'package:gpt_thing/home/model_group.dart';
@@ -98,40 +99,7 @@ class _ChatMessageState extends State<ChatMessage> {
                                   : TextAlign.center,
                             )), // use SelectionArea to avoid multiple highlights
                 if (widget.imageUrl.isNotEmpty)
-                  FractionallySizedBox(
-                    widthFactor: 0.7,
-                    child: AspectRatio(
-                      aspectRatio: 1,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Container(
-                          decoration: BoxDecoration(color: Colors.grey[900]!),
-                          child: CachedNetworkImage(
-                            imageUrl: widget.imageUrl,
-                            placeholder: (context, url) => Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.image_rounded,
-                                    color: Colors.grey[700]),
-                                const Text(
-                                  "Loading image...",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey,
-                                    fontStyle: FontStyle.italic,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            errorWidget: (context, url, error) => Center(
-                              child:
-                                  Icon(Icons.error, color: Colors.red[200]!),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                  ChatImage(imageUrl: widget.imageUrl),
                 if (widget.text.isEmpty && widget.imageUrl.isEmpty)
                   const Text(
                     "Thinking...",
