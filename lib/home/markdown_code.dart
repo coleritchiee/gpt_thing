@@ -36,6 +36,7 @@ class MarkdownCode extends MarkdownElementBuilder {
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
+              color: Colors.black,
             ),
             clipBehavior: Clip.antiAlias,
             child: Scrollbar(
@@ -48,7 +49,10 @@ class MarkdownCode extends MarkdownElementBuilder {
                   language: language,
                   theme: irBlackModifiedTheme,
                   padding: const EdgeInsets.all(8),
-                  textStyle: GoogleFonts.robotoMono(),
+                  textStyle: GoogleFonts.robotoMono(
+                    fontSize: MediaQuery.of(context).textScaler.scale(
+                        14), // must do this or it won't scale with mobile accessibility
+                  ),
                 ),
               ),
             ),

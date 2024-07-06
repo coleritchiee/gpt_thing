@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dart_openai/dart_openai.dart';
@@ -13,7 +12,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:gpt_thing/home/copy_button.dart';
 import 'package:gpt_thing/home/markdown_code.dart';
 import 'package:gpt_thing/home/model_group.dart';
-import 'package:image_downloader/image_downloader.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:universal_html/html.dart' as html;
 
@@ -171,19 +169,15 @@ class ChatMessage extends StatelessWidget {
 }
 
 void saveImage(String url) async {
-  // This is honestly a crazy solution, but its the only way for full quality images on
-  // each platform. I couldn't tell you why each package isn't consistent.
   if (kIsWeb) {
     html.AnchorElement anchor = html.AnchorElement(href: url);
     anchor.download = url;
     anchor.click();
     anchor.remove();
-  } else if (Platform.isAndroid) {
+  } else {
     final imagePath = '${Directory.systemTemp.path}/image.png';
     await Dio().download(url, imagePath);
     await Gal.putImage(imagePath);
-  } else if (Platform.isIOS) {
-    ImageDownloader.downloadImage(url);
   }
 }
 
