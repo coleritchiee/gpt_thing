@@ -1,10 +1,8 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_highlighter/flutter_highlighter.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:gpt_thing/home/copy_button.dart';
 import 'package:markdown/markdown.dart' as md;
 
 class MarkdownCode extends MarkdownElementBuilder {
@@ -13,7 +11,6 @@ class MarkdownCode extends MarkdownElementBuilder {
       TextStyle? preferredStyle, TextStyle? parentStyle) {
     var language = '';
     var code = element.textContent.trim();
-    var codeCopied = false;
 
     if (element.attributes['class'] != null) {
       language = (element.attributes['class'] as String).substring(9);
@@ -71,36 +68,12 @@ class MarkdownCode extends MarkdownElementBuilder {
                       ),
                     ),
                   ),
-                StatefulBuilder(builder: (context, setState) {
-                  return MouseRegion(
-                    onEnter: (val) {
-                      setState(() {
-                        codeCopied = false;
-                      });
-                    },
-                    child: IconButton(
-                      icon: codeCopied
-                          ? const Icon(Icons.check_rounded)
-                          : const Icon(Icons.copy_rounded),
-                      tooltip: "Copy code",
-                      onPressed: () {
-                        Clipboard.setData(ClipboardData(text: code));
-                        setState(() {
-                          codeCopied = true;
-                          Timer(const Duration(seconds: 3), () {
-                            setState(() {
-                              codeCopied = false;
-                            });
-                          });
-                        });
-                      },
-                      color: Colors.grey,
-                      iconSize: 20,
-                      padding: const EdgeInsets.all(4),
-                      constraints: const BoxConstraints(),
-                    ),
-                  );
-                }),
+                CopyButton(
+                  text: code,
+                  tooltip: "Copy code",
+                  color: Colors.grey,
+                  iconSize: 20,
+                ),
               ]),
         ],
       );

@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:gal/gal.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:gpt_thing/home/copy_button.dart';
 import 'package:gpt_thing/home/markdown_code.dart';
 import 'package:gpt_thing/home/model_group.dart';
 import 'package:image_downloader/image_downloader.dart';
@@ -139,11 +140,10 @@ class ChatMessage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     if (text.isNotEmpty)
-                      ChatMessageButton(
-                          icon: const Icon(Icons.copy_rounded),
-                          function: () {
-                            Clipboard.setData(ClipboardData(text: text));
-                          }),
+                      CopyButton(
+                        text: text,
+                        tooltip: "Copy message", 
+                      ),
                     if (imageUrl.isNotEmpty)
                       ChatMessageButton(
                         icon: const Icon(Icons.file_download_rounded),
