@@ -21,26 +21,35 @@ class ChatImage extends StatelessWidget {
             decoration: BoxDecoration(color: Colors.grey[900]!),
             child: CachedNetworkImage(
               imageUrl: imageUrl,
-              placeholder: (context, url) => Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.image_rounded,
-                      color: Colors.grey[700]),
-                  const Text(
-                    "Loading image...",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                      fontStyle: FontStyle.italic,
+              progressIndicatorBuilder: (context, url, downloadProgress) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.image_rounded, color: Colors.grey[700]),
+                    const Text(
+                      "Loading image...",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                        fontStyle: FontStyle.italic,
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    SizedBox(
+                      width: 100,
+                      child: LinearProgressIndicator(
+                        value: downloadProgress.progress,
+                      ),
+                    ),
+                  ],
+                );
+              },
               errorWidget: (context, url, error) => Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error_outline_rounded,
-                      color: Colors.grey[700]),
+                  Icon(Icons.image_not_supported_rounded, color: Colors.grey[700]),
                   const Text(
                     "Something went wrong.",
                     style: TextStyle(
@@ -51,6 +60,7 @@ class ChatImage extends StatelessWidget {
                   ),
                 ],
               ),
+              fadeOutDuration: Duration.zero,
             ),
           ),
         ),
