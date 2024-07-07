@@ -19,93 +19,129 @@ class ChatImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        FractionallySizedBox(
-          widthFactor: 0.6,
-          child: AspectRatio(
-            aspectRatio: 1,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Container(
-                decoration: BoxDecoration(color: Colors.grey[900]!),
-                child: CachedNetworkImage(
-                  imageUrl: imageUrl,
-                  progressIndicatorBuilder: (context, url, downloadProgress) {
-                    return Column(
+    if (imageUrl == "Generating...") {
+      return FractionallySizedBox(
+        widthFactor: 0.6,
+        child: AspectRatio(
+          aspectRatio: 1,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Container(
+              decoration: BoxDecoration(color: Colors.grey[900]!),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.image_rounded, color: Colors.grey[700]),
+                  const Text(
+                    "Generating...",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 6,
+                  ),
+                  const SizedBox(
+                    width: 100,
+                    child: LinearProgressIndicator(),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    } else {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FractionallySizedBox(
+            widthFactor: 0.6,
+            child: AspectRatio(
+              aspectRatio: 1,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Container(
+                  decoration: BoxDecoration(color: Colors.grey[900]!),
+                  child: CachedNetworkImage(
+                    imageUrl: imageUrl,
+                    progressIndicatorBuilder: (context, url, downloadProgress) {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.image_rounded, color: Colors.grey[700]),
+                          const Text(
+                            "Loading image...",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 6,
+                          ),
+                          SizedBox(
+                            width: 100,
+                            child: LinearProgressIndicator(
+                              value: downloadProgress.progress,
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                    errorWidget: (context, url, error) => Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.image_rounded, color: Colors.grey[700]),
+                        Icon(Icons.image_not_supported_rounded,
+                            color: Colors.grey[700]),
                         const Text(
-                          "Loading image...",
+                          "Image not found.",
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey,
                             fontStyle: FontStyle.italic,
                           ),
                         ),
-                        const SizedBox(
-                          height: 8,
-                        ),
-                        SizedBox(
-                          width: 100,
-                          child: LinearProgressIndicator(
-                            value: downloadProgress.progress,
-                          ),
-                        ),
                       ],
-                    );
-                  },
-                  errorWidget: (context, url, error) => Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.image_not_supported_rounded,
-                          color: Colors.grey[700]),
-                      const Text(
-                        "Image not found.",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    ],
+                    ),
+                    fadeOutDuration: Duration.zero,
                   ),
-                  fadeOutDuration: Duration.zero,
                 ),
               ),
             ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CompactIconButton(
-                icon: const Icon(Icons.file_download_rounded),
-                tooltip: "Save image",
-                onPressed: () {
-                  saveImage(imageUrl);
-                },
-              ),
-              if (!kIsWeb)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
                 CompactIconButton(
-                  icon: Platform.isAndroid
-                      ? const Icon(Icons.share_rounded)
-                      : const Icon(Icons.ios_share_rounded),
+                  icon: const Icon(Icons.file_download_rounded),
+                  tooltip: "Save image",
                   onPressed: () {
-                    shareImage(imageUrl);
+                    saveImage(imageUrl);
                   },
                 ),
-            ],
+                if (!kIsWeb)
+                  CompactIconButton(
+                    icon: Platform.isAndroid
+                        ? const Icon(Icons.share_rounded)
+                        : const Icon(Icons.ios_share_rounded),
+                    onPressed: () {
+                      shareImage(imageUrl);
+                    },
+                  ),
+              ],
+            ),
           ),
-        ),
-      ],
-    );
+        ],
+      );
+    }
   }
 }
 

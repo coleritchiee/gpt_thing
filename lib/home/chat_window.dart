@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/chat_message.dart';
+import 'package:gpt_thing/home/model_group.dart';
 
 class ChatWindow extends StatefulWidget {
   final ChatData data;
@@ -35,13 +36,23 @@ class _ChatWindowState extends State<ChatWindow> {
     }).toList();
 
     if (widget.data.isThinking()) {
-      messages.add(
-        ChatMessage(
-          role: OpenAIChatMessageRole.assistant,
-          modelGroup: widget.data.modelGroup,
-          text: widget.data.streamText,
-        ),
-      );
+      if (widget.data.modelGroup == ModelGroup.dalle) {
+        messages.add(
+          ChatMessage(
+            role: OpenAIChatMessageRole.assistant,
+            modelGroup: widget.data.modelGroup,
+            imageUrl: "Generating...",
+          ),
+        );
+      } else {
+        messages.add(
+          ChatMessage(
+            role: OpenAIChatMessageRole.assistant,
+            modelGroup: widget.data.modelGroup,
+            text: widget.data.streamText,
+          ),
+        );
+      }
     }
 
     return Expanded(
