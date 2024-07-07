@@ -1,19 +1,12 @@
-import 'dart:io';
-
 import 'package:dart_openai/dart_openai.dart';
-import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:gal/gal.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gpt_thing/home/chat_image.dart';
 import 'package:gpt_thing/home/compact_icon_button.dart';
 import 'package:gpt_thing/home/markdown_code.dart';
 import 'package:gpt_thing/home/model_group.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:universal_html/html.dart' as html;
 
 class ChatMessage extends StatefulWidget {
   const ChatMessage({
@@ -93,9 +86,10 @@ class _ChatMessageState extends State<ChatMessage> {
                                 )
                           : Text(
                               widget.text,
-                              textAlign: widget.role == OpenAIChatMessageRole.user
-                                  ? TextAlign.right
-                                  : TextAlign.center,
+                              textAlign:
+                                  widget.role == OpenAIChatMessageRole.user
+                                      ? TextAlign.right
+                                      : TextAlign.center,
                             )), // use SelectionArea to avoid multiple highlights
                 if (widget.imageUrl.isNotEmpty)
                   ChatImage(imageUrl: widget.imageUrl),
@@ -111,7 +105,8 @@ class _ChatMessageState extends State<ChatMessage> {
               ],
             ),
           ),
-          if (widget.role == OpenAIChatMessageRole.assistant)
+          if (widget.role == OpenAIChatMessageRole.assistant &&
+              widget.text.isNotEmpty)
             Align(
               alignment: Alignment.centerLeft,
               child: Padding(
@@ -120,52 +115,33 @@ class _ChatMessageState extends State<ChatMessage> {
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    if (widget.text.isNotEmpty)
+                    CompactIconButton(
+                      icon: const Icon(Icons.copy_rounded),
+                      tooltip: "Copy message",
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: widget.text));
+                      },
+                    ),
+                    if (markdown)
                       CompactIconButton(
-                        icon: const Icon(Icons.copy_rounded),
-                        tooltip: "Copy message",
-                        onPressed: () {
-                          Clipboard.setData(ClipboardData(text: widget.text));
-                        },
-                      ),
-                    if (widget.text.isNotEmpty)
-                      if (markdown)
-                        CompactIconButton(
-                            icon: const Icon(Icons.code_off_rounded),
-                            tooltip: "View without formatting",
-                            showConfirm: false,
-                            onPressed: () {
-                              setState(() {
-                                markdown = false;
-                              });
-                            })
-                      else
-                        CompactIconButton(
-                            icon: const Icon(Icons.code_rounded),
-                            tooltip: "View with Markdown",
-                            showConfirm: false,
-                            onPressed: () {
-                              setState(() {
-                                markdown = true;
-                              });
-                            }),
-                    if (widget.imageUrl.isNotEmpty)
+                          icon: const Icon(Icons.code_off_rounded),
+                          tooltip: "View without formatting",
+                          showConfirm: false,
+                          onPressed: () {
+                            setState(() {
+                              markdown = false;
+                            });
+                          })
+                    else
                       CompactIconButton(
-                        icon: const Icon(Icons.file_download_rounded),
-                        tooltip: "Save image",
-                        onPressed: () {
-                          saveImage(widget.imageUrl);
-                        },
-                      ),
-                    if (widget.imageUrl.isNotEmpty && !kIsWeb)
-                      CompactIconButton(
-                        icon: Platform.isAndroid
-                            ? const Icon(Icons.share_rounded)
-                            : const Icon(Icons.ios_share_rounded),
-                        onPressed: () {
-                          shareImage(widget.imageUrl);
-                        },
-                      ),
+                          icon: const Icon(Icons.code_rounded),
+                          tooltip: "View with Markdown",
+                          showConfirm: false,
+                          onPressed: () {
+                            setState(() {
+                              markdown = true;
+                            });
+                          }),
                   ],
                 ),
               ),
@@ -173,27 +149,6 @@ class _ChatMessageState extends State<ChatMessage> {
         ],
       ),
     );
-  }
-}
-
-void saveImage(String url) async {
-  if (kIsWeb) {
-    html.AnchorElement anchor = html.AnchorElement(href: url);
-    anchor.download = url;
-    anchor.click();
-    anchor.remove();
-  } else {
-    final imagePath = '${Directory.systemTemp.path}/image.png';
-    await Dio().download(url, imagePath);
-    await Gal.putImage(imagePath);
-  }
-}
-
-void shareImage(String url) async {
-  if (!kIsWeb) {
-    final imagePath = '${Directory.systemTemp.path}/image.png';
-    await Dio().download(url, imagePath);
-    Share.shareXFiles([XFile(imagePath)]);
   }
 }
 
