@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:gal/gal.dart';
 import 'package:gpt_thing/home/compact_icon_button.dart';
 import 'package:share_plus/share_plus.dart';
@@ -24,7 +24,7 @@ class ChatImage extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         FractionallySizedBox(
-          widthFactor: 0.7,
+          widthFactor: 0.6,
           child: AspectRatio(
             aspectRatio: 1,
             child: ClipRRect(
@@ -61,9 +61,10 @@ class ChatImage extends StatelessWidget {
                   errorWidget: (context, url, error) => Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.image_not_supported_rounded, color: Colors.grey[700]),
+                      Icon(Icons.image_not_supported_rounded,
+                          color: Colors.grey[700]),
                       const Text(
-                        "Something went wrong.",
+                        "Image not found.",
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey,
@@ -115,16 +116,15 @@ void saveImage(String url) async {
     anchor.click();
     anchor.remove();
   } else {
-    final imagePath = '${Directory.systemTemp.path}/image.png';
-    await Dio().download(url, imagePath);
-    await Gal.putImage(imagePath);
+    final file = await DefaultCacheManager().getSingleFile(url);
+    await Gal.putImageBytes(file.readAsBytesSync());
   }
 }
 
 void shareImage(String url) async {
   if (!kIsWeb) {
-    final imagePath = '${Directory.systemTemp.path}/image.png';
-    await Dio().download(url, imagePath);
-    Share.shareXFiles([XFile(imagePath)]);
+    final file = await DefaultCacheManager().getSingleFile(url);
+    await Share.shareXFiles(
+        [XFile.fromData(file.readAsBytesSync(), mimeType: "png")]);
   }
 }

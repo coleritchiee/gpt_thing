@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:gpt_thing/home/api_manager.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/chat_info.dart';
@@ -131,6 +134,11 @@ class _MessageBoxState extends State<MessageBox> {
         String firebaseUrl = await FirestoreService()
             .uploadImageToStorageFromLink(
                 response.data.first.b64Json!, widget.data.id);
+        // Put the image in the cache now, so you don't have to download it again later
+        // Also make sure to wait until it's done, otherwise it will be downloaded again
+        await DefaultCacheManager().putFile(
+            firebaseUrl, base64Decode(response.data.first.b64Json!),
+            fileExtension: "png");
         widget.data.addImage(OpenAIChatMessageRole.assistant, firebaseUrl);
         ChatInfo info = widget.chatIds.getById(widget.data.id)!;
         widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
@@ -244,8 +252,7 @@ class _MessageBoxState extends State<MessageBox> {
                   )),
             ),
           ),
-        if (widget.data.messages.isEmpty)
-          const SizedBox(height: 8.0),
+        if (widget.data.messages.isEmpty) const SizedBox(height: 8.0),
         ConstrainedBox(
           constraints: const BoxConstraints(
             maxHeight: 215,
