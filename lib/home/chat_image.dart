@@ -13,9 +13,11 @@ class ChatImage extends StatelessWidget {
   const ChatImage({
     super.key,
     required this.imageUrl,
+    this.altText,
   });
 
   final String imageUrl;
+  final String? altText;
 
   @override
   Widget build(BuildContext context) {
@@ -69,44 +71,59 @@ class ChatImage extends StatelessWidget {
                   child: CachedNetworkImage(
                     imageUrl: imageUrl,
                     progressIndicatorBuilder: (context, url, downloadProgress) {
-                      return Column(
+                      return Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.image_rounded, color: Colors.grey[700]),
+                            const Text(
+                              "Loading image...",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey,
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 6,
+                            ),
+                            SizedBox(
+                              width: 100,
+                              child: LinearProgressIndicator(
+                                value: downloadProgress.progress,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    errorWidget: (context, url, error) => Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.image_rounded, color: Colors.grey[700]),
+                          Icon(Icons.image_not_supported_rounded,
+                              color: Colors.grey[700]),
                           const Text(
-                            "Loading image...",
+                            "Image not found.",
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey,
                               fontStyle: FontStyle.italic,
                             ),
                           ),
-                          const SizedBox(
-                            height: 6,
-                          ),
-                          SizedBox(
-                            width: 100,
-                            child: LinearProgressIndicator(
-                              value: downloadProgress.progress,
+                          if (altText != null)
+                            Text(
+                              "Alt: ${altText!}",
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey,
+                                fontStyle: FontStyle.italic,
+                              ),
                             ),
-                          ),
                         ],
-                      );
-                    },
-                    errorWidget: (context, url, error) => Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.image_not_supported_rounded,
-                            color: Colors.grey[700]),
-                        const Text(
-                          "Image not found.",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey,
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                     fadeOutDuration: Duration.zero,
                   ),

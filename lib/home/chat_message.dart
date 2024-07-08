@@ -23,7 +23,7 @@ class ChatMessage extends StatefulWidget {
   final String imageUrl;
 
   @override
-  State<ChatMessage> createState() => _ChatMessageState();  
+  State<ChatMessage> createState() => _ChatMessageState();
 }
 
 class _ChatMessageState extends State<ChatMessage> {
@@ -77,6 +77,20 @@ class _ChatMessageState extends State<ChatMessage> {
                               ? MarkdownBody(
                                   data: widget.text,
                                   styleSheet: gptStyle,
+                                  imageBuilder: (uri, title, alt) {
+                                    return Padding(
+                                      padding: const EdgeInsets.only(top: 4),
+                                      child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Expanded(
+                                                child: ChatImage(
+                                                    imageUrl: uri.toString(),
+                                                    altText: alt)),
+                                          ]),
+                                    );
+                                  },
                                   builders: {
                                       'code': MarkdownCode(),
                                     })
@@ -119,7 +133,8 @@ class _ChatMessageState extends State<ChatMessage> {
                       icon: const Icon(Icons.copy_rounded),
                       tooltip: "Copy message",
                       onPressed: () async {
-                        await Clipboard.setData(ClipboardData(text: widget.text));
+                        await Clipboard.setData(
+                            ClipboardData(text: widget.text));
                         return true;
                       },
                     ),
