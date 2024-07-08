@@ -4,8 +4,8 @@ import 'package:gpt_thing/route.dart';
 import 'package:gpt_thing/services/models.dart';
 import 'package:gpt_thing/services/user_locator.dart';
 import 'package:gpt_thing/theme.dart';
-import 'firebase_options.dart';
-import 'home/home.dart';
+import 'package:gpt_thing/firebase_options.dart';
+import 'package:gpt_thing/home/home.dart';
 
 
 void main() {

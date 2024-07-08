@@ -46,16 +46,8 @@ class HomePage extends StatelessWidget {
               ),
               drawer: HomeDrawer(
                 ids: ChatIdNotifier([]),
-                onNewChatClick: () {
-                  data.overwrite(ChatData());
-                },
-                onIdClick: (info) async {
-                  ChatData? newData =
-                      await FirestoreService().fetchChat(info.id);
-                  if (newData != null) {
-                    data.overwrite(newData);
-                  }
-                },
+                onNewChatClick: () {},
+                onIdClick: (info) {},
                 onDelete: (index) {},
                 onLogoutClick: () {},
                 keyDialog: keyDialog,
@@ -201,6 +193,7 @@ class HomePage extends StatelessWidget {
                                 },
                                 onLogoutClick: () {
                                   AuthService().signOut();
+                                  user.overwrite(u.User.NOT_SIGNED_IN);
                                   data.overwrite(ChatData());
                                 },
                                 keyDialog: keyDialog,

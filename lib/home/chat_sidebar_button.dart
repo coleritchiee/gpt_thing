@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class ChatSidebarButton extends StatefulWidget {
   final String title;
@@ -7,12 +9,12 @@ class ChatSidebarButton extends StatefulWidget {
   final Function() onDelete;
 
   const ChatSidebarButton({
-    Key? key,
+    super.key,
     required this.title,
     required this.onRename,
     required this.onDelete,
     required this.onClick,
-  }) : super(key: key);
+  });
 
   @override
   _ChatSidebarButtonState createState() => _ChatSidebarButtonState();
@@ -58,7 +60,45 @@ class _ChatSidebarButtonState extends State<ChatSidebarButton> {
         onTap: () {
           widget.onClick();
         },
+        onLongPress: kIsWeb
+            ? null
+            : () {
+                HapticFeedback.mediumImpact();
+                showOptionsMenu();
+              },
       ),
     );
+  }
+
+  showOptionsMenu() {
+    showModalBottomSheet(
+        context: context,
+        shape: const LinearBorder(),
+        builder: (context) {
+          return SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Text(widget.title, overflow: TextOverflow.ellipsis)),
+                ListTile(
+                  title: const Text('Rename Chat'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    widget.onRename();
+                  },
+                ),
+                ListTile(
+                  title: const Text('Delete Chat'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    widget.onDelete();
+                  },
+                ),
+              ],
+            ),
+          );
+        });
   }
 }

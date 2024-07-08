@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dart_openai/dart_openai.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/chat_message.dart';
@@ -18,6 +19,7 @@ class ChatWindow extends StatefulWidget {
 class _ChatWindowState extends State<ChatWindow> {
   bool blink = true;
   late Timer blinkTimer;
+  final FocusNode nothing = FocusNode();
 
   @override
   void initState() {
@@ -33,6 +35,10 @@ class _ChatWindowState extends State<ChatWindow> {
   void dispose() {
     blinkTimer.cancel();
     super.dispose();
+  }
+
+  void unfocus() {
+    FocusScope.of(context).requestFocus(nothing);
   }
 
   @override
@@ -60,11 +66,20 @@ class _ChatWindowState extends State<ChatWindow> {
     }
 
     return Expanded(
-      child: ListView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        controller: widget.scroller,
-        reverse: true,
-        children: messages,
+      child: NotificationListener<ScrollNotification>(
+        onNotification: (notif) {
+          if (notif is ScrollStartNotification && !kIsWeb) {
+            unfocus();
+          }
+          return true;
+        },
+        child: ListView(
+          padding: EdgeInsets.zero,
+          physics: const AlwaysScrollableScrollPhysics(),
+          controller: widget.scroller,
+          reverse: true,
+          children: messages,
+        ),
       ),
     );
   }
