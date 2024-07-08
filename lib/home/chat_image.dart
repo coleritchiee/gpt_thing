@@ -184,10 +184,7 @@ class ChatImage extends StatelessWidget {
 
 Future<bool> saveImage(String url) async {
   if (kIsWeb) {
-    html.AnchorElement anchor = html.AnchorElement(href: url);
-    anchor.download = url;
-    anchor.click();
-    anchor.remove();
+    html.window.open(url, "image");
   } else {
     final file = await DefaultCacheManager().getSingleFile(url);
     try {
