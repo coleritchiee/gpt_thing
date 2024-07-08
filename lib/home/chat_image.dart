@@ -10,7 +10,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:universal_html/html.dart' as html;
 
 class ChatImage extends StatelessWidget {
-  const ChatImage({
+  ChatImage({
     super.key,
     required this.imageUrl,
     this.altText,
@@ -18,6 +18,8 @@ class ChatImage extends StatelessWidget {
 
   final String imageUrl;
   final String? altText;
+
+  final ValueNotifier<bool> imgLoaded = ValueNotifier(false);
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +72,14 @@ class ChatImage extends StatelessWidget {
                   decoration: BoxDecoration(color: Colors.grey[900]!),
                   child: CachedNetworkImage(
                     imageUrl: imageUrl,
+                    imageBuilder: (context, imageProvider) {
+                      if (!imgLoaded.value) {
+                        Future.delayed(Duration.zero, () {
+                          imgLoaded.value = true;
+                        });
+                      }
+                      return Image(image: imageProvider);
+                    },
                     progressIndicatorBuilder: (context, url, downloadProgress) {
                       return Padding(
                         padding: const EdgeInsets.all(8),
@@ -131,28 +141,37 @@ class ChatImage extends StatelessWidget {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CompactIconButton(
-                  icon: const Icon(Icons.file_download_rounded),
-                  tooltip: "Save image",
-                  showLoading: true,
-                  onPressed: () => saveImage(imageUrl),
-                ),
-                if (!kIsWeb)
-                  CompactIconButton(
-                    icon: Platform.isAndroid
-                        ? const Icon(Icons.share_rounded)
-                        : const Icon(Icons.ios_share_rounded),
-                    showLoading: true,
-                    onPressed: () => shareImage(imageUrl),
+          ListenableBuilder(
+            listenable: imgLoaded,
+            builder: (context, snapshot) {
+              if (imgLoaded.value) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CompactIconButton(
+                        icon: const Icon(Icons.file_download_rounded),
+                        tooltip: "Save image",
+                        showLoading: true,
+                        onPressed: () => saveImage(imageUrl),
+                      ),
+                      if (!kIsWeb)
+                        CompactIconButton(
+                          icon: Platform.isAndroid
+                              ? const Icon(Icons.share_rounded)
+                              : const Icon(Icons.ios_share_rounded),
+                          showLoading: true,
+                          onPressed: () => shareImage(imageUrl),
+                        ),
+                    ],
                   ),
-              ],
-            ),
+                );
+              } else {
+                return const SizedBox.shrink();
+              }
+            }
           ),
         ],
       );
