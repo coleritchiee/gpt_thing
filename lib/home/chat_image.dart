@@ -123,18 +123,16 @@ class ChatImage extends StatelessWidget {
                 CompactIconButton(
                   icon: const Icon(Icons.file_download_rounded),
                   tooltip: "Save image",
-                  onPressed: () {
-                    saveImage(imageUrl);
-                  },
+                  showLoading: true,
+                  onPressed: () => saveImage(imageUrl),
                 ),
                 if (!kIsWeb)
                   CompactIconButton(
                     icon: Platform.isAndroid
                         ? const Icon(Icons.share_rounded)
                         : const Icon(Icons.ios_share_rounded),
-                    onPressed: () {
-                      shareImage(imageUrl);
-                    },
+                    showLoading: true,
+                    onPressed: () => shareImage(imageUrl),
                   ),
               ],
             ),
@@ -145,7 +143,7 @@ class ChatImage extends StatelessWidget {
   }
 }
 
-void saveImage(String url) async {
+Future<bool> saveImage(String url) async {
   if (kIsWeb) {
     html.AnchorElement anchor = html.AnchorElement(href: url);
     anchor.download = url;
@@ -153,14 +151,22 @@ void saveImage(String url) async {
     anchor.remove();
   } else {
     final file = await DefaultCacheManager().getSingleFile(url);
-    await Gal.putImageBytes(file.readAsBytesSync());
+    try {
+      await Gal.putImageBytes(file.readAsBytesSync());
+    } catch (e) {
+      print(e);
+      return false;
+    }
   }
+  return true;
 }
 
-void shareImage(String url) async {
+Future<bool> shareImage(String url) async {
   if (!kIsWeb) {
     final file = await DefaultCacheManager().getSingleFile(url);
-    await Share.shareXFiles(
+    final result = await Share.shareXFiles(
         [XFile.fromData(file.readAsBytesSync(), mimeType: "png")]);
+    return result.status == ShareResultStatus.success;
   }
+  return false;
 }

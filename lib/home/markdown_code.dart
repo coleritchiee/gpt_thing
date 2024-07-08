@@ -92,8 +92,9 @@ class MarkdownCode extends MarkdownElementBuilder {
                     tooltip: "Copy code",
                     color: Colors.grey,
                     iconSize: 20,
-                    onPressed: () {
-                      Clipboard.setData(ClipboardData(text: code));
+                    onPressed: () async {
+                      await Clipboard.setData(ClipboardData(text: code));
+                      return true;
                     },
                   ),
                   CompactIconButton(
@@ -102,10 +103,11 @@ class MarkdownCode extends MarkdownElementBuilder {
                     color: Colors.grey,
                     iconSize: 20,
                     showConfirm: false,
-                    onPressed: () {
+                    onPressed: () async {
                       setState(() {
                         wrapCode = !wrapCode;
                       });
+                      return true;
                     },
                   ),
                 ]),

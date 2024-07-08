@@ -23,7 +23,7 @@ class ChatMessage extends StatefulWidget {
   final String imageUrl;
 
   @override
-  State<ChatMessage> createState() => _ChatMessageState();
+  State<ChatMessage> createState() => _ChatMessageState();  
 }
 
 class _ChatMessageState extends State<ChatMessage> {
@@ -118,8 +118,9 @@ class _ChatMessageState extends State<ChatMessage> {
                     CompactIconButton(
                       icon: const Icon(Icons.copy_rounded),
                       tooltip: "Copy message",
-                      onPressed: () {
-                        Clipboard.setData(ClipboardData(text: widget.text));
+                      onPressed: () async {
+                        await Clipboard.setData(ClipboardData(text: widget.text));
+                        return true;
                       },
                     ),
                     if (markdown)
@@ -127,20 +128,22 @@ class _ChatMessageState extends State<ChatMessage> {
                           icon: const Icon(Icons.code_off_rounded),
                           tooltip: "View without formatting",
                           showConfirm: false,
-                          onPressed: () {
+                          onPressed: () async {
                             setState(() {
                               markdown = false;
                             });
+                            return true;
                           })
                     else
                       CompactIconButton(
                           icon: const Icon(Icons.code_rounded),
                           tooltip: "View with Markdown",
                           showConfirm: false,
-                          onPressed: () {
+                          onPressed: () async {
                             setState(() {
                               markdown = true;
                             });
+                            return true;
                           }),
                   ],
                 ),
