@@ -10,7 +10,7 @@ class MarkdownCode extends MarkdownElementBuilder {
   @override
   Widget? visitElementAfterWithContext(BuildContext context, md.Element element,
       TextStyle? preferredStyle, TextStyle? parentStyle) {
-    var language = '';
+    var language = "";
     var code = element.textContent.trim();
 
     var wrapCode = false;
@@ -19,7 +19,7 @@ class MarkdownCode extends MarkdownElementBuilder {
       language = (element.attributes['class'] as String).substring(9);
     }
 
-    if (language == '' && !code.contains('\n')) {
+    if (language == "" && !code.contains('\n')) {
       return RichText(
         // must be RichText otherwise SelectionArea throws a fit
         text: TextSpan(
@@ -30,9 +30,14 @@ class MarkdownCode extends MarkdownElementBuilder {
             backgroundColor: Colors.black,
           ),
         ),
+        textScaler: MediaQuery.textScalerOf(context), // to scale with mobile accessibility
       );
     } else {
       ScrollController scroller = ScrollController();
+      if (language.isEmpty) {
+        language = "code";
+      }
+
       return StatefulBuilder(builder: (context, setState) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -51,7 +56,7 @@ class MarkdownCode extends MarkdownElementBuilder {
                       padding: const EdgeInsets.all(8),
                       textStyle: GoogleFonts.robotoMono(
                         fontSize: MediaQuery.of(context).textScaler.scale(
-                            14), // must do this or it won't scale with mobile accessibility
+                            14), // to scale with mobile accessibility
                       ),
                     )
                   : Scrollbar(

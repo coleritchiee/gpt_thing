@@ -2,7 +2,6 @@ import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:gpt_thing/home/chat_image.dart';
 import 'package:gpt_thing/home/compact_icon_button.dart';
 import 'package:gpt_thing/home/markdown_code.dart';
@@ -187,9 +186,9 @@ final gptStyle = MarkdownStyleSheet(
     bottom: 4,
   ),
   // checkbox: null,
-  code: GoogleFonts.robotoMono(
-    backgroundColor: Colors.grey.shade900,
-  ),
+  // code: GoogleFonts.robotoMono(
+  //   backgroundColor: Colors.grey.shade900,
+  // ),
   // codeblockAlign: null,
   // codeblockDecoration: BoxDecoration(
   //   color: Colors.grey.shade900,

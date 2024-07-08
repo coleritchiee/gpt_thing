@@ -126,6 +126,9 @@ class ChatImage extends StatelessWidget {
                           if (altText != null)
                             Text(
                               "Alt: ${altText!}",
+                              textAlign: TextAlign.center,
+                              maxLines: 5,
+                              overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: Colors.grey,
