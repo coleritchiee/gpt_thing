@@ -7,8 +7,8 @@ import 'package:gpt_thing/home/chat_image.dart';
 import 'package:gpt_thing/home/compact_icon_button.dart';
 import 'package:gpt_thing/home/markdown_code.dart';
 import 'package:gpt_thing/home/model_group.dart';
-import 'package:universal_html/html.dart' as html;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
 
 class ChatMessage extends StatefulWidget {
   const ChatMessage({
@@ -79,9 +79,17 @@ class _ChatMessageState extends State<ChatMessage> {
                               ? MarkdownBody(
                                   data: widget.text,
                                   styleSheet: gptStyle,
-                                  onTapLink: (text, href, title) {
+                                  onTapLink: (text, href, title) async {
                                     if (href != null) {
-                                      openLink(href);
+                                      if (!await openLink(href) && context.mounted) {
+                                        ScaffoldMessenger.of(context).clearSnackBars();
+                                        ScaffoldMessenger.of(context)
+                                           .showSnackBar(SnackBar(
+                                              content: Text(
+                                                "Invalid link: $href",
+                                              ),
+                                            ));
+                                      }
                                     }
                                   },
                                   imageBuilder: (uri, title, alt) {
@@ -177,11 +185,16 @@ class _ChatMessageState extends State<ChatMessage> {
   }
 }
 
-void openLink(String url) {
+Future<bool> openLink(String url) async {
   final uri = Uri.tryParse(url);
   if (uri != null) {
-    launchUrl(uri, mode: LaunchMode.platformDefault);
+    try {
+      return await launchUrl(uri);
+    } catch (e) {
+      return false;
+    }
   }
+  return false;
 }
 
 final gptStyle = MarkdownStyleSheet(
