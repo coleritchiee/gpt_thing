@@ -1,4 +1,5 @@
 import 'package:dart_openai/dart_openai.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -6,6 +7,8 @@ import 'package:gpt_thing/home/chat_image.dart';
 import 'package:gpt_thing/home/compact_icon_button.dart';
 import 'package:gpt_thing/home/markdown_code.dart';
 import 'package:gpt_thing/home/model_group.dart';
+import 'package:universal_html/html.dart' as html;
+import 'package:url_launcher/url_launcher.dart';
 
 class ChatMessage extends StatefulWidget {
   const ChatMessage({
@@ -76,6 +79,11 @@ class _ChatMessageState extends State<ChatMessage> {
                               ? MarkdownBody(
                                   data: widget.text,
                                   styleSheet: gptStyle,
+                                  onTapLink: (text, href, title) {
+                                    if (href != null) {
+                                      openLink(href);
+                                    }
+                                  },
                                   imageBuilder: (uri, title, alt) {
                                     return Padding(
                                       padding: const EdgeInsets.only(top: 4),
@@ -166,6 +174,13 @@ class _ChatMessageState extends State<ChatMessage> {
         ],
       ),
     );
+  }
+}
+
+void openLink(String url) {
+  final uri = Uri.tryParse(url);
+  if (uri != null) {
+    launchUrl(uri, mode: LaunchMode.platformDefault);
   }
 }
 

@@ -58,6 +58,7 @@ dependencies:
   share_plus: ^9.0.0
   flutter_highlighter: ^0.1.1
   flutter_cache_manager: ^3.3.2
+  url_launcher: ^6.3.0
 
 dev_dependencies:
   flutter_test:
