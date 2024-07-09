@@ -56,7 +56,10 @@ dependencies:
   universal_html: ^2.2.4
   gal: ^2.3.0
   share_plus: ^9.0.0
-  flutter_highlighter: ^0.1.1
+  flutter_highlight:
+    git:
+      url: https://github.com/NamanShergill/highlight.dart
+      path: flutter_highlight
   flutter_cache_manager: ^3.3.2
   url_launcher: ^6.3.0
 
