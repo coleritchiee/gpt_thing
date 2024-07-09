@@ -79,14 +79,16 @@ class _ChatMessageState extends State<ChatMessage> {
                                   styleSheet: gptStyle,
                                   onTapLink: (text, href, title) async {
                                     if (href != null) {
-                                      if (!await openLink(href) && context.mounted) {
-                                        ScaffoldMessenger.of(context).clearSnackBars();
+                                      if (!await openLink(href) &&
+                                          context.mounted) {
                                         ScaffoldMessenger.of(context)
-                                           .showSnackBar(SnackBar(
-                                              content: Text(
-                                                "Invalid link: $href",
-                                              ),
-                                            ));
+                                            .clearSnackBars();
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                          content: Text(
+                                            "Invalid link: $href",
+                                          ),
+                                        ));
                                       }
                                     }
                                   },
@@ -102,6 +104,16 @@ class _ChatMessageState extends State<ChatMessage> {
                                                     imageUrl: uri.toString(),
                                                     altText: alt)),
                                           ]),
+                                    );
+                                  },
+                                  checkboxBuilder: (isChecked) {
+                                    return Icon(
+                                      isChecked
+                                          ? Icons.check_box_rounded
+                                          : Icons
+                                              .check_box_outline_blank_rounded,
+                                      applyTextScaling: true,
+                                      size: 16
                                     );
                                   },
                                   builders: {
