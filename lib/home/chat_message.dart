@@ -1,5 +1,4 @@
 import 'package:dart_openai/dart_openai.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -8,7 +7,6 @@ import 'package:gpt_thing/home/compact_icon_button.dart';
 import 'package:gpt_thing/home/markdown_code.dart';
 import 'package:gpt_thing/home/model_group.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:http/http.dart' as http;
 
 class ChatMessage extends StatefulWidget {
   const ChatMessage({
@@ -244,7 +242,12 @@ final gptStyle = MarkdownStyleSheet(
   // h6: null,
   // h6Align: null,
   // h6Padding: null,
-  // horizontalRuleDecoration: null,
+  horizontalRuleDecoration: BoxDecoration(
+    border: Border.all(
+      color: Colors.grey.shade800,
+      width: 1,
+    ),
+  ),
   // img: null,
   // listBullet: null,
   // listBulletPadding: null,
