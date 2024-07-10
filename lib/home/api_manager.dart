@@ -7,7 +7,6 @@ class APIManager {
     return await OpenAI.instance.chat.create(
       model: model,
       messages: messages,
-      maxTokens: 1024,
     );
   }
 
@@ -16,7 +15,6 @@ class APIManager {
     return OpenAI.instance.chat.createStream(
         model: model,
         messages: messages,
-        maxTokens: 1024,
         streamOptions: {
           "include_usage": true,
         });
