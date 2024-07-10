@@ -30,7 +30,7 @@ class _ChatWindowState extends State<ChatWindow> {
         modelGroup: widget.data.modelGroup,
         text: msg.content!.first.text != null ? msg.content!.first.text! : "",
         imageUrl: msg.content!.first.imageUrl != null
-            ? msg.content!.first.imageUrl!
+            ? msg.content!.first.imageUrl!['url']
             : "",
       );
     }).toList();

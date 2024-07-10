@@ -117,7 +117,7 @@ class ChatData extends ChangeNotifier {
     if (delta.choices.first.delta.content != null) {
       if (delta.choices.first.delta.content!.first != null) {
         if (delta.choices.first.delta.content!.first!.text != null) {
-          // yes this is ugly but otherwise there's an error
+          // yes this is ugly but you have to check
           streamText += delta.choices.first.delta.content!.first!.text!;
           notifyListeners();
         }

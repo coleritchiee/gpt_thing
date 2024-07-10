@@ -252,10 +252,11 @@ packages:
   dart_openai:
     dependency: "direct main"
     description:
-      name: dart_openai
-      sha256: "853bb57fed6a71c3ba0324af5cb40c16d196cf3aa55b91d244964ae4a241ccf1"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: "218874fc8e0a2b4429e12183e0990c970b16b608"
+      url: "https://github.com/dominic-deantonio/openai"
+    source: git
     version: "5.1.0"
   dart_style:
     dependency: transitive

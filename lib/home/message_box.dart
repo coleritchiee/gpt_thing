@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:dart_openai/dart_openai.dart';
@@ -71,33 +72,42 @@ class _MessageBoxState extends State<MessageBox> {
       case ModelGroup.chatGPT:
         final chatStream = widget.api
             .chatPromptStream(widget.data.messages, widget.data.model);
+        final streamCompleter = Completer<bool>();
+        int inputTokens = 0;
+        int outputTokens = 0;
         chatStream.listen(
           (delta) {
-            widget.data.addChatStreamDelta(delta);
+            if (delta.usage != null) {
+              inputTokens = delta.usage!.promptTokens;
+              outputTokens = delta.usage!.completionTokens;
+            }
+            if (delta.haveChoices) {
+              widget.data.addChatStreamDelta(delta);
+            }
           },
           onDone: () {
-            final response = widget.data.clearStreamText();
-            widget.data.addMessage(OpenAIChatMessageRole.assistant, response);
-            if (widget.data.id == "") {
-              ChatInfo info = ChatInfo(
-                  id: widget.data.id,
-                  title: widget.data.firstUserMessage(),
-                  date: DateTime.now());
-              widget.data
-                  .overwrite(FirestoreService().updateChat(widget.data, info));
-              widget.chatIds.addInfo(info);
-            } else {
-              ChatInfo info = widget.chatIds.getById(widget.data.id)!;
-              widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
-              widget.data
-                  .overwrite(FirestoreService().updateChat(widget.data, info));
-            }
-            setState(() {
-              _isWaiting = false;
-              widget.data.setThinking(false);
-            });
+            streamCompleter.complete(true);
           },
         );
+        await streamCompleter.future;
+
+        final response = widget.data.clearStreamText();
+        widget.data.addMessage(OpenAIChatMessageRole.assistant, response);
+        widget.data.addTokenUsage(inputTokens, outputTokens);
+        if (widget.data.id == "") {
+          ChatInfo info = ChatInfo(
+              id: widget.data.id,
+              title: widget.data.firstUserMessage(),
+              date: DateTime.now());
+          widget.data
+              .overwrite(FirestoreService().updateChat(widget.data, info));
+          widget.chatIds.addInfo(info);
+        } else {
+          ChatInfo info = widget.chatIds.getById(widget.data.id)!;
+          widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
+          widget.data
+              .overwrite(FirestoreService().updateChat(widget.data, info));
+        }
 
         // final response = await widget.api
         //     .chatPrompt(widget.data.messages, widget.data.model);
@@ -253,6 +263,13 @@ class _MessageBoxState extends State<MessageBox> {
             ),
           ),
         if (widget.data.messages.isEmpty) const SizedBox(height: 8.0),
+        if (widget.data.inputTokens > 0 || widget.data.outputTokens > 0)
+          ListenableBuilder(
+            listenable: widget.data,
+            builder: (context, snapshot) {
+              return Text("Input tokens: ${widget.data.inputTokens} Output tokens: ${widget.data.outputTokens}");
+            }
+          ),
         ConstrainedBox(
           constraints: const BoxConstraints(
             maxHeight: 215,
