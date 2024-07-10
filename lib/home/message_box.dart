@@ -92,8 +92,8 @@ class _MessageBoxState extends State<MessageBox> {
         await streamCompleter.future;
 
         final response = widget.data.clearStreamText();
-        widget.data.addMessage(OpenAIChatMessageRole.assistant, response);
         widget.data.addTokenUsage(inputTokens, outputTokens);
+        widget.data.addMessage(OpenAIChatMessageRole.assistant, response);
         if (widget.data.id == "") {
           ChatInfo info = ChatInfo(
               id: widget.data.id,
@@ -111,9 +111,9 @@ class _MessageBoxState extends State<MessageBox> {
 
         // final response = await widget.api
         //     .chatPrompt(widget.data.messages, widget.data.model);
+        // widget.data.addTokenUsage(response.usage.promptTokens, response.usage.completionTokens);
         // widget.data.addMessage(OpenAIChatMessageRole.assistant,
         //     (response.choices.first.message.content)!.first.text!);
-        // widget.data.addTokenUsage(response.usage.promptTokens, response.usage.completionTokens);
         // if (widget.data.id == "") {
         //   ChatInfo info = ChatInfo(
         //       id: widget.data.id, title: widget.data.id, date: DateTime.now());
@@ -263,13 +263,6 @@ class _MessageBoxState extends State<MessageBox> {
             ),
           ),
         if (widget.data.messages.isEmpty) const SizedBox(height: 8.0),
-        if (widget.data.inputTokens > 0 || widget.data.outputTokens > 0)
-          ListenableBuilder(
-            listenable: widget.data,
-            builder: (context, snapshot) {
-              return Text("Input tokens: ${widget.data.inputTokens} Output tokens: ${widget.data.outputTokens}");
-            }
-          ),
         ConstrainedBox(
           constraints: const BoxConstraints(
             maxHeight: 215,

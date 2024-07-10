@@ -24,7 +24,10 @@ class _ChatWindowState extends State<ChatWindow> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> messages = widget.data.messages.map((msg) {
+    // have to define it here or it throws a fit over types when adding the token display
+    final List<Widget> messages = [];
+
+    messages.addAll(widget.data.messages.map((msg) {
       return ChatMessage(
         role: msg.role,
         modelGroup: widget.data.modelGroup,
@@ -33,7 +36,7 @@ class _ChatWindowState extends State<ChatWindow> {
             ? msg.content!.first.imageUrl!['url']
             : "",
       );
-    }).toList();
+    }).toList());
 
     if (widget.data.isThinking()) {
       if (widget.data.modelGroup == ModelGroup.dalle) {
@@ -55,6 +58,23 @@ class _ChatWindowState extends State<ChatWindow> {
       }
     }
 
+    if (widget.data.hasTokenUsage()) {
+      messages.add(
+        Padding(
+          padding: const EdgeInsets.only(bottom: 4),
+          child: Text(
+            "Token Usage: ${widget.data.inputTokens} input, ${widget.data.outputTokens} output",
+            style: const TextStyle(
+              color: Colors.grey,
+              fontSize: 12,
+              fontStyle: FontStyle.italic,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
+
     return Expanded(
       child: NotificationListener<ScrollNotification>(
         onNotification: (notif) {
@@ -64,14 +84,13 @@ class _ChatWindowState extends State<ChatWindow> {
           return true;
         },
         child: SingleChildScrollView(
-          padding: EdgeInsets.zero,
-          physics: const AlwaysScrollableScrollPhysics(),
-          controller: widget.scroller,
-          reverse: true,
-          child: Column(
-            children: messages,
-          )
-        ),
+            padding: EdgeInsets.zero,
+            physics: const AlwaysScrollableScrollPhysics(),
+            controller: widget.scroller,
+            reverse: true,
+            child: Column(
+              children: messages,
+            )),
       ),
     );
   }
