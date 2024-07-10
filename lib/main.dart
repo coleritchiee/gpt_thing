@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/services.dart';
 import 'package:gpt_thing/route.dart';
-import 'package:gpt_thing/services/models.dart';
 import 'package:gpt_thing/services/user_locator.dart';
 import 'package:gpt_thing/theme.dart';
 import 'package:gpt_thing/firebase_options.dart';
 import 'package:gpt_thing/home/home.dart';
 
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
   UserLocator.setupLocator();
   runApp(
   const App(),

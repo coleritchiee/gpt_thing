@@ -25,6 +25,8 @@ class ChatData extends ChangeNotifier {
   String id = "";
   String model = "";
   ModelGroup modelGroup = ModelGroup.other;
+  int inputTokens = 0;
+  int outputTokens = 0;
 
   // excluded fields
   String apiKey = "";
@@ -48,6 +50,8 @@ class ChatData extends ChangeNotifier {
     messages = data.messages;
     model = data.model;
     modelGroup = data.modelGroup;
+    inputTokens = data.inputTokens;
+    outputTokens = data.outputTokens;
     _thinking = false;
     streamText = "";
     notifyListeners();
@@ -111,7 +115,7 @@ class ChatData extends ChangeNotifier {
     if (delta.choices.first.delta.content != null) {
       if (delta.choices.first.delta.content!.first != null) {
         if (delta.choices.first.delta.content!.first!.text != null) {
-          // yes this is ugly but otherwise there's an error
+          // yes this is ugly but you have to check
           streamText += delta.choices.first.delta.content!.first!.text!;
           notifyListeners();
         }
@@ -134,6 +138,16 @@ class ChatData extends ChangeNotifier {
       ],
     ));
     notifyListeners();
+  }
+
+  void addTokenUsage(int input, int output) {
+    inputTokens += input;
+    outputTokens += output;
+    notifyListeners();
+  }
+
+  bool hasTokenUsage() {
+    return inputTokens > 0 || outputTokens > 0;
   }
 
   void addImage(OpenAIChatMessageRole role, String url) {
@@ -160,6 +174,8 @@ class ChatData extends ChangeNotifier {
       ..id = json['id'] as String
       ..model = json['model'] as String
       ..modelGroup = ModelGroup.getByName(json['modelGroup'] as String)
+      ..inputTokens = json['inputTokens'] as int
+      ..outputTokens = json['outputTokens'] as int
       ..messages = (json['messages'] as List)
           .map((e) => OpenAIChatCompletionChoiceMessageModel.fromMap(
               e as Map<String, dynamic>))
@@ -171,6 +187,8 @@ class ChatData extends ChangeNotifier {
       'id': id,
       'model': model,
       'modelGroup': modelGroup.name,
+      'inputTokens': inputTokens,
+      'outputTokens': outputTokens,
       'messages': messages.map((message) => message.toMap()).toList(),
     };
   }

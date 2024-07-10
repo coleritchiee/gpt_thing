@@ -2,21 +2,22 @@ import 'package:dart_openai/dart_openai.dart';
 
 class APIManager {
   Future<OpenAIChatCompletionModel> chatPrompt(
-    List<OpenAIChatCompletionChoiceMessageModel> messages, String model) async {
+      List<OpenAIChatCompletionChoiceMessageModel> messages,
+      String model) async {
     return await OpenAI.instance.chat.create(
       model: model,
       messages: messages,
-      maxTokens: 1024,
     );
   }
 
   Stream<OpenAIStreamChatCompletionModel> chatPromptStream(
-    List<OpenAIChatCompletionChoiceMessageModel> messages, String model) {
+      List<OpenAIChatCompletionChoiceMessageModel> messages, String model) {
     return OpenAI.instance.chat.createStream(
-      model: model,
-      messages: messages,
-      maxTokens: 1024,
-    );
+        model: model,
+        messages: messages,
+        streamOptions: {
+          "include_usage": true,
+        });
   }
 
   Future<OpenAIImageModel> imagePrompt(String prompt, String model) async {
@@ -24,7 +25,8 @@ class APIManager {
       model: model,
       prompt: prompt,
       n: 1,
-      size: OpenAIImageSize.size1024, // the only size supported by both dall-e 2 and 3
+      size: OpenAIImageSize
+          .size1024, // the only size supported by both dall-e 2 and 3
       responseFormat: OpenAIImageResponseFormat.b64Json,
     );
   }

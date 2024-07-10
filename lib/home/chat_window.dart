@@ -1,10 +1,10 @@
-import 'dart:async';
-
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/chat_message.dart';
+import 'package:gpt_thing/home/model_group.dart';
+import 'package:intl/intl.dart';
 
 class ChatWindow extends StatefulWidget {
   final ChatData data;
@@ -17,25 +17,7 @@ class ChatWindow extends StatefulWidget {
 }
 
 class _ChatWindowState extends State<ChatWindow> {
-  bool blink = true;
-  late Timer blinkTimer;
   final FocusNode nothing = FocusNode();
-
-  @override
-  void initState() {
-    super.initState();
-    blinkTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
-      setState(() {
-        blink = !blink;
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    blinkTimer.cancel();
-    super.dispose();
-  }
 
   void unfocus() {
     FocusScope.of(context).requestFocus(nothing);
@@ -43,24 +25,58 @@ class _ChatWindowState extends State<ChatWindow> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> messages = widget.data.messages.reversed.map((msg) {
+    // have to define it here or it throws a fit over types when adding the token display
+    final List<Widget> messages = [];
+
+    messages.addAll(widget.data.messages.map((msg) {
       return ChatMessage(
         role: msg.role,
         modelGroup: widget.data.modelGroup,
         text: msg.content!.first.text != null ? msg.content!.first.text! : "",
         imageUrl: msg.content!.first.imageUrl != null
-            ? msg.content!.first.imageUrl!
+            ? msg.content!.first.imageUrl!['url']
             : "",
       );
-    }).toList();
+    }).toList());
 
     if (widget.data.isThinking()) {
-      messages.insert(
-        0,
-        ChatMessage(
-          role: OpenAIChatMessageRole.assistant,
-          modelGroup: widget.data.modelGroup,
-          text: widget.data.streamText,
+      if (widget.data.modelGroup == ModelGroup.dalle) {
+        messages.add(
+          ChatMessage(
+            role: OpenAIChatMessageRole.assistant,
+            modelGroup: widget.data.modelGroup,
+            imageUrl: "Generating...",
+          ),
+        );
+      } else {
+        messages.add(
+          ChatMessage(
+            role: OpenAIChatMessageRole.assistant,
+            modelGroup: widget.data.modelGroup,
+            text: widget.data.streamText,
+          ),
+        );
+      }
+    }
+
+    if (widget.data.hasTokenUsage()) {
+      final formatter = NumberFormat.compact();
+      formatter.maximumFractionDigits = 1;
+      final input = formatter.format(widget.data.inputTokens);
+      final output = formatter.format(widget.data.outputTokens);
+
+      messages.add(
+        Padding(
+          padding: const EdgeInsets.only(bottom: 4),
+          child: Text(
+            "Token Usage: $input input, $output output",
+            style: const TextStyle(
+              color: Colors.grey,
+              fontSize: 12,
+              fontStyle: FontStyle.italic,
+            ),
+            textAlign: TextAlign.center,
+          ),
         ),
       );
     }
@@ -73,13 +89,14 @@ class _ChatWindowState extends State<ChatWindow> {
           }
           return true;
         },
-        child: ListView(
-          padding: EdgeInsets.zero,
-          physics: const AlwaysScrollableScrollPhysics(),
-          controller: widget.scroller,
-          reverse: true,
-          children: messages,
-        ),
+        child: SingleChildScrollView(
+            padding: EdgeInsets.zero,
+            physics: const AlwaysScrollableScrollPhysics(),
+            controller: widget.scroller,
+            reverse: true,
+            child: Column(
+              children: messages,
+            )),
       ),
     );
   }

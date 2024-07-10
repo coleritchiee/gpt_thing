@@ -43,8 +43,10 @@ dependencies:
   google_sign_in: ^6.2.1
   rxdart: ^0.27.7
   json_annotation: ^4.9.0
-  flutter_markdown: ^0.7.1
-  dart_openai: ^5.1.0
+  flutter_markdown: ^0.7.3
+  dart_openai:
+    git:
+      url: https://github.com/dominic-deantonio/openai # a fork for token usage on streaming
   font_awesome_flutter: ^10.6.0
   firebase_storage: ^11.7.7
   http: ^1.2.1
@@ -54,6 +56,16 @@ dependencies:
   sign_in_with_apple: ^6.1.1
   crypto: ^3.0.3
   get_it: ^7.7.0
+  universal_html: ^2.2.4
+  gal: ^2.3.0
+  share_plus: ^9.0.0
+  flutter_highlight:
+    git:
+      url: https://github.com/NamanShergill/highlight.dart # a fork for selecting text
+      path: flutter_highlight
+  flutter_cache_manager: ^3.3.2
+  url_launcher: ^6.3.0
+  intl: ^0.19.0
 
 dev_dependencies:
   flutter_test:

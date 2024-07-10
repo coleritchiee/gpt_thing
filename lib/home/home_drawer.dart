@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:gpt_thing/home/chat_id_notifier.dart';
 import 'package:gpt_thing/home/chat_info.dart';
 import 'package:gpt_thing/home/chat_sidebar_button.dart';
@@ -202,6 +203,22 @@ class HomeDrawer extends StatelessWidget {
                       ),
                       onTap: () {
                         Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: ListTile(
+                      title: const Text('Clear Cache'),
+                      titleTextStyle: Theme.of(context).textTheme.bodySmall,
+                      leading: const Icon(Icons.cleaning_services_rounded),
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(5),
+                        ),
+                      ),
+                      onTap: () {
+                        DefaultCacheManager().emptyCache();
                       },
                     ),
                   ),
