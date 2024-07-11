@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart' as f;
 import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -9,7 +8,7 @@ part 'models.g.dart';
 @JsonSerializable(explicitToJson: true)
 class User extends ChangeNotifier{
 
-  static User NOT_SIGNED_IN = User(uid: "", name: "", settings: UserSettings(streamResponse: false, generateTitles: false, showSystemPrompt: false));
+  static User NOT_SIGNED_IN = User(uid: "", name: "", settings: UserSettings.DEFAULT);
 
   String uid;
   String name;
