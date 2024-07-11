@@ -13,6 +13,14 @@ class UserSettings {
 
   UserSettings({required this.streamResponse, required this.generateTitles, required this.showSystemPrompt});
 
+  UserSettings copyWith({bool? streamResponse, bool? generateTitles, bool? showSystemPrompt}) {
+    return UserSettings(
+      streamResponse: streamResponse ?? this.streamResponse,
+      generateTitles: generateTitles ?? this.generateTitles,
+      showSystemPrompt: showSystemPrompt ?? this.showSystemPrompt,
+    );
+  }
+
   factory UserSettings.fromJson(Map<String, dynamic> json) => _$UserSettingsFromJson(json);
   Map<String, dynamic> toJson() => _$UserSettingsToJson(this);
 }

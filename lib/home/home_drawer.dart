@@ -6,9 +6,11 @@ import 'package:gpt_thing/home/chat_info.dart';
 import 'package:gpt_thing/home/chat_sidebar_button.dart';
 import 'package:gpt_thing/home/key_set_dialog.dart';
 import 'package:gpt_thing/services/firestore.dart';
+import '../services/models.dart' as u;
 
 class HomeDrawer extends StatelessWidget {
   final ChatIdNotifier ids;
+  final u.User user;
   final Function() onNewChatClick;
   final Function(ChatInfo) onIdClick;
   final Function() onLogoutClick;
@@ -17,7 +19,7 @@ class HomeDrawer extends StatelessWidget {
 
   const HomeDrawer(
       {super.key,
-      required this.ids,
+      required this.ids, required this.user,
       required this.onNewChatClick,
       required this.onIdClick,
       required this.onLogoutClick,
@@ -141,6 +143,22 @@ class HomeDrawer extends StatelessWidget {
                                   },
                                 ),
                               ),
+                              Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: ListTile(
+                                  title: const Text('About'),
+                                  titleTextStyle: Theme.of(context).textTheme.bodySmall,
+                                  leading: const Icon(Icons.info_rounded),
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(5),
+                                    ),
+                                  ),
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ),
                             ],
                           );
                         } else {
@@ -163,6 +181,58 @@ class HomeDrawer extends StatelessWidget {
                                   },
                                 ),
                               ),
+                              Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: ListTile(
+                                  title: const Text('Set API Key'),
+                                  titleTextStyle: Theme.of(context).textTheme.bodySmall,
+                                  leading: const Icon(Icons.key_rounded),
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(5),
+                                    ),
+                                  ),
+                                  tileColor:
+                                  keyDialog.data.keyIsSet() ? null : Colors.blue[800],
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                    showDialog(context: context, builder: keyDialog.build);
+                                  },
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: ListTile(
+                                  title: const Text('Settings'),
+                                  titleTextStyle: Theme.of(context).textTheme.bodySmall,
+                                  leading: const Icon(Icons.settings),
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(5),
+                                    ),
+                                  ),
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                    _showSettingsDialog(context);
+                                  },
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: ListTile(
+                                  title: const Text('About'),
+                                  titleTextStyle: Theme.of(context).textTheme.bodySmall,
+                                  leading: const Icon(Icons.info_rounded),
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(5),
+                                    ),
+                                  ),
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ),
                             ],
                           );
                         }
@@ -170,57 +240,6 @@ class HomeDrawer extends StatelessWidget {
                         return const CircularProgressIndicator();
                       }
                     },
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: ListTile(
-                      title: const Text('Set API Key'),
-                      titleTextStyle: Theme.of(context).textTheme.bodySmall,
-                      leading: const Icon(Icons.key_rounded),
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(5),
-                        ),
-                      ),
-                      tileColor:
-                          keyDialog.data.keyIsSet() ? null : Colors.blue[800],
-                      onTap: () {
-                        Navigator.pop(context);
-                        showDialog(context: context, builder: keyDialog.build);
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: ListTile(
-                      title: const Text('About'),
-                      titleTextStyle: Theme.of(context).textTheme.bodySmall,
-                      leading: const Icon(Icons.info_rounded),
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(5),
-                        ),
-                      ),
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: ListTile(
-                      title: const Text('Clear Cache'),
-                      titleTextStyle: Theme.of(context).textTheme.bodySmall,
-                      leading: const Icon(Icons.cleaning_services_rounded),
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(5),
-                        ),
-                      ),
-                      onTap: () {
-                        DefaultCacheManager().emptyCache();
-                      },
-                    ),
                   ),
                 ],
               ),
@@ -278,4 +297,103 @@ class HomeDrawer extends StatelessWidget {
       },
     );
   }
+
+  void _showSettingsDialog(BuildContext context) {
+    TextEditingController nameController = TextEditingController(text: user.name);
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          insetPadding: const EdgeInsets.all(24.0),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: StatefulBuilder(
+              builder: (context, setState) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "Settings",
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 8),
+                    TextFormField(
+                      controller: nameController,
+                      decoration: const InputDecoration(
+                        labelText: "Change Name",
+                        border: OutlineInputBorder(),
+                        contentPadding: EdgeInsets.all(10),
+                      ),
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    const SizedBox(height: 12),
+                    _settingsTile(context, "Stream Response", "Displays responses as they are generated, rather than waiting for the full response", user.settings.streamResponse, (value) {
+                      setState(() => user.updateSettings(user.settings.copyWith(streamResponse: value)));
+                    }),
+                    _settingsTile(context, "Generate Titles", "Automatically generate titles for chats, using tokens", user.settings.generateTitles, (value) {
+                      setState(() => user.updateSettings(user.settings.copyWith(generateTitles: value)));
+                    }),
+                    _settingsTile(context, "Show System Prompt", "Enables an input field for system prompts in chats", user.settings.showSystemPrompt, (value) {
+                      setState(() => user.updateSettings(user.settings.copyWith(showSystemPrompt: value)));
+                    }),
+                    const SizedBox(height: 8),
+                    ListTile(
+                      title: const Text('Clear Cache'),
+                      leading: const Icon(Icons.cleaning_services),
+                      onTap: () {
+                        DefaultCacheManager().emptyCache();
+                        Navigator.pop(context);
+                      },
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            user.overwrite(u.User(
+                              uid: user.uid,
+                              name: nameController.text,
+                              settings: user.settings,
+                            ));
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('Save'),
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _settingsTile(BuildContext context, String title, String description, bool currentValue, Function(bool) onChanged) {
+    return SwitchListTile(
+      title: Text(title),
+      subtitle: Text(description),
+      value: currentValue,
+      onChanged: onChanged,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+    );
+  }
 }
+
+

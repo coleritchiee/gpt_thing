@@ -41,7 +41,9 @@ class FirestoreService {
       await _db.collection('users').doc(user.uid).set(user.toJson());
       GetIt.I<u.User>().overwrite(user);
     }
-    catch(e){}
+    catch(e){
+      print(e.toString());
+    }
   }
 
   Future<void> addChatInfoToUser(String userId, ChatInfo chatInfo) async {

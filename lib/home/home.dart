@@ -46,6 +46,7 @@ class HomePage extends StatelessWidget {
               ),
               drawer: HomeDrawer(
                 ids: ChatIdNotifier([]),
+                user: user,
                 onNewChatClick: () {},
                 onIdClick: (info) {},
                 onDelete: (index) {},
@@ -171,6 +172,7 @@ class HomePage extends StatelessWidget {
                               ),
                               drawer: HomeDrawer(
                                 ids: chatIds,
+                                user: user,
                                 onNewChatClick: () {
                                   data.overwrite(ChatData());
                                 },
