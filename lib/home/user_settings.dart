@@ -3,15 +3,15 @@ import 'package:json_annotation/json_annotation.dart';
 part 'user_settings.g.dart';
 
 final streamValues = [
-  "full",
-  "paragraph",
-  "none",
+  "on",
+  "per line",
+  "off",
 ];
 
 @JsonSerializable(explicitToJson: true)
 class UserSettings {
   static final UserSettings DEFAULT = UserSettings(
-      streamResponse: "full",
+      streamResponse: "on",
       generateTitles: false,
       showSystemPrompt: false,
       saveAPIToken: false);

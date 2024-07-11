@@ -16,7 +16,7 @@ class SettingsDialog extends StatelessWidget {
       insetPadding: const EdgeInsets.all(24.0),
       child: ConstrainedBox(
         constraints: const BoxConstraints(
-          maxWidth: 600,
+          maxWidth: 800,
         ),
         child: SingleChildScrollView(
           child: Padding(
@@ -43,7 +43,7 @@ class SettingsDialog extends StatelessWidget {
                     const SizedBox(height: 12),
                     _settingsTile(
                         "Stream Response",
-                        "Displays responses as they are generated, rather than waiting for the full response",
+                        "Shows words as they are generated, instead of waiting for the full message",
                         user.settings.streamResponse, (value) {
                       setState(() => user.updateSettings(
                           user.settings.copyWith(streamResponse: value)));
@@ -68,7 +68,15 @@ class SettingsDialog extends StatelessWidget {
                       null,
                       (value) async {
                         await DefaultCacheManager().emptyCache();
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            content: Text('Cache cleared'),
+                            duration: Duration(seconds: 2),
+                          ));
+                        }
                       },
+                      buttonIcon: const Icon(Icons.delete_rounded),
                     ),
                     const SizedBox(height: 10),
                     Row(
@@ -106,7 +114,7 @@ class SettingsDialog extends StatelessWidget {
 
 Widget _settingsTile(String title, String description, dynamic currentValue,
     Function(dynamic) onChanged,
-    {List<dynamic>? values}) {
+    {List<dynamic>? values, Icon? buttonIcon}) {
   Widget trailingWidget = const SizedBox.shrink();
 
   if (currentValue is bool) {
@@ -125,6 +133,13 @@ Widget _settingsTile(String title, String description, dynamic currentValue,
       }).toList(),
       onChanged: onChanged,
     );
+  } else {
+    trailingWidget = IconButton(
+      icon: buttonIcon ?? const Icon(Icons.error_outline_rounded),
+      onPressed: () {
+        onChanged(null);
+      },
+    );
   }
 
   return ListTile(
@@ -134,6 +149,5 @@ Widget _settingsTile(String title, String description, dynamic currentValue,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(12),
     ),
-    onTap: currentValue == null ? () {onChanged(null);} : null,
   );
 }
