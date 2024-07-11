@@ -186,29 +186,6 @@ class HomeDrawer extends StatelessWidget {
                               Padding(
                                 padding: const EdgeInsets.all(4.0),
                                 child: ListTile(
-                                  title: const Text('Set API Key'),
-                                  titleTextStyle:
-                                      Theme.of(context).textTheme.bodySmall,
-                                  leading: const Icon(Icons.key_rounded),
-                                  shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(5),
-                                    ),
-                                  ),
-                                  tileColor: keyDialog.data.keyIsSet()
-                                      ? null
-                                      : Colors.blue[800],
-                                  onTap: () {
-                                    Navigator.pop(context);
-                                    showDialog(
-                                        context: context,
-                                        builder: keyDialog.build);
-                                  },
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: ListTile(
                                   title: const Text('Settings'),
                                   titleTextStyle:
                                       Theme.of(context).textTheme.bodySmall,
@@ -314,7 +291,11 @@ class HomeDrawer extends StatelessWidget {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return SettingsDialog(nameController: nameController, user: user);
+        return SettingsDialog(
+          nameController: nameController,
+          user: user,
+          keyDialog: keyDialog,
+        );
       },
     );
   }

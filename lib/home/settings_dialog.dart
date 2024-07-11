@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:gpt_thing/home/key_set_dialog.dart';
 import 'package:gpt_thing/home/user_settings.dart';
 import '../services/models.dart' as u;
 
 class SettingsDialog extends StatelessWidget {
   const SettingsDialog(
-      {super.key, required this.nameController, required this.user});
+      {super.key,
+      required this.nameController,
+      required this.user,
+      required this.keyDialog});
 
+  final KeySetDialog keyDialog;
   final TextEditingController nameController;
   final u.User user;
 
@@ -62,6 +67,19 @@ class SettingsDialog extends StatelessWidget {
                       setState(() => user.updateSettings(
                           user.settings.copyWith(showSystemPrompt: value)));
                     }),
+                    _settingsTile(
+                      "Set API Key",
+                      "That may or may not be necessary to use this app",
+                      null,
+                      (value) async {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return keyDialog;
+                            });
+                      },
+                      buttonIcon: const Icon(Icons.key_rounded),
+                    ),
                     _settingsTile(
                       "Clear Cache",
                       "In case anything isn't working right",
