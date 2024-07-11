@@ -6,7 +6,6 @@ import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/chat_id_notifier.dart';
 import 'package:gpt_thing/home/home_drawer.dart';
 import 'package:gpt_thing/home/key_set_dialog.dart';
-import 'package:gpt_thing/home/user_settings.dart';
 import 'package:gpt_thing/services/auth.dart';
 import 'package:gpt_thing/services/firestore.dart';
 import 'chat_info.dart';
@@ -225,8 +224,7 @@ class HomePage extends StatelessWidget {
                                                     ),
                                                   ],
                                                 );
-                                              }
-                                              )))));
+                                              })))));
                         });
                   }
                 });
