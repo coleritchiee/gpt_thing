@@ -48,7 +48,7 @@ class SettingsDialog extends StatelessWidget {
                     const SizedBox(height: 12),
                     _settingsTile(
                         "Stream Response",
-                        "Shows words as they are generated, instead of waiting for the full message",
+                        "Show words as they are generated, instead of waiting for the full message",
                         user.settings.streamResponse, (value) {
                       setState(() => user.updateSettings(
                           user.settings.copyWith(streamResponse: value)));
@@ -62,14 +62,21 @@ class SettingsDialog extends StatelessWidget {
                     }),
                     _settingsTile(
                         "Show System Prompt",
-                        "Enables an input field for system prompts in chats",
+                        "Enable an input field for system prompts in chats",
                         user.settings.showSystemPrompt, (value) {
                       setState(() => user.updateSettings(
                           user.settings.copyWith(showSystemPrompt: value)));
                     }),
                     _settingsTile(
+                        "Save API Key",
+                        "Save your API key in the database, so it's ready when you log in",
+                        user.settings.saveAPIToken, (value) {
+                      setState(() => user.updateSettings(
+                          user.settings.copyWith(saveAPIToken: value)));
+                    }),
+                    _settingsTile(
                       "Set API Key",
-                      "That may or may not be necessary to use this app",
+                      "It may or may not be necessary to use this app",
                       null,
                       (value) async {
                         showDialog(
