@@ -3,6 +3,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/key_set_dialog.dart';
 import 'package:gpt_thing/home/user_settings.dart';
+import 'package:gpt_thing/services/firestore.dart';
 import '../services/models.dart' as u;
 
 class SettingsDialog extends StatelessWidget {
@@ -21,6 +22,7 @@ class SettingsDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    u.User prev = u.User(uid: user.uid, name: user.name, settings: user.settings);
     return Dialog(
       insetPadding: const EdgeInsets.all(24.0),
       child: ConstrainedBox(
@@ -120,6 +122,7 @@ class SettingsDialog extends StatelessWidget {
                       children: [
                         TextButton(
                           onPressed: () {
+                            user.overwrite(prev);
                             Navigator.pop(context);
                           },
                           child: const Text('Cancel'),
@@ -131,6 +134,7 @@ class SettingsDialog extends StatelessWidget {
                               name: nameController.text,
                               settings: user.settings,
                             ));
+                            FirestoreService().updateUser(user);
                             Navigator.of(context).pop();
                           },
                           child: const Text('Save'),
