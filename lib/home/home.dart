@@ -52,98 +52,100 @@ class HomePage extends StatelessWidget {
                 onLogoutClick: () {},
                 keyDialog: keyDialog,
               ),
-              body: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(36.0),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      maxWidth: 768,
-                    ),
-                    child: ListenableBuilder(
-                      listenable: data,
-                      builder: (context, child) {
-                        return Column(
-                          children: [
-                            ChatWindow(data: data, scroller: scroller),
-                            Container(
-                              margin: const EdgeInsets.all(16.0),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 20.0, vertical: 10.0),
-                              decoration: BoxDecoration(
-                                color: Colors.grey[800],
-                                borderRadius: BorderRadius.circular(25.0),
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 10.0,
-                                    offset: Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Expanded(
-                                    child: Row(
-                                      children: [
-                                        const Text(
-                                          "Please ",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16.0,
+              body: SafeArea(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(36.0),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxWidth: 768,
+                      ),
+                      child: ListenableBuilder(
+                        listenable: data,
+                        builder: (context, child) {
+                          return Column(
+                            children: [
+                              ChatWindow(data: data, scroller: scroller),
+                              Container(
+                                margin: const EdgeInsets.all(16.0),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20.0, vertical: 10.0),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[800],
+                                  borderRadius: BorderRadius.circular(25.0),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 10.0,
+                                      offset: Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Expanded(
+                                      child: Row(
+                                        children: [
+                                          const Text(
+                                            "Please ",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16.0,
+                                            ),
                                           ),
-                                        ),
-                                        StatefulBuilder(
-                                            builder: (context, setState) {
-                                          return MouseRegion(
-                                            onEnter: (event) {
-                                              setState(() {
-                                                linkHover = true;
-                                              });
-                                            },
-                                            onExit: (event) {
-                                              setState(() {
-                                                linkHover = false;
-                                              });
-                                            },
-                                            cursor: SystemMouseCursors.click,
-                                            child: GestureDetector(
-                                              onTap: () {
-                                                Navigator.of(context)
-                                                    .pushReplacementNamed(
-                                                        '/login');
+                                          StatefulBuilder(
+                                              builder: (context, setState) {
+                                            return MouseRegion(
+                                              onEnter: (event) {
+                                                setState(() {
+                                                  linkHover = true;
+                                                });
                                               },
-                                              child: Text(
-                                                'sign in',
-                                                style: TextStyle(
-                                                  color: Colors.blue,
-                                                  fontSize: 16.0,
-                                                  decoration: linkHover
-                                                      ? TextDecoration.underline
-                                                      : null,
-                                                  decorationColor: Colors.blue,
+                                              onExit: (event) {
+                                                setState(() {
+                                                  linkHover = false;
+                                                });
+                                              },
+                                              cursor: SystemMouseCursors.click,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.of(context)
+                                                      .pushReplacementNamed(
+                                                          '/login');
+                                                },
+                                                child: Text(
+                                                  'sign in',
+                                                  style: TextStyle(
+                                                    color: Colors.blue,
+                                                    fontSize: 16.0,
+                                                    decoration: linkHover
+                                                        ? TextDecoration.underline
+                                                        : null,
+                                                    decorationColor: Colors.blue,
+                                                  ),
                                                 ),
                                               ),
+                                            );
+                                          }),
+                                          const Text(
+                                            " to access chats.",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16.0,
                                             ),
-                                          );
-                                        }),
-                                        const Text(
-                                          " to access chats.",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16.0,
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 10.0),
-                                ],
-                              ),
-                            )
-                          ],
-                        );
-                      },
+                                    const SizedBox(width: 10.0),
+                                  ],
+                                ),
+                              )
+                            ],
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ),
@@ -199,32 +201,34 @@ class HomePage extends StatelessWidget {
                                 },
                                 keyDialog: keyDialog,
                               ),
-                              body: Center(
-                                  child: Padding(
-                                      padding: const EdgeInsets.all(4),
-                                      child: ConstrainedBox(
-                                          constraints: const BoxConstraints(
-                                            maxWidth: 768,
-                                          ),
-                                          child: ListenableBuilder(
-                                              listenable: data,
-                                              builder: (context, child) {
-                                                return Column(
-                                                  children: [
-                                                    ChatWindow(
+                              body: SafeArea(
+                                child: Center(
+                                    child: Padding(
+                                        padding: const EdgeInsets.all(4),
+                                        child: ConstrainedBox(
+                                            constraints: const BoxConstraints(
+                                              maxWidth: 768,
+                                            ),
+                                            child: ListenableBuilder(
+                                                listenable: data,
+                                                builder: (context, child) {
+                                                  return Column(
+                                                    children: [
+                                                      ChatWindow(
+                                                          data: data,
+                                                          scroller: scroller),
+                                                      MessageBox(
                                                         data: data,
-                                                        scroller: scroller),
-                                                    MessageBox(
-                                                      data: data,
-                                                      keyDialog: keyDialog,
-                                                      modelDialog: modelDialog,
-                                                      api: api,
-                                                      chatIds: chatIds,
-                                                      chatScroller: scroller,
-                                                    ),
-                                                  ],
-                                                );
-                                              })))));
+                                                        keyDialog: keyDialog,
+                                                        modelDialog: modelDialog,
+                                                        api: api,
+                                                        chatIds: chatIds,
+                                                        chatScroller: scroller,
+                                                      ),
+                                                    ],
+                                                  );
+                                                })))),
+                              ));
                         });
                   }
                 });
