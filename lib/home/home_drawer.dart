@@ -292,6 +292,7 @@ class HomeDrawer extends StatelessWidget {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return SettingsDialog(
+          data: keyDialog.data, // don't ask, I was lazy... but if it works it works
           nameController: nameController,
           user: user,
           keyDialog: keyDialog,
