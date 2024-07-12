@@ -83,6 +83,19 @@ class _MessageBoxState extends State<MessageBox> {
     return "";
   }
 
+  Future<void> generateChatTitle() async {
+    ChatInfo info = widget.chatIds.getById(widget.data.id)!;
+    final title = await widget.api.getChatTitle(widget.data.messages);
+    info.title = title.choices.first.message.content!.first.text!;
+    widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
+    widget.data
+        .overwrite(FirestoreService().updateChat(widget.data, info));
+    // replace this with adding tokens to the user profile so they can keep track,
+    // otherwise the models between the title generation and the conversation can differ
+    // and it will be an inaccurate count
+    // widget.data.addTokenUsage(title.usage.promptTokens, title.usage.completionTokens);
+  }
+
   void recMsg(String msg) async {
     switch (widget.data.modelGroup) {
       case ModelGroup.chatGPT:
@@ -224,6 +237,10 @@ class _MessageBoxState extends State<MessageBox> {
         ChatInfo info = widget.chatIds.getById(widget.data.id)!;
         widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
         widget.data.overwrite(FirestoreService().updateChat(widget.data, info));
+
+        if (widget.user.settings.generateTitles) {
+          await generateChatTitle();
+        }
         break;
       default:
         print("No modelGroup match found");

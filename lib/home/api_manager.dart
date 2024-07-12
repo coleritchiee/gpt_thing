@@ -9,6 +9,32 @@ class APIManager {
       messages: messages,
     );
   }
+  
+  Future<OpenAIChatCompletionModel> getChatTitle(List<OpenAIChatCompletionChoiceMessageModel> messages) async {
+    final promptMsg = <OpenAIChatCompletionChoiceMessageModel>[];
+    // clone it to avoid messing with the actual chat
+    promptMsg.addAll(messages);
+    // remove system prompt to avoid conflicting instructions
+    for (int i = 0; i < promptMsg.length; i++) {
+      if (promptMsg[i].role == OpenAIChatMessageRole.system) {
+        promptMsg.removeAt(i);
+        i--;
+      }
+    }
+    // add our own system prompt to generate titles
+    promptMsg.insert(0, OpenAIChatCompletionChoiceMessageModel(
+      role: OpenAIChatMessageRole.system,
+      content: [
+        OpenAIChatCompletionChoiceMessageContentItemModel.text(
+          "You are an assistant that generates summarizing titles for conversations. Respond in ABSOLUTELY NO MORE THAN 30 CHARACTERS, formatted with PROPER TITLE CAPITALIZATION and WITHOUT QUOTATIONS. The following messages are the context of the conversation."
+        )
+      ]
+    ));
+    return await OpenAI.instance.chat.create(
+      model: "gpt-3.5-turbo",
+      messages: promptMsg,
+    );
+  }
 
   Stream<OpenAIStreamChatCompletionModel> chatPromptStream(
       List<OpenAIChatCompletionChoiceMessageModel> messages, String model) {
