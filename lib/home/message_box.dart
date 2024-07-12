@@ -96,7 +96,7 @@ class _MessageBoxState extends State<MessageBox> {
     // widget.data.addTokenUsage(title.usage.promptTokens, title.usage.completionTokens);
   }
 
-  void recMsg(String msg) async {
+  void recMsg(String msg, bool firstMsg) async {
     switch (widget.data.modelGroup) {
       case ModelGroup.chatGPT:
         switch (widget.user.settings.streamResponse) {
@@ -210,6 +210,9 @@ class _MessageBoxState extends State<MessageBox> {
             }
             break;
         }
+        if (widget.user.settings.generateTitles && firstMsg) {
+          await generateChatTitle();
+        }
         break;
       case ModelGroup.dalle:
         final response = await widget.api.imagePrompt(
@@ -237,10 +240,6 @@ class _MessageBoxState extends State<MessageBox> {
         ChatInfo info = widget.chatIds.getById(widget.data.id)!;
         widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
         widget.data.overwrite(FirestoreService().updateChat(widget.data, info));
-
-        if (widget.user.settings.generateTitles) {
-          await generateChatTitle();
-        }
         break;
       default:
         print("No modelGroup match found");
@@ -263,11 +262,15 @@ class _MessageBoxState extends State<MessageBox> {
       openModelDialog();
       return;
     }
+    bool firstMessage = false;
+    if (widget.data.messages.isEmpty) {
+      firstMessage = true;
+    }
     if (sysController.text.isNotEmpty) {
       widget.data.addMessage(OpenAIChatMessageRole.system, sysController.text);
     }
     widget.data.addMessage(OpenAIChatMessageRole.user, msgController.text);
-    recMsg(msgController.text);
+    recMsg(msgController.text, firstMessage);
     msgController.clear();
     sysController.clear();
     setState(() {
