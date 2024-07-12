@@ -76,7 +76,7 @@ class _MessageBoxState extends State<MessageBox> {
       if (delta.choices.first.delta.content!.first != null) {
         if (delta.choices.first.delta.content!.first!.text != null) {
           // yes this is ugly but you have to check
-          return  delta.choices.first.delta.content!.first!.text!;
+          return delta.choices.first.delta.content!.first!.text!;
         }
       }
     }
@@ -177,12 +177,15 @@ class _MessageBoxState extends State<MessageBox> {
           case "off":
             final response = await widget.api
                 .chatPrompt(widget.data.messages, widget.data.model);
-            widget.data.addTokenUsage(response.usage.promptTokens, response.usage.completionTokens);
+            widget.data.addTokenUsage(
+                response.usage.promptTokens, response.usage.completionTokens);
             widget.data.addMessage(OpenAIChatMessageRole.assistant,
                 (response.choices.first.message.content)!.first.text!);
             if (widget.data.id == "") {
               ChatInfo info = ChatInfo(
-                  id: widget.data.id, title: widget.data.id, date: DateTime.now());
+                  id: widget.data.id,
+                  title: widget.data.id,
+                  date: DateTime.now());
               widget.data
                   .overwrite(FirestoreService().updateChat(widget.data, info));
               widget.chatIds.addInfo(info);
@@ -296,7 +299,8 @@ class _MessageBoxState extends State<MessageBox> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (widget.data.messages.isEmpty)
+        if (widget.data.messages.isEmpty &&
+            widget.user.settings.showSystemPrompt)
           ConstrainedBox(
             constraints: const BoxConstraints(
               maxHeight: 215,
@@ -330,7 +334,9 @@ class _MessageBoxState extends State<MessageBox> {
                   )),
             ),
           ),
-        if (widget.data.messages.isEmpty) const SizedBox(height: 8.0),
+        if (widget.data.messages.isEmpty &&
+            widget.user.settings.showSystemPrompt)
+          const SizedBox(height: 8.0),
         ConstrainedBox(
           constraints: const BoxConstraints(
             maxHeight: 215,
