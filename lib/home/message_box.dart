@@ -5,6 +5,7 @@ import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:get_it/get_it.dart';
 import 'package:gpt_thing/home/api_manager.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/chat_info.dart';
@@ -12,6 +13,7 @@ import 'package:gpt_thing/home/key_set_dialog.dart';
 import 'package:gpt_thing/home/model_dialog.dart';
 import 'package:gpt_thing/home/model_group.dart';
 import 'package:gpt_thing/services/firestore.dart';
+import '../services/models.dart' as u;
 
 import 'chat_id_notifier.dart';
 
@@ -23,7 +25,9 @@ class MessageBox extends StatefulWidget {
   final ChatIdNotifier chatIds;
   final ScrollController chatScroller;
 
-  const MessageBox({
+  final u.User user = GetIt.I<u.User>();
+
+  MessageBox({
     super.key,
     required this.data,
     required this.keyDialog,
@@ -67,65 +71,129 @@ class _MessageBoxState extends State<MessageBox> {
     );
   }
 
+  String getStreamDeltaString(OpenAIStreamChatCompletionModel delta) {
+    if (delta.choices.first.delta.content != null) {
+      if (delta.choices.first.delta.content!.first != null) {
+        if (delta.choices.first.delta.content!.first!.text != null) {
+          // yes this is ugly but you have to check
+          return  delta.choices.first.delta.content!.first!.text!;
+        }
+      }
+    }
+    return "";
+  }
+
   void recMsg(String msg) async {
     switch (widget.data.modelGroup) {
       case ModelGroup.chatGPT:
-        final chatStream = widget.api
-            .chatPromptStream(widget.data.messages, widget.data.model);
-        final streamCompleter = Completer<bool>();
-        int inputTokens = 0;
-        int outputTokens = 0;
-        chatStream.listen(
-          (delta) {
-            if (delta.usage != null) {
-              inputTokens = delta.usage!.promptTokens;
-              outputTokens = delta.usage!.completionTokens;
-            }
-            if (delta.haveChoices) {
-              widget.data.addChatStreamDelta(delta);
-            }
-          },
-          onDone: () {
-            streamCompleter.complete(true);
-          },
-        );
-        await streamCompleter.future;
+        switch (widget.user.settings.streamResponse) {
+          case "on":
+            final chatStream = widget.api
+                .chatPromptStream(widget.data.messages, widget.data.model);
+            final streamCompleter = Completer<bool>();
+            int inputTokens = 0;
+            int outputTokens = 0;
+            chatStream.listen(
+              (delta) {
+                if (delta.usage != null) {
+                  inputTokens = delta.usage!.promptTokens;
+                  outputTokens = delta.usage!.completionTokens;
+                }
+                if (delta.haveChoices) {
+                  widget.data.addChatStreamDelta(getStreamDeltaString(delta));
+                }
+              },
+              onDone: () {
+                streamCompleter.complete(true);
+              },
+            );
+            await streamCompleter.future;
 
-        final response = widget.data.clearStreamText();
-        widget.data.addTokenUsage(inputTokens, outputTokens);
-        widget.data.addMessage(OpenAIChatMessageRole.assistant, response);
-        if (widget.data.id == "") {
-          ChatInfo info = ChatInfo(
-              id: widget.data.id,
-              title: widget.data.firstUserMessage(),
-              date: DateTime.now());
-          widget.data
-              .overwrite(FirestoreService().updateChat(widget.data, info));
-          widget.chatIds.addInfo(info);
-        } else {
-          ChatInfo info = widget.chatIds.getById(widget.data.id)!;
-          widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
-          widget.data
-              .overwrite(FirestoreService().updateChat(widget.data, info));
+            final response = widget.data.clearStreamText();
+            widget.data.addTokenUsage(inputTokens, outputTokens);
+            widget.data.addMessage(OpenAIChatMessageRole.assistant, response);
+            if (widget.data.id == "") {
+              ChatInfo info = ChatInfo(
+                  id: widget.data.id,
+                  title: widget.data.firstUserMessage(),
+                  date: DateTime.now());
+              widget.data
+                  .overwrite(FirestoreService().updateChat(widget.data, info));
+              widget.chatIds.addInfo(info);
+            } else {
+              ChatInfo info = widget.chatIds.getById(widget.data.id)!;
+              widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
+              widget.data
+                  .overwrite(FirestoreService().updateChat(widget.data, info));
+            }
+            break;
+          case "per line":
+            final chatStream = widget.api
+                .chatPromptStream(widget.data.messages, widget.data.model);
+            final streamCompleter = Completer<bool>();
+            int inputTokens = 0;
+            int outputTokens = 0;
+            String buffer = "";
+            chatStream.listen(
+              (delta) {
+                if (delta.usage != null) {
+                  inputTokens = delta.usage!.promptTokens;
+                  outputTokens = delta.usage!.completionTokens;
+                }
+                if (delta.haveChoices) {
+                  buffer += getStreamDeltaString(delta);
+                  if (buffer.contains("\n")) {
+                    widget.data.addChatStreamDelta(buffer);
+                    buffer = "";
+                  }
+                }
+              },
+              onDone: () {
+                streamCompleter.complete(true);
+              },
+            );
+            await streamCompleter.future;
+
+            widget.data.addChatStreamDelta(buffer);
+            buffer = "";
+            final response = widget.data.clearStreamText();
+            widget.data.addTokenUsage(inputTokens, outputTokens);
+            widget.data.addMessage(OpenAIChatMessageRole.assistant, response);
+            if (widget.data.id == "") {
+              ChatInfo info = ChatInfo(
+                  id: widget.data.id,
+                  title: widget.data.firstUserMessage(),
+                  date: DateTime.now());
+              widget.data
+                  .overwrite(FirestoreService().updateChat(widget.data, info));
+              widget.chatIds.addInfo(info);
+            } else {
+              ChatInfo info = widget.chatIds.getById(widget.data.id)!;
+              widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
+              widget.data
+                  .overwrite(FirestoreService().updateChat(widget.data, info));
+            }
+            break;
+          case "off":
+            final response = await widget.api
+                .chatPrompt(widget.data.messages, widget.data.model);
+            widget.data.addTokenUsage(response.usage.promptTokens, response.usage.completionTokens);
+            widget.data.addMessage(OpenAIChatMessageRole.assistant,
+                (response.choices.first.message.content)!.first.text!);
+            if (widget.data.id == "") {
+              ChatInfo info = ChatInfo(
+                  id: widget.data.id, title: widget.data.id, date: DateTime.now());
+              widget.data
+                  .overwrite(FirestoreService().updateChat(widget.data, info));
+              widget.chatIds.addInfo(info);
+            } else {
+              ChatInfo info = widget.chatIds.getById(widget.data.id)!;
+              widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
+              widget.data
+                  .overwrite(FirestoreService().updateChat(widget.data, info));
+            }
+            break;
         }
-
-        // final response = await widget.api
-        //     .chatPrompt(widget.data.messages, widget.data.model);
-        // widget.data.addTokenUsage(response.usage.promptTokens, response.usage.completionTokens);
-        // widget.data.addMessage(OpenAIChatMessageRole.assistant,
-        //     (response.choices.first.message.content)!.first.text!);
-        // if (widget.data.id == "") {
-        //   ChatInfo info = ChatInfo(
-        //       id: widget.data.id, title: widget.data.id, date: DateTime.now());
-        //   widget.data
-        //       .overwrite(FirestoreService().updateChat(widget.data, info));
-        //   widget.chatIds.addInfo(info);
-        // } else {
-        //   ChatInfo info = widget.chatIds.getById(widget.data.id)!;
-        //   widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
-        //   widget.data
-        //       .overwrite(FirestoreService().updateChat(widget.data, info));
-        // }
         break;
       case ModelGroup.dalle:
         final response = await widget.api.imagePrompt(

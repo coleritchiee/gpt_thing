@@ -111,16 +111,9 @@ class ChatData extends ChangeNotifier {
     return _thinking;
   }
 
-  void addChatStreamDelta(OpenAIStreamChatCompletionModel delta) {
-    if (delta.choices.first.delta.content != null) {
-      if (delta.choices.first.delta.content!.first != null) {
-        if (delta.choices.first.delta.content!.first!.text != null) {
-          // yes this is ugly but you have to check
-          streamText += delta.choices.first.delta.content!.first!.text!;
-          notifyListeners();
-        }
-      }
-    }
+  void addChatStreamDelta(String buffer) {
+    streamText += buffer;
+    notifyListeners();
   }
 
   String clearStreamText() {
