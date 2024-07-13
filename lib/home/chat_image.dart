@@ -58,12 +58,13 @@ class ChatImage extends StatelessWidget {
         ),
       );
     } else {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          FractionallySizedBox(
-            widthFactor: 0.6,
+          Expanded(
+            flex: 6,
             child: AspectRatio(
               aspectRatio: 1,
               child: ClipRRect(
@@ -144,37 +145,41 @@ class ChatImage extends StatelessWidget {
               ),
             ),
           ),
-          ListenableBuilder(
-            listenable: imgLoaded,
-            builder: (context, snapshot) {
-              if (imgLoaded.value) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      CompactIconButton(
-                        icon: const Icon(Icons.file_download_rounded),
-                        tooltip: "Save image",
-                        showLoading: true,
-                        onPressed: () => saveImage(imageUrl),
-                      ),
-                      if (!kIsWeb)
+          Expanded(
+            flex: 4,
+            child: ListenableBuilder(
+              listenable: imgLoaded,
+              builder: (context, snapshot) {
+                if (imgLoaded.value) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         CompactIconButton(
-                          icon: Platform.isAndroid
-                              ? const Icon(Icons.share_rounded)
-                              : const Icon(Icons.ios_share_rounded),
+                          icon: const Icon(Icons.file_download_rounded),
+                          tooltip: "Save image",
                           showLoading: true,
-                          onPressed: () => shareImage(imageUrl),
+                          onPressed: () => saveImage(imageUrl),
                         ),
-                    ],
-                  ),
-                );
-              } else {
-                return const SizedBox.shrink();
+                        if (!kIsWeb)
+                          CompactIconButton(
+                            icon: Platform.isAndroid
+                                ? const Icon(Icons.share_rounded)
+                                : const Icon(Icons.ios_share_rounded),
+                            showLoading: true,
+                            onPressed: () => shareImage(imageUrl),
+                          ),
+                      ],
+                    ),
+                  );
+                } else {
+                  return const SizedBox.shrink();
+                }
               }
-            }
+            ),
           ),
         ],
       );
