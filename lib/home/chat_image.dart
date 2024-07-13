@@ -162,7 +162,7 @@ class ChatImage extends StatelessWidget {
                           icon: const Icon(Icons.file_download_rounded),
                           tooltip: "Save image",
                           showLoading: true,
-                          onPressed: () => saveImage(imageUrl),
+                          onPressed: () => saveImage(imageUrl, context),
                         ),
                         if (!kIsWeb)
                           CompactIconButton(
@@ -187,7 +187,7 @@ class ChatImage extends StatelessWidget {
   }
 }
 
-Future<bool> saveImage(String url) async {
+Future<bool> saveImage(String url, BuildContext context) async {
   if (kIsWeb) {
     html.window.open(url, "image");
   } else {
@@ -197,6 +197,14 @@ Future<bool> saveImage(String url) async {
     } catch (e) {
       print(e);
       return false;
+    }
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Image saved"),
+          duration: Duration(seconds: 2),
+        ),
+      );
     }
   }
   return true;
