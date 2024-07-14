@@ -32,7 +32,7 @@ class HomePage extends StatelessWidget {
     void applyUserSettings() {
       if (user.settings.saveAPIKey) {
         
-        data.applyDefaultModel();
+        data.applyDefaultModel(context);
       }
     }
 
@@ -195,7 +195,7 @@ class HomePage extends StatelessWidget {
                                       user: user,
                                       onNewChatClick: () {
                                         data.overwrite(ChatData());
-                                        data.applyDefaultModel();
+                                        data.applyDefaultModel(context);
                                       },
                                       onIdClick: (info) async {
                                         ChatData? newData =

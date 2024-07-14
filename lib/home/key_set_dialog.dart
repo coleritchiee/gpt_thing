@@ -55,7 +55,6 @@ class KeySetDialog extends StatelessWidget {
                   keyFocus.requestFocus();
                   return;
                 }
-                data.applyDefaultModel();
                 setState(() {
                   isWaiting = false;
                 });
@@ -63,6 +62,7 @@ class KeySetDialog extends StatelessWidget {
                   ScaffoldMessenger.of(context).clearSnackBars();
                   Navigator.pop(context, true);
                 }
+                data.applyDefaultModel(context);
               }
 
               return Column(

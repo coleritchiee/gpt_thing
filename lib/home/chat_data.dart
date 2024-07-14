@@ -2,6 +2,7 @@ import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:gpt_thing/home/model_group.dart';
+import 'package:gpt_thing/services/firestore.dart';
 import '../services/models.dart' as u;
 
 class Model {
@@ -108,9 +109,33 @@ class ChatData extends ChangeNotifier {
     return null;
   }
 
-  void applyDefaultModel() {
+  void applyDefaultModel(BuildContext context) {
     if (keyIsSet() && user.settings.defaultModel.isNotEmpty) {
-      setModel(getModelById(user.settings.defaultModel));
+      Model? defaultModel = getModelById(user.settings.defaultModel);
+      if (defaultModel == null) {
+        String oldModel = user.settings.defaultModel;
+        // reset default model and update it in the database
+        user.updateSettings(
+            user.settings.copyWith(defaultModel: "", defaultModelGroup: ""));
+        FirestoreService().updateUser(user);
+        // tell the user the default model is gone
+        showDialog(context: context, builder: (context) {
+          return AlertDialog(
+            title: const Text("Default Model Error"),
+            content: Text("Looks like your default model ($oldModel) isn't supported anymore. Choose a new one in settings."),
+            actions: [
+              TextButton(
+                child: const Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              )
+            ],
+            insetPadding: const EdgeInsets.all(24),
+          );
+        });
+      }
+      setModel(defaultModel);
     }
   }
 
