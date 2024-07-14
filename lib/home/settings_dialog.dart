@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/key_set_dialog.dart';
+import 'package:gpt_thing/home/model_dialog.dart';
 import 'package:gpt_thing/home/settings_tile.dart';
 import 'package:gpt_thing/home/user_settings.dart';
 import 'package:gpt_thing/services/firestore.dart';
@@ -12,12 +13,14 @@ class SettingsDialog extends StatelessWidget {
     super.key,
     required this.data,
     required this.keyDialog,
+    required this.modelDialog,
     required this.nameController,
     required this.user,
   });
 
   final ChatData data;
   final KeySetDialog keyDialog;
+  final ModelDialog modelDialog;
   final TextEditingController nameController;
   final u.User user;
 
@@ -25,6 +28,26 @@ class SettingsDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     u.User prev =
         u.User(uid: user.uid, name: user.name, settings: user.settings);
+
+    Future<bool> openKeySetDialog() async {
+      bool? keySet = await showDialog(context: context, builder: keyDialog.build);
+      return keySet == true;
+    }
+
+    Future<bool> setDefaultModel() async {
+      if (!data.keyIsSet()) {
+          if (!await openKeySetDialog()) return false;
+        }
+        Model? newModel;
+        if (context.mounted) {
+          newModel = await showDialog(context: context, builder: modelDialog.build);
+          if (newModel != null) {
+            user.settings.defaultModel = newModel.id;
+          }
+        }
+        return newModel != null;
+    }
+      
     return Dialog(
       insetPadding: const EdgeInsets.all(24.0),
       child: ConstrainedBox(
@@ -76,15 +99,20 @@ class SettingsDialog extends StatelessWidget {
                       "Default Model",
                       "Automatically set the model in new chats",
                       note: user.settings.defaultModel.isEmpty
-                          ? "None chosen"
-                          : user.settings.defaultModel,
+                          ? "None selected"
+                          : "Selected: ${user.settings.defaultModel}",
                       user.settings.defaultModel,
-                      (value) {
-                        setState(() => user.updateSettings(
-                            user.settings.copyWith(defaultModel: value)));
+                      (value) async {
+                        if (value is String && value.isEmpty) { // reset the setting
+                          setState(() => user.updateSettings(
+                              user.settings.copyWith(defaultModel: "")));
+                          return;
+                        }
+                        if (await setDefaultModel());
+                        setState(() {});
                       },
                         defaultValue: UserSettings.DEFAULT.defaultModel,
-                      buttonText: "Choose",
+                      buttonText: "Select",
                     ),
                     SettingsTile(
                         "Show System Prompt",

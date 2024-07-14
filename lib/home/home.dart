@@ -34,7 +34,7 @@ class HomePage extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Scaffold(
-              appBar: AppBar(title: Text('GPT Thing')),
+              appBar: AppBar(title: const Text('GPT Thing')),
               body: const Center(child: CircularProgressIndicator()),
             );
           }
@@ -52,6 +52,7 @@ class HomePage extends StatelessWidget {
                 onDelete: (index) {},
                 onLogoutClick: () {},
                 keyDialog: keyDialog,
+                modelDialog: modelDialog,
               ),
               body: SafeArea(
                 child: Center(
@@ -209,6 +210,7 @@ class HomePage extends StatelessWidget {
                                         data.overwrite(ChatData());
                                       },
                                       keyDialog: keyDialog,
+                                      modelDialog: modelDialog,
                                     ),
                                     body: SafeArea(
                                       child: Center(
