@@ -104,7 +104,7 @@ class _MessageBoxState extends State<MessageBox> {
         late int outputTokens;
         // api call and text streaming (setting dependent)
         switch (widget.user.settings.streamResponse) {
-          case "on":
+          case "word":
             final chatStream = widget.api
                 .chatPromptStream(widget.data.messages, widget.data.model);
             final streamCompleter = Completer<bool>();
@@ -125,7 +125,7 @@ class _MessageBoxState extends State<MessageBox> {
             await streamCompleter.future;
             message = widget.data.clearStreamText();
             break;
-          case "per line":
+          case "line":
             final chatStream = widget.api
                 .chatPromptStream(widget.data.messages, widget.data.model);
             final streamCompleter = Completer<bool>();

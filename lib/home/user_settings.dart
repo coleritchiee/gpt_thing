@@ -3,15 +3,15 @@ import 'package:json_annotation/json_annotation.dart';
 part 'user_settings.g.dart';
 
 final streamValues = [
-  "on",
-  "per line",
+  "word",
+  "line",
   "off",
 ];
 
 @JsonSerializable(explicitToJson: true)
 class UserSettings {
   static final UserSettings DEFAULT = UserSettings(
-      streamResponse: "on",
+      streamResponse: "word",
       generateTitles: false,
       defaultModel: "",
       defaultModelGroup: "",
