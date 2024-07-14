@@ -10,15 +10,13 @@ class ModelDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ModelGroup? filter;
-    String newModel = data.model;
-    ModelGroup newGroup = data.modelGroup;
+    Model? newModel;
     bool hasPreviews = false;
     bool showPreviews = false;
     bool groupSelected = false;
 
     void setModel() {
-      data.setModel(newModel, newGroup);
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(newModel);
     }
 
     return Dialog(
@@ -111,11 +109,11 @@ class ModelDialog extends StatelessWidget {
                             child: ListTile(
                               onTap: () {
                                 setState(() {
-                                  if (newModel == model.id) {
+                                  if (newModel == model) {
                                     setModel(); // detecting "double tap"
+                                  } else {
+                                    newModel = model;
                                   }
-                                  newModel = model.id;
-                                  newGroup = model.group;
                                 });
                               },
                               title: Center(child: Text(model.id)),
@@ -125,7 +123,7 @@ class ModelDialog extends StatelessWidget {
                               ),
                               dense: true,
                               visualDensity: const VisualDensity(vertical: -4),
-                              tileColor: newModel == model.id
+                              tileColor: newModel == model
                                   ? Colors.grey[850]
                                   : null,
                             ),
@@ -185,8 +183,8 @@ class ModelDialog extends StatelessWidget {
                               ],
                             ),
                           TextButton(
-                              onPressed: newModel.isNotEmpty &&
-                                      newGroup == filter
+                              onPressed: newModel != null &&
+                                      newModel!.group == filter
                                   ? () {
                                       setModel();
                                     }

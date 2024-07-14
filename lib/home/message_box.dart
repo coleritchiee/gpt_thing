@@ -47,20 +47,21 @@ class _MessageBoxState extends State<MessageBox> {
   bool _isEmpty = true;
   bool _isWaiting = false;
 
-  Future openKeySetDialog() {
-    return showDialog(context: context, builder: widget.keyDialog.build);
+  Future<bool> openKeySetDialog() async {
+    bool? keySet = await showDialog(context: context, builder: widget.keyDialog.build);
+    return keySet == true;
   }
 
-  void openModelDialog() {
+  Future<bool> openModelDialog() async {
     if (!widget.data.keyIsSet()) {
-      openKeySetDialog().then((val) {
-        if (widget.data.keyIsSet()) {
-          showDialog(context: context, builder: widget.modelDialog.build);
-        }
-      });
-      return;
+      if (!await openKeySetDialog()) return false;
     }
-    showDialog(context: context, builder: widget.modelDialog.build);
+    Model? newModel;
+    if (mounted) {
+      newModel = await showDialog(context: context, builder: widget.modelDialog.build);
+      widget.data.setModel(newModel);
+    }
+    return newModel != null;
   }
 
   void resetChatScroll() {
@@ -88,8 +89,7 @@ class _MessageBoxState extends State<MessageBox> {
     final title = await widget.api.getChatTitle(widget.data.messages);
     info.title = title.choices.first.message.content!.first.text!;
     widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
-    widget.data
-        .overwrite(FirestoreService().updateChat(widget.data, info));
+    widget.data.overwrite(FirestoreService().updateChat(widget.data, info));
     // replace this with adding tokens to the user profile so they can keep track,
     // otherwise the models between the title generation and the conversation can differ
     // and it will be an inaccurate count
@@ -224,22 +224,15 @@ class _MessageBoxState extends State<MessageBox> {
     });
   }
 
-  void sendMsg() {
+  void sendMsg() async {
     if (!widget.data.keyIsSet()) {
-      openKeySetDialog().then((value) => {
-            if (widget.data.keyIsSet() && !widget.data.modelChosen())
-              {openModelDialog()}
-          });
-      return;
+      if (!await openKeySetDialog()) return;
     }
     if (!widget.data.modelChosen()) {
       openModelDialog();
       return;
     }
-    bool firstMessage = false;
-    if (widget.data.messages.isEmpty) {
-      firstMessage = true;
-    }
+    bool firstMessage = widget.data.messages.isEmpty;
     if (sysController.text.isNotEmpty) {
       widget.data.addMessage(OpenAIChatMessageRole.system, sysController.text);
     }

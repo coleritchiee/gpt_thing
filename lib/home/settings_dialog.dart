@@ -56,7 +56,7 @@ class SettingsDialog extends StatelessWidget {
                     const SizedBox(height: 12),
                     SettingsTile(
                         "Stream Response",
-                        "Show the response as its generated, instead of waiting until it's finished",
+                        "Show chat responses as they are generated",
                         user.settings.streamResponse, (value) {
                       setState(() => user.updateSettings(
                           user.settings.copyWith(streamResponse: value)));
@@ -65,7 +65,7 @@ class SettingsDialog extends StatelessWidget {
                         values: streamValues),
                     SettingsTile(
                         "Generate Titles",
-                        "Automatically generate titles for chats",
+                        "Automatically generate titles for new chats",
                         note: "Uses tokens on ChatGPT 3.5 Turbo",
                         noteColor: Colors.amber,
                         user.settings.generateTitles, (value) {
@@ -74,7 +74,7 @@ class SettingsDialog extends StatelessWidget {
                     }, defaultValue: UserSettings.DEFAULT.generateTitles),
                     SettingsTile(
                       "Default Model",
-                      "Automatically set a model in new chats",
+                      "Automatically set the model in new chats",
                       note: user.settings.defaultModel.isEmpty
                           ? "None chosen"
                           : user.settings.defaultModel,
@@ -88,7 +88,7 @@ class SettingsDialog extends StatelessWidget {
                     ),
                     SettingsTile(
                         "Show System Prompt",
-                        "Enable an input field for a system prompt in chats (you can still change it)",
+                        "Enable an input field for a system prompt in chats",
                         user.settings.showSystemPrompt, (value) {
                       setState(() => user.updateSettings(
                           user.settings.copyWith(showSystemPrompt: value)));

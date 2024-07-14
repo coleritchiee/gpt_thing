@@ -60,7 +60,7 @@ class KeySetDialog extends StatelessWidget {
                 });
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).clearSnackBars();
-                  Navigator.pop(context);
+                  Navigator.pop(context, true);
                 }
               }
 
@@ -182,7 +182,7 @@ class KeySetDialog extends StatelessWidget {
                     children: [
                       TextButton(
                         onPressed: () {
-                          Navigator.pop(context);
+                          Navigator.pop(context, false);
                           ScaffoldMessenger.of(context).clearSnackBars();
                         },
                         style: const ButtonStyle(

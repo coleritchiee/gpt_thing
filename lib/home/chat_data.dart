@@ -88,10 +88,12 @@ class ChatData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setModel(String model, ModelGroup group) {
-    this.model = model;
-    modelGroup = group;
-    notifyListeners();
+  void setModel(Model? model) {
+    if (model != null) {
+      this.model = model.id;
+      modelGroup = model.group;
+      notifyListeners();
+    }
   }
 
   bool keyIsSet() {
