@@ -171,7 +171,7 @@ class _MessageBoxState extends State<MessageBox> {
         if (widget.data.id == "") {
           ChatInfo info = ChatInfo(
               id: widget.data.id,
-              title: widget.data.firstUserMessage(),
+              title: widget.data.firstUserMessage(64),
               date: DateTime.now());
           widget.data
               .overwrite(FirestoreService().updateChat(widget.data, info));
@@ -196,7 +196,7 @@ class _MessageBoxState extends State<MessageBox> {
         if (widget.data.id == "") {
           ChatInfo info = ChatInfo(
               id: widget.data.id,
-              title: widget.data.firstUserMessage(),
+              title: widget.data.firstUserMessage(64),
               date: DateTime.now());
           widget.data
               .overwrite(FirestoreService().updateChat(widget.data, info));

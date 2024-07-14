@@ -153,13 +153,17 @@ class ChatData extends ChangeNotifier {
     notifyListeners();
   }
 
-  String firstUserMessage() {
+  String firstUserMessage(int limit) {
+    String message = "Untitled Chat"; // failsafe instead of id (security risk)
     for (OpenAIChatCompletionChoiceMessageModel msg in messages) {
       if (msg.role == OpenAIChatMessageRole.user) {
-        return msg.content!.first.text!;
+        message = msg.content!.first.text!;
       }
     }
-    return id;
+    if (message.length > limit) {
+      message = "${message.substring(0, limit)}...";
+    }
+    return message;
   }
 
   factory ChatData.fromJson(Map<String, dynamic> json) {
