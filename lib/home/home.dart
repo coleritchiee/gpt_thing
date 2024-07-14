@@ -31,7 +31,7 @@ class HomePage extends StatelessWidget {
 
     void applyUserSettings() {
       if (user.settings.saveAPIKey) {
-        
+        // FETCH AND SET API KEY HERE
         data.applyDefaultModel(context);
       }
     }

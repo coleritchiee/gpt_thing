@@ -108,8 +108,10 @@ class SettingsDialog extends StatelessWidget {
                               user.settings.copyWith(defaultModel: "")));
                           return;
                         }
-                        if (await setDefaultModel());
-                        setState(() {});
+                        if (await setDefaultModel()) {
+                          data.applyDefaultModel();
+                          setState(() {});
+                        }
                       },
                         defaultValue: UserSettings.DEFAULT.defaultModel,
                       buttonText: "Select",

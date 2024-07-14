@@ -109,10 +109,11 @@ class ChatData extends ChangeNotifier {
     return null;
   }
 
-  void applyDefaultModel(BuildContext context) {
+  void applyDefaultModel([BuildContext? context]) {
+    if (messages.isNotEmpty) return; // don't change model if there's a conversation
     if (keyIsSet() && user.settings.defaultModel.isNotEmpty) {
       Model? defaultModel = getModelById(user.settings.defaultModel);
-      if (defaultModel == null) {
+      if (defaultModel == null && context != null) {
         String oldModel = user.settings.defaultModel;
         // reset default model and update it in the database
         user.updateSettings(
