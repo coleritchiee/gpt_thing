@@ -43,7 +43,6 @@ class SettingsDialog extends StatelessWidget {
           newModel = await showDialog(context: context, builder: modelDialog.build);
           if (newModel != null) {
             user.settings.defaultModel = newModel.id;
-            user.settings.defaultModelGroup = newModel.group.name;
           }
         }
         return newModel != null;
