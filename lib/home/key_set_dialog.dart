@@ -55,6 +55,7 @@ class KeySetDialog extends StatelessWidget {
                   keyFocus.requestFocus();
                   return;
                 }
+                data.applyDefaultModel();
                 setState(() {
                   isWaiting = false;
                 });

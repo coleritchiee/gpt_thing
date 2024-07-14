@@ -29,6 +29,13 @@ class HomePage extends StatelessWidget {
 
     bool linkHover = false;
 
+    void applyUserSettings() {
+      if (user.settings.saveAPIKey) {
+        
+        data.applyDefaultModel();
+      }
+    }
+
     return StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
@@ -122,9 +129,11 @@ class HomePage extends StatelessWidget {
                                                     color: Colors.blue,
                                                     fontSize: 16.0,
                                                     decoration: linkHover
-                                                        ? TextDecoration.underline
+                                                        ? TextDecoration
+                                                            .underline
                                                         : null,
-                                                    decorationColor: Colors.blue,
+                                                    decorationColor:
+                                                        Colors.blue,
                                                   ),
                                                 ),
                                               ),
@@ -169,8 +178,10 @@ class HomePage extends StatelessWidget {
                                 child: CircularProgressIndicator()),
                           );
                         } else {
-                          ChatIdNotifier chatIds = ChatIdNotifier(
-                              snapshot.data!);
+                          // USER IS FOUND, CONFIGURE SETTINGS HERE
+                          ChatIdNotifier chatIds =
+                              ChatIdNotifier(snapshot.data!);
+                          applyUserSettings();
                           return ListenableBuilder(
                               listenable: user,
                               builder: (context, snapshot) {
@@ -184,10 +195,12 @@ class HomePage extends StatelessWidget {
                                       user: user,
                                       onNewChatClick: () {
                                         data.overwrite(ChatData());
+                                        data.applyDefaultModel();
                                       },
                                       onIdClick: (info) async {
-                                        ChatData? newData = await FirestoreService()
-                                            .fetchChat(info.id);
+                                        ChatData? newData =
+                                            await FirestoreService()
+                                                .fetchChat(info.id);
                                         if (newData != null) {
                                           data.overwrite(newData);
                                           scroller.jumpTo(0);
@@ -196,11 +209,9 @@ class HomePage extends StatelessWidget {
                                       onDelete: (index) {
                                         FirestoreService()
                                             .removeIdFromUserAndDeleteChat(
-                                            FirebaseAuth
-                                                .instance.currentUser!.uid,
-                                            chatIds
-                                                .get(index)
-                                                .id);
+                                                FirebaseAuth
+                                                    .instance.currentUser!.uid,
+                                                chatIds.get(index).id);
                                         chatIds.removeInfo(chatIds.get(index));
                                         data.overwrite(ChatData());
                                       },
@@ -217,25 +228,30 @@ class HomePage extends StatelessWidget {
                                           child: Padding(
                                               padding: const EdgeInsets.all(4),
                                               child: ConstrainedBox(
-                                                  constraints: const BoxConstraints(
+                                                  constraints:
+                                                      const BoxConstraints(
                                                     maxWidth: 768,
                                                   ),
                                                   child: ListenableBuilder(
                                                       listenable: data,
-                                                      builder: (context,
-                                                          child) {
+                                                      builder:
+                                                          (context, child) {
                                                         return Column(
                                                           children: [
                                                             ChatWindow(
                                                                 data: data,
-                                                                scroller: scroller),
+                                                                scroller:
+                                                                    scroller),
                                                             MessageBox(
                                                               data: data,
-                                                              keyDialog: keyDialog,
-                                                              modelDialog: modelDialog,
+                                                              keyDialog:
+                                                                  keyDialog,
+                                                              modelDialog:
+                                                                  modelDialog,
                                                               api: api,
                                                               chatIds: chatIds,
-                                                              chatScroller: scroller,
+                                                              chatScroller:
+                                                                  scroller,
                                                             ),
                                                           ],
                                                         );
@@ -246,6 +262,6 @@ class HomePage extends StatelessWidget {
                       });
                 });
           }
-    });
-    }
+        });
   }
+}

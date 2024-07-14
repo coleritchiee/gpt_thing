@@ -1,6 +1,8 @@
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:gpt_thing/home/model_group.dart';
+import '../services/models.dart' as u;
 
 class Model {
   late String id;
@@ -42,6 +44,7 @@ class ChatData extends ChangeNotifier {
   ];
   bool _thinking = false;
   String streamText = "";
+  u.User user = GetIt.I<u.User>();
 
   ChatData();
 
@@ -93,6 +96,21 @@ class ChatData extends ChangeNotifier {
       this.model = model.id;
       modelGroup = model.group;
       notifyListeners();
+    }
+  }
+
+  Model? getModelById(String id) {
+    for (Model m in models) {
+      if (m.id == id) {
+        return m;
+      }
+    }
+    return null;
+  }
+
+  void applyDefaultModel() {
+    if (keyIsSet() && user.settings.defaultModel.isNotEmpty) {
+      setModel(getModelById(user.settings.defaultModel));
     }
   }
 
