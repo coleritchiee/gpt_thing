@@ -1,16 +1,17 @@
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/chat_message.dart';
 import 'package:gpt_thing/home/model_group.dart';
 import 'package:intl/intl.dart';
 
 class ChatWindow extends StatefulWidget {
-  final ChatData data;
+  final ChatData data = GetIt.I<ChatData>();
   final ScrollController scroller;
 
-  const ChatWindow({super.key, required this.data, required this.scroller});
+  ChatWindow({super.key, required this.scroller});
 
   @override
   State<ChatWindow> createState() => _ChatWindowState();

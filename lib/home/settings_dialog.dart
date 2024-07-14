@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:get_it/get_it.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/key_set_dialog.dart';
 import 'package:gpt_thing/home/model_dialog.dart';
@@ -9,20 +10,16 @@ import 'package:gpt_thing/services/firestore.dart';
 import '../services/models.dart' as u;
 
 class SettingsDialog extends StatelessWidget {
-  const SettingsDialog({
+  SettingsDialog({
     super.key,
-    required this.data,
-    required this.keyDialog,
-    required this.modelDialog,
     required this.nameController,
-    required this.user,
   });
 
-  final ChatData data;
-  final KeySetDialog keyDialog;
-  final ModelDialog modelDialog;
+  final u.User user = GetIt.I<u.User>();
+  final ChatData data = GetIt.I<ChatData>();
+  final KeySetDialog keyDialog = KeySetDialog();
+  final ModelDialog modelDialog = ModelDialog();
   final TextEditingController nameController;
-  final u.User user;
 
   @override
   Widget build(BuildContext context) {
@@ -30,24 +27,26 @@ class SettingsDialog extends StatelessWidget {
         u.User(uid: user.uid, name: user.name, settings: user.settings);
 
     Future<bool> openKeySetDialog() async {
-      bool? keySet = await showDialog(context: context, builder: keyDialog.build);
+      bool? keySet =
+          await showDialog(context: context, builder: keyDialog.build);
       return keySet == true;
     }
 
     Future<bool> setDefaultModel() async {
       if (!data.keyIsSet()) {
-          if (!await openKeySetDialog()) return false;
+        if (!await openKeySetDialog()) return false;
+      }
+      Model? newModel;
+      if (context.mounted) {
+        newModel =
+            await showDialog(context: context, builder: modelDialog.build);
+        if (newModel != null) {
+          user.settings.defaultModel = newModel.id;
         }
-        Model? newModel;
-        if (context.mounted) {
-          newModel = await showDialog(context: context, builder: modelDialog.build);
-          if (newModel != null) {
-            user.settings.defaultModel = newModel.id;
-          }
-        }
-        return newModel != null;
+      }
+      return newModel != null;
     }
-      
+
     return Dialog(
       insetPadding: const EdgeInsets.all(24.0),
       child: ConstrainedBox(
@@ -103,7 +102,8 @@ class SettingsDialog extends StatelessWidget {
                           : "Selected: ${user.settings.defaultModel}",
                       user.settings.defaultModel,
                       (value) async {
-                        if (value is String && value.isEmpty) { // reset the setting
+                        if (value is String && value.isEmpty) {
+                          // reset the setting
                           setState(() => user.updateSettings(
                               user.settings.copyWith(defaultModel: "")));
                           return;
@@ -113,7 +113,7 @@ class SettingsDialog extends StatelessWidget {
                           setState(() {});
                         }
                       },
-                        defaultValue: UserSettings.DEFAULT.defaultModel,
+                      defaultValue: UserSettings.DEFAULT.defaultModel,
                       buttonText: "Select",
                     ),
                     SettingsTile(
@@ -122,8 +122,7 @@ class SettingsDialog extends StatelessWidget {
                         user.settings.showSystemPrompt, (value) {
                       setState(() => user.updateSettings(
                           user.settings.copyWith(showSystemPrompt: value)));
-                    },
-                        defaultValue: UserSettings.DEFAULT.showSystemPrompt),
+                    }, defaultValue: UserSettings.DEFAULT.showSystemPrompt),
                     SettingsTile(
                         "Save API Key",
                         "Save your API key in the database, so it's ready when you log in",
@@ -133,8 +132,7 @@ class SettingsDialog extends StatelessWidget {
                         user.settings.saveAPIKey, (value) {
                       setState(() => user.updateSettings(
                           user.settings.copyWith(saveAPIKey: value)));
-                    },
-                        defaultValue: UserSettings.DEFAULT.saveAPIKey),
+                    }, defaultValue: UserSettings.DEFAULT.saveAPIKey),
                     SettingsTile(
                       "Set API Key",
                       "It may or may not be necessary to use this app",

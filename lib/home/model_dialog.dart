@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/model_group.dart';
 
 class ModelDialog extends StatelessWidget {
-  final ChatData data;
+  final ChatData data = GetIt.I<ChatData>();
 
-  const ModelDialog({super.key, required this.data});
+  ModelDialog({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -123,9 +124,8 @@ class ModelDialog extends StatelessWidget {
                               ),
                               dense: true,
                               visualDensity: const VisualDensity(vertical: -4),
-                              tileColor: newModel == model
-                                  ? Colors.grey[850]
-                                  : null,
+                              tileColor:
+                                  newModel == model ? Colors.grey[850] : null,
                             ),
                           );
                         }).toList(),
@@ -150,8 +150,7 @@ class ModelDialog extends StatelessWidget {
                               });
                             },
                             style: const ButtonStyle(
-                              tapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
                             child: const Text("Back"),
                           ),
@@ -183,15 +182,14 @@ class ModelDialog extends StatelessWidget {
                               ],
                             ),
                           TextButton(
-                              onPressed: newModel != null &&
-                                      newModel!.group == filter
-                                  ? () {
-                                      setModel();
-                                    }
-                                  : null,
+                              onPressed:
+                                  newModel != null && newModel!.group == filter
+                                      ? () {
+                                          setModel();
+                                        }
+                                      : null,
                               style: const ButtonStyle(
-                                tapTargetSize:
-                                    MaterialTapTargetSize.shrinkWrap,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
                               child: const Text("Confirm")),
                         ],

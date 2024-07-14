@@ -18,10 +18,10 @@ import '../services/models.dart' as u;
 import 'chat_id_notifier.dart';
 
 class MessageBox extends StatefulWidget {
-  final ChatData data;
-  final KeySetDialog keyDialog;
-  final ModelDialog modelDialog;
-  final APIManager api;
+  final ChatData data = GetIt.I<ChatData>();
+  final APIManager api = GetIt.I<APIManager>();
+  final KeySetDialog keyDialog = KeySetDialog();
+  final ModelDialog modelDialog = ModelDialog();
   final ChatIdNotifier chatIds;
   final ScrollController chatScroller;
 
@@ -29,10 +29,6 @@ class MessageBox extends StatefulWidget {
 
   MessageBox({
     super.key,
-    required this.data,
-    required this.keyDialog,
-    required this.modelDialog,
-    required this.api,
     required this.chatIds,
     required this.chatScroller,
   });
@@ -48,7 +44,8 @@ class _MessageBoxState extends State<MessageBox> {
   bool _isWaiting = false;
 
   Future<bool> openKeySetDialog() async {
-    bool? keySet = await showDialog(context: context, builder: widget.keyDialog.build);
+    bool? keySet =
+        await showDialog(context: context, builder: widget.keyDialog.build);
     return keySet == true;
   }
 
@@ -58,7 +55,8 @@ class _MessageBoxState extends State<MessageBox> {
     }
     Model? newModel;
     if (mounted) {
-      newModel = await showDialog(context: context, builder: widget.modelDialog.build);
+      newModel =
+          await showDialog(context: context, builder: widget.modelDialog.build);
       widget.data.setModel(newModel);
     }
     return newModel != null;
