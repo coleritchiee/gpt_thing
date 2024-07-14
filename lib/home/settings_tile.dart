@@ -5,6 +5,7 @@ class SettingsTile extends StatelessWidget {
       {super.key,
       this.values,
       this.buttonIcon,
+      this.buttonText,
       this.note,
       this.noteColor});
 
@@ -14,6 +15,7 @@ class SettingsTile extends StatelessWidget {
   final Function(dynamic) onChanged;
   final List<dynamic>? values;
   final Icon? buttonIcon;
+  final String? buttonText;
   final String? note;
   final Color? noteColor;
 
@@ -24,6 +26,13 @@ class SettingsTile extends StatelessWidget {
     if (buttonIcon != null) {
       trailingWidget = IconButton(
         icon: buttonIcon ?? const Icon(Icons.error_outline_rounded),
+        onPressed: () {
+          onChanged(null);
+        },
+      );
+    } else if (buttonText != null) {
+      trailingWidget = TextButton(
+        child: Text(buttonText!),
         onPressed: () {
           onChanged(null);
         },

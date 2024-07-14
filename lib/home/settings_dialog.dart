@@ -71,15 +71,21 @@ class SettingsDialog extends StatelessWidget {
                           user.settings.copyWith(generateTitles: value)));
                     }),
                     SettingsTile(
-                        "Default Model",
-                        "Automatically set a model in new chats",
-                        user.settings.defaultModel, (value) {
-                      setState(() => user.updateSettings(
-                          user.settings.copyWith(defaultModel: value)));
-                    }),
+                      "Default Model",
+                      "Automatically set a model in new chats",
+                      note: user.settings.defaultModel.isEmpty
+                          ? "None chosen"
+                          : user.settings.defaultModel,
+                      user.settings.defaultModel,
+                      (value) {
+                        setState(() => user.updateSettings(
+                            user.settings.copyWith(defaultModel: value)));
+                      },
+                      buttonText: "Choose",
+                    ),
                     SettingsTile(
                         "Show System Prompt",
-                        "Enable an input field for a system prompt in chats",
+                        "Enable an input field for a system prompt in chats (you can still change it)",
                         user.settings.showSystemPrompt, (value) {
                       setState(() => user.updateSettings(
                           user.settings.copyWith(showSystemPrompt: value)));
