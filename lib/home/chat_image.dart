@@ -194,6 +194,7 @@ Future<bool> saveImage(String url, BuildContext context) async {
     try {
       await Gal.putImageBytes(file.readAsBytesSync());
     } catch (e) {
+      String msg = "Something went wrong";
       if (e is GalException) {
         switch (e.type) {
           case GalExceptionType.accessDenied:
@@ -214,14 +215,23 @@ Future<bool> saveImage(String url, BuildContext context) async {
                     );
                   });
             }
-            break;
+            return false;
           case GalExceptionType.notEnoughSpace:
-            // TODO: Handle this case.
+            msg = "Insufficient space";
+            break;
           case GalExceptionType.notSupportedFormat:
-            // TODO: Handle this case.
+            msg = "File type not supported";
           case GalExceptionType.unexpected:
-            // TODO: Handle this case.
+            // default
+            break;
         }
+      }
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(msg),
+          ),
+        );
       }
       return false;
     }
