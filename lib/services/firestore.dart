@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/model_group.dart';
 import 'package:gpt_thing/home/user_settings.dart';
@@ -166,6 +167,9 @@ class FirestoreService {
       List<Reference> allFiles = result.items;
 
       for (var fileRef in allFiles) {
+        // remove from the cache
+        DefaultCacheManager().removeFile(await fileRef.getDownloadURL());
+        // then delete from the database
         await fileRef.delete();
       }
     } catch (e) {

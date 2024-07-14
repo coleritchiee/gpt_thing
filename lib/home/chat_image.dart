@@ -58,12 +58,13 @@ class ChatImage extends StatelessWidget {
         ),
       );
     } else {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          FractionallySizedBox(
-            widthFactor: 0.6,
+          Expanded(
+            flex: 6,
             child: AspectRatio(
               aspectRatio: 1,
               child: ClipRRect(
@@ -144,37 +145,40 @@ class ChatImage extends StatelessWidget {
               ),
             ),
           ),
-          ListenableBuilder(
-            listenable: imgLoaded,
-            builder: (context, snapshot) {
-              if (imgLoaded.value) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      CompactIconButton(
-                        icon: const Icon(Icons.file_download_rounded),
-                        tooltip: "Save image",
-                        showLoading: true,
-                        onPressed: () => saveImage(imageUrl),
+          Expanded(
+            flex: 4,
+            child: ListenableBuilder(
+                listenable: imgLoaded,
+                builder: (context, snapshot) {
+                  if (imgLoaded.value) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CompactIconButton(
+                            icon: const Icon(Icons.file_download_rounded),
+                            tooltip: "Save image",
+                            showLoading: true,
+                            onPressed: () => saveImage(imageUrl, context),
+                          ),
+                          if (!kIsWeb)
+                            CompactIconButton(
+                              icon: Platform.isAndroid
+                                  ? const Icon(Icons.share_rounded)
+                                  : const Icon(Icons.ios_share_rounded),
+                              showLoading: true,
+                              onPressed: () => shareImage(imageUrl),
+                            ),
+                        ],
                       ),
-                      if (!kIsWeb)
-                        CompactIconButton(
-                          icon: Platform.isAndroid
-                              ? const Icon(Icons.share_rounded)
-                              : const Icon(Icons.ios_share_rounded),
-                          showLoading: true,
-                          onPressed: () => shareImage(imageUrl),
-                        ),
-                    ],
-                  ),
-                );
-              } else {
-                return const SizedBox.shrink();
-              }
-            }
+                    );
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+                }),
           ),
         ],
       );
@@ -182,7 +186,7 @@ class ChatImage extends StatelessWidget {
   }
 }
 
-Future<bool> saveImage(String url) async {
+Future<bool> saveImage(String url, BuildContext context) async {
   if (kIsWeb) {
     html.window.open(url, "image");
   } else {
@@ -190,8 +194,54 @@ Future<bool> saveImage(String url) async {
     try {
       await Gal.putImageBytes(file.readAsBytesSync());
     } catch (e) {
-      print(e);
+      String msg = "Something went wrong";
+      if (e is GalException) {
+        switch (e.type) {
+          case GalExceptionType.accessDenied:
+            if (context.mounted) {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text("Access Denied"),
+                      content: const Text(
+                          "To save images, you need to enable the permission for this app in Settings."),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: const Text("OK"),
+                        ),
+                      ],
+                    );
+                  });
+            }
+            return false;
+          case GalExceptionType.notEnoughSpace:
+            msg = "Insufficient space";
+            break;
+          case GalExceptionType.notSupportedFormat:
+            msg = "File type not supported";
+          case GalExceptionType.unexpected:
+            // default
+            break;
+        }
+      }
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(msg),
+          ),
+        );
+      }
       return false;
+    }
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Image saved"),
+          duration: Duration(seconds: 2),
+        ),
+      );
     }
   }
   return true;
