@@ -99,13 +99,15 @@ class _MessageBoxState extends State<MessageBox> {
   void recMsg(String msg, bool firstMsg) async {
     switch (widget.data.modelGroup) {
       case ModelGroup.chatGPT:
+        late String message;
+        late int inputTokens;
+        late int outputTokens;
+        // api call and text streaming (setting dependent)
         switch (widget.user.settings.streamResponse) {
           case "on":
             final chatStream = widget.api
                 .chatPromptStream(widget.data.messages, widget.data.model);
             final streamCompleter = Completer<bool>();
-            int inputTokens = 0;
-            int outputTokens = 0;
             chatStream.listen(
               (delta) {
                 if (delta.usage != null) {
@@ -121,31 +123,12 @@ class _MessageBoxState extends State<MessageBox> {
               },
             );
             await streamCompleter.future;
-
-            final response = widget.data.clearStreamText();
-            widget.data.addTokenUsage(inputTokens, outputTokens);
-            widget.data.addMessage(OpenAIChatMessageRole.assistant, response);
-            if (widget.data.id == "") {
-              ChatInfo info = ChatInfo(
-                  id: widget.data.id,
-                  title: widget.data.firstUserMessage(),
-                  date: DateTime.now());
-              widget.data
-                  .overwrite(FirestoreService().updateChat(widget.data, info));
-              widget.chatIds.addInfo(info);
-            } else {
-              ChatInfo info = widget.chatIds.getById(widget.data.id)!;
-              widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
-              widget.data
-                  .overwrite(FirestoreService().updateChat(widget.data, info));
-            }
+            message = widget.data.clearStreamText();
             break;
           case "per line":
             final chatStream = widget.api
                 .chatPromptStream(widget.data.messages, widget.data.model);
             final streamCompleter = Completer<bool>();
-            int inputTokens = 0;
-            int outputTokens = 0;
             String buffer = "";
             chatStream.listen(
               (delta) {
@@ -169,47 +152,38 @@ class _MessageBoxState extends State<MessageBox> {
 
             widget.data.addChatStreamDelta(buffer);
             buffer = "";
-            final response = widget.data.clearStreamText();
-            widget.data.addTokenUsage(inputTokens, outputTokens);
-            widget.data.addMessage(OpenAIChatMessageRole.assistant, response);
-            if (widget.data.id == "") {
-              ChatInfo info = ChatInfo(
-                  id: widget.data.id,
-                  title: widget.data.firstUserMessage(),
-                  date: DateTime.now());
-              widget.data
-                  .overwrite(FirestoreService().updateChat(widget.data, info));
-              widget.chatIds.addInfo(info);
-            } else {
-              ChatInfo info = widget.chatIds.getById(widget.data.id)!;
-              widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
-              widget.data
-                  .overwrite(FirestoreService().updateChat(widget.data, info));
-            }
+            message = widget.data.clearStreamText();
             break;
           case "off":
             final response = await widget.api
                 .chatPrompt(widget.data.messages, widget.data.model);
-            widget.data.addTokenUsage(
-                response.usage.promptTokens, response.usage.completionTokens);
-            widget.data.addMessage(OpenAIChatMessageRole.assistant,
-                (response.choices.first.message.content)!.first.text!);
-            if (widget.data.id == "") {
-              ChatInfo info = ChatInfo(
-                  id: widget.data.id,
-                  title: widget.data.id,
-                  date: DateTime.now());
-              widget.data
-                  .overwrite(FirestoreService().updateChat(widget.data, info));
-              widget.chatIds.addInfo(info);
-            } else {
-              ChatInfo info = widget.chatIds.getById(widget.data.id)!;
-              widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
-              widget.data
-                  .overwrite(FirestoreService().updateChat(widget.data, info));
-            }
+            message = (response.choices.first.message.content)!.first.text!;
+            inputTokens = response.usage.promptTokens;
+            outputTokens = response.usage.completionTokens;
             break;
+          default:
+            print("invalid streamResponse setting");
         }
+
+        // add the stuff to the database
+        widget.data.addTokenUsage(inputTokens, outputTokens);
+        widget.data.addMessage(OpenAIChatMessageRole.assistant, message);
+        if (widget.data.id == "") {
+          ChatInfo info = ChatInfo(
+              id: widget.data.id,
+              title: widget.data.firstUserMessage(),
+              date: DateTime.now());
+          widget.data
+              .overwrite(FirestoreService().updateChat(widget.data, info));
+          widget.chatIds.addInfo(info);
+        } else {
+          ChatInfo info = widget.chatIds.getById(widget.data.id)!;
+          widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
+          widget.data
+              .overwrite(FirestoreService().updateChat(widget.data, info));
+        }
+
+        // generate the title if the setting is on
         if (widget.user.settings.generateTitles && firstMsg) {
           await generateChatTitle();
         }
