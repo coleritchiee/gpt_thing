@@ -11,7 +11,7 @@ UserSettings _$UserSettingsFromJson(Map<String, dynamic> json) => UserSettings(
       generateTitles: json['generateTitles'] as bool,
       defaultModel: json['defaultModel'] as String,
       showSystemPrompt: json['showSystemPrompt'] as bool,
-      saveAPIToken: json['saveAPIToken'] as bool,
+      saveAPIKey: json['saveAPIKey'] as bool,
     );
 
 Map<String, dynamic> _$UserSettingsToJson(UserSettings instance) =>
@@ -20,5 +20,5 @@ Map<String, dynamic> _$UserSettingsToJson(UserSettings instance) =>
       'generateTitles': instance.generateTitles,
       'defaultModel': instance.defaultModel,
       'showSystemPrompt': instance.showSystemPrompt,
-      'saveAPIToken': instance.saveAPIToken,
+      'saveAPIKey': instance.saveAPIKey,
     };

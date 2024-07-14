@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class SettingsTile extends StatelessWidget {
   const SettingsTile(this.title, this.description, this.currentValue, this.onChanged,
       {super.key,
+      this.defaultValue,
       this.values,
       this.buttonIcon,
       this.buttonText,
@@ -13,6 +14,7 @@ class SettingsTile extends StatelessWidget {
   final String description;
   final dynamic currentValue;
   final Function(dynamic) onChanged;
+  final dynamic defaultValue;
   final List<dynamic>? values;
   final Icon? buttonIcon;
   final String? buttonText;
@@ -21,30 +23,41 @@ class SettingsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget trailingWidget = const SizedBox.shrink();
+    List<Widget> trail = [];
+    if (defaultValue != null) {
+      if (defaultValue != currentValue) {
+        trail.add(IconButton(
+          icon: const Icon(Icons.replay_rounded),
+          onPressed: () {
+            onChanged(defaultValue);
+          },
+          tooltip: "Restore default",
+        ));
+      }
+    }
 
     if (buttonIcon != null) {
-      trailingWidget = IconButton(
+      trail.add(IconButton(
         icon: buttonIcon ?? const Icon(Icons.error_outline_rounded),
         onPressed: () {
           onChanged(null);
         },
-      );
+      ));
     } else if (buttonText != null) {
-      trailingWidget = TextButton(
+      trail.add(TextButton(
         child: Text(buttonText!),
         onPressed: () {
           onChanged(null);
         },
-      );
+      ));
     } else if (currentValue is bool) {
-      trailingWidget = Switch(
+      trail.add(Switch(
         value: currentValue,
         onChanged: onChanged,
-      );
+      ));
     } else if (currentValue is String) {
       if (values != null) {
-        trailingWidget = DropdownButton(
+        trail.add(DropdownButton(
           value: currentValue,
           items: values!.map((value) {
             return DropdownMenuItem(
@@ -53,7 +66,7 @@ class SettingsTile extends StatelessWidget {
             );
           }).toList(),
           onChanged: onChanged,
-        );
+        ));
       } else {
         // TODO: TextField?
       }
@@ -79,7 +92,12 @@ class SettingsTile extends StatelessWidget {
                 )),
         ]),
       ),
-      trailing: trailingWidget,
+      trailing: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
+        children: trail,
+      ),
     );
   }
 }

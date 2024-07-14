@@ -60,7 +60,9 @@ class SettingsDialog extends StatelessWidget {
                         user.settings.streamResponse, (value) {
                       setState(() => user.updateSettings(
                           user.settings.copyWith(streamResponse: value)));
-                    }, values: streamValues),
+                    },
+                        defaultValue: UserSettings.DEFAULT.streamResponse,
+                        values: streamValues),
                     SettingsTile(
                         "Generate Titles",
                         "Automatically generate titles for chats",
@@ -69,7 +71,7 @@ class SettingsDialog extends StatelessWidget {
                         user.settings.generateTitles, (value) {
                       setState(() => user.updateSettings(
                           user.settings.copyWith(generateTitles: value)));
-                    }),
+                    }, defaultValue: UserSettings.DEFAULT.generateTitles),
                     SettingsTile(
                       "Default Model",
                       "Automatically set a model in new chats",
@@ -81,6 +83,7 @@ class SettingsDialog extends StatelessWidget {
                         setState(() => user.updateSettings(
                             user.settings.copyWith(defaultModel: value)));
                       },
+                        defaultValue: UserSettings.DEFAULT.defaultModel,
                       buttonText: "Choose",
                     ),
                     SettingsTile(
@@ -89,17 +92,19 @@ class SettingsDialog extends StatelessWidget {
                         user.settings.showSystemPrompt, (value) {
                       setState(() => user.updateSettings(
                           user.settings.copyWith(showSystemPrompt: value)));
-                    }),
+                    },
+                        defaultValue: UserSettings.DEFAULT.showSystemPrompt),
                     SettingsTile(
                         "Save API Key",
                         "Save your API key in the database, so it's ready when you log in",
                         note:
                             "This is sensitive info, only do this if you understand the risks involved",
                         noteColor: Colors.red.shade400,
-                        user.settings.saveAPIToken, (value) {
+                        user.settings.saveAPIKey, (value) {
                       setState(() => user.updateSettings(
-                          user.settings.copyWith(saveAPIToken: value)));
-                    }),
+                          user.settings.copyWith(saveAPIKey: value)));
+                    },
+                        defaultValue: UserSettings.DEFAULT.saveAPIKey),
                     SettingsTile(
                       "Set API Key",
                       "It may or may not be necessary to use this app",
