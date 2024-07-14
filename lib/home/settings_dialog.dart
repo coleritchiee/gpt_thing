@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/key_set_dialog.dart';
+import 'package:gpt_thing/home/settings_tile.dart';
 import 'package:gpt_thing/home/user_settings.dart';
 import 'package:gpt_thing/services/firestore.dart';
 import '../services/models.dart' as u;
@@ -22,7 +23,8 @@ class SettingsDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    u.User prev = u.User(uid: user.uid, name: user.name, settings: user.settings);
+    u.User prev =
+        u.User(uid: user.uid, name: user.name, settings: user.settings);
     return Dialog(
       insetPadding: const EdgeInsets.all(24.0),
       child: ConstrainedBox(
@@ -52,14 +54,14 @@ class SettingsDialog extends StatelessWidget {
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                     const SizedBox(height: 12),
-                    _settingsTile(
+                    SettingsTile(
                         "Stream Response",
                         "Show the response as its generated, instead of waiting until it's finished",
                         user.settings.streamResponse, (value) {
                       setState(() => user.updateSettings(
                           user.settings.copyWith(streamResponse: value)));
                     }, values: streamValues),
-                    _settingsTile(
+                    SettingsTile(
                         "Generate Titles",
                         "Automatically generate titles for chats",
                         note: "Uses tokens on ChatGPT 3.5 Turbo",
@@ -68,21 +70,21 @@ class SettingsDialog extends StatelessWidget {
                       setState(() => user.updateSettings(
                           user.settings.copyWith(generateTitles: value)));
                     }),
-                    _settingsTile(
+                    SettingsTile(
                         "Default Model",
                         "Automatically set a model in new chats",
                         user.settings.defaultModel, (value) {
                       setState(() => user.updateSettings(
                           user.settings.copyWith(defaultModel: value)));
                     }),
-                    _settingsTile(
+                    SettingsTile(
                         "Show System Prompt",
                         "Enable an input field for a system prompt in chats",
                         user.settings.showSystemPrompt, (value) {
                       setState(() => user.updateSettings(
                           user.settings.copyWith(showSystemPrompt: value)));
                     }),
-                    _settingsTile(
+                    SettingsTile(
                         "Save API Key",
                         "Save your API key in the database, so it's ready when you log in",
                         note:
@@ -92,10 +94,11 @@ class SettingsDialog extends StatelessWidget {
                       setState(() => user.updateSettings(
                           user.settings.copyWith(saveAPIToken: value)));
                     }),
-                    _settingsTile(
+                    SettingsTile(
                       "Set API Key",
                       "It may or may not be necessary to use this app",
-                      note: data.keyIsSet() ? "Key is set!" : "Currently not set",
+                      note:
+                          data.keyIsSet() ? "Key is set!" : "Currently not set",
                       null,
                       (value) async {
                         await showDialog(
@@ -107,7 +110,7 @@ class SettingsDialog extends StatelessWidget {
                       },
                       buttonIcon: const Icon(Icons.key_rounded),
                     ),
-                    _settingsTile(
+                    SettingsTile(
                       "Clear Cache",
                       "This will not delete any of your chats or images",
                       null,
@@ -157,62 +160,4 @@ class SettingsDialog extends StatelessWidget {
       ),
     );
   }
-}
-
-Widget _settingsTile(String title, String description, dynamic currentValue,
-    Function(dynamic) onChanged,
-    {List<dynamic>? values, Icon? buttonIcon, String? note, Color? noteColor}) {
-  Widget trailingWidget = const SizedBox.shrink();
-
-  if (currentValue is bool) {
-    trailingWidget = Switch(
-      value: currentValue,
-      onChanged: onChanged,
-    );
-  } else if (currentValue is String) {
-    if (values != null) {
-      trailingWidget = DropdownButton(
-        value: currentValue,
-        items: values.map((value) {
-          return DropdownMenuItem(
-            value: value,
-            child: Text(value),
-          );
-        }).toList(),
-        onChanged: onChanged,
-      );
-    } else {
-      
-    }
-  } else {
-    trailingWidget = IconButton(
-      icon: buttonIcon ?? const Icon(Icons.error_outline_rounded),
-      onPressed: () {
-        onChanged(null);
-      },
-    );
-  }
-
-  return ListTile(
-    title: Text(title),
-    subtitle: RichText(
-      text: TextSpan(children: [
-        TextSpan(
-            text: description,
-            style: const TextStyle(
-              color: Colors.grey,
-              fontSize: 16,
-            )),
-        if (note != null)
-          TextSpan(
-              text: "\n$note",
-              style: TextStyle(
-                color: noteColor ?? Colors.grey.shade600,
-                fontSize: 14,
-                height: 1.5, // for line spacing
-              )),
-      ]),
-    ),
-    trailing: trailingWidget,
-  );
 }
