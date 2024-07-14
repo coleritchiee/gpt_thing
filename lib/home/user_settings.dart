@@ -14,12 +14,14 @@ class UserSettings {
       streamResponse: "on",
       generateTitles: false,
       defaultModel: "",
+      defaultModelGroup: "",
       showSystemPrompt: false,
       saveAPIKey: false);
 
   String streamResponse;
   bool generateTitles;
   String defaultModel;
+  String defaultModelGroup;
   bool showSystemPrompt;
   bool saveAPIKey;
 
@@ -27,6 +29,7 @@ class UserSettings {
       {required this.streamResponse,
       required this.generateTitles,
       required this.defaultModel,
+      required this.defaultModelGroup,
       required this.showSystemPrompt,
       required this.saveAPIKey});
 
@@ -34,12 +37,14 @@ class UserSettings {
       {String? streamResponse,
       bool? generateTitles,
       String? defaultModel,
+      String? defaultModelGroup,
       bool? showSystemPrompt,
       bool? saveAPIKey}) {
     return UserSettings(
       streamResponse: streamResponse ?? this.streamResponse,
       generateTitles: generateTitles ?? this.generateTitles,
       defaultModel: defaultModel ?? this.defaultModel,
+      defaultModelGroup: defaultModelGroup ?? this.defaultModelGroup,
       showSystemPrompt: showSystemPrompt ?? this.showSystemPrompt,
       saveAPIKey: saveAPIKey ?? this.saveAPIKey,
     );
