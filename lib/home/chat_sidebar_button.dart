@@ -31,7 +31,8 @@ class _ChatSidebarButtonState extends State<ChatSidebarButton> {
       child: ListTile(
         title: Text(
           widget.title,
-          overflow: TextOverflow.ellipsis,
+          overflow: _isHovered ? TextOverflow.fade : TextOverflow.ellipsis,
+          softWrap: false,
         ),
         titleTextStyle: Theme.of(context).textTheme.bodySmall,
         visualDensity: const VisualDensity(vertical: -4),
