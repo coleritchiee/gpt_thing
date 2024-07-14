@@ -69,6 +69,13 @@ class SettingsDialog extends StatelessWidget {
                           user.settings.copyWith(generateTitles: value)));
                     }),
                     _settingsTile(
+                        "Default Model",
+                        "Automatically set a model in new chats",
+                        user.settings.defaultModel, (value) {
+                      setState(() => user.updateSettings(
+                          user.settings.copyWith(defaultModel: value)));
+                    }),
+                    _settingsTile(
                         "Show System Prompt",
                         "Enable an input field for a system prompt in chats",
                         user.settings.showSystemPrompt, (value) {
@@ -163,16 +170,20 @@ Widget _settingsTile(String title, String description, dynamic currentValue,
       onChanged: onChanged,
     );
   } else if (currentValue is String) {
-    trailingWidget = DropdownButton(
-      value: currentValue,
-      items: values!.map((value) {
-        return DropdownMenuItem(
-          value: value,
-          child: Text(value),
-        );
-      }).toList(),
-      onChanged: onChanged,
-    );
+    if (values != null) {
+      trailingWidget = DropdownButton(
+        value: currentValue,
+        items: values.map((value) {
+          return DropdownMenuItem(
+            value: value,
+            child: Text(value),
+          );
+        }).toList(),
+        onChanged: onChanged,
+      );
+    } else {
+      
+    }
   } else {
     trailingWidget = IconButton(
       icon: buttonIcon ?? const Icon(Icons.error_outline_rounded),

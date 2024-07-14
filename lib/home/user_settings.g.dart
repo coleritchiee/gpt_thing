@@ -9,6 +9,7 @@ part of 'user_settings.dart';
 UserSettings _$UserSettingsFromJson(Map<String, dynamic> json) => UserSettings(
       streamResponse: json['streamResponse'] as String,
       generateTitles: json['generateTitles'] as bool,
+      defaultModel: json['defaultModel'] as String,
       showSystemPrompt: json['showSystemPrompt'] as bool,
       saveAPIToken: json['saveAPIToken'] as bool,
     );
@@ -17,6 +18,7 @@ Map<String, dynamic> _$UserSettingsToJson(UserSettings instance) =>
     <String, dynamic>{
       'streamResponse': instance.streamResponse,
       'generateTitles': instance.generateTitles,
+      'defaultModel': instance.defaultModel,
       'showSystemPrompt': instance.showSystemPrompt,
       'saveAPIToken': instance.saveAPIToken,
     };
