@@ -57,8 +57,8 @@
 	</array>
 
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This is required to save generated images.</string>
+	<string>This permission is required to save generated images.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>This is required to save generated images.</string>
+	<string>This permission is required to save generated images.</string>
 </dict>
 </plist>

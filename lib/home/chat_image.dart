@@ -148,38 +148,37 @@ class ChatImage extends StatelessWidget {
           Expanded(
             flex: 4,
             child: ListenableBuilder(
-              listenable: imgLoaded,
-              builder: (context, snapshot) {
-                if (imgLoaded.value) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CompactIconButton(
-                          icon: const Icon(Icons.file_download_rounded),
-                          tooltip: "Save image",
-                          showLoading: true,
-                          onPressed: () => saveImage(imageUrl, context),
-                        ),
-                        if (!kIsWeb)
+                listenable: imgLoaded,
+                builder: (context, snapshot) {
+                  if (imgLoaded.value) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                           CompactIconButton(
-                            icon: Platform.isAndroid
-                                ? const Icon(Icons.share_rounded)
-                                : const Icon(Icons.ios_share_rounded),
+                            icon: const Icon(Icons.file_download_rounded),
+                            tooltip: "Save image",
                             showLoading: true,
-                            onPressed: () => shareImage(imageUrl),
+                            onPressed: () => saveImage(imageUrl, context),
                           ),
-                      ],
-                    ),
-                  );
-                } else {
-                  return const SizedBox.shrink();
-                }
-              }
-            ),
+                          if (!kIsWeb)
+                            CompactIconButton(
+                              icon: Platform.isAndroid
+                                  ? const Icon(Icons.share_rounded)
+                                  : const Icon(Icons.ios_share_rounded),
+                              showLoading: true,
+                              onPressed: () => shareImage(imageUrl),
+                            ),
+                        ],
+                      ),
+                    );
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+                }),
           ),
         ],
       );
@@ -195,7 +194,35 @@ Future<bool> saveImage(String url, BuildContext context) async {
     try {
       await Gal.putImageBytes(file.readAsBytesSync());
     } catch (e) {
-      print(e);
+      if (e is GalException) {
+        switch (e.type) {
+          case GalExceptionType.accessDenied:
+            if (context.mounted) {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text("Access Denied"),
+                      content: const Text(
+                          "To save images, you need to enable the permission for this app in Settings."),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: const Text("OK"),
+                        ),
+                      ],
+                    );
+                  });
+            }
+            break;
+          case GalExceptionType.notEnoughSpace:
+            // TODO: Handle this case.
+          case GalExceptionType.notSupportedFormat:
+            // TODO: Handle this case.
+          case GalExceptionType.unexpected:
+            // TODO: Handle this case.
+        }
+      }
       return false;
     }
     if (context.mounted) {
