@@ -1,33 +1,30 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/chat_id_notifier.dart';
 import 'package:gpt_thing/home/chat_info.dart';
 import 'package:gpt_thing/home/chat_sidebar_button.dart';
-import 'package:gpt_thing/home/key_set_dialog.dart';
-import 'package:gpt_thing/home/model_dialog.dart';
 import 'package:gpt_thing/home/settings_dialog.dart';
 import 'package:gpt_thing/services/firestore.dart';
 import '../services/models.dart' as u;
 
 class HomeDrawer extends StatelessWidget {
   final ChatIdNotifier ids;
+  final ChatData data;
   final u.User user;
   final Function() onNewChatClick;
   final Function(ChatInfo) onIdClick;
   final Function() onLogoutClick;
   final Function(int) onDelete;
-  final KeySetDialog keyDialog;
-  final ModelDialog modelDialog;
 
   const HomeDrawer(
       {super.key,
       required this.ids,
+      required this.data,
       required this.user,
       required this.onNewChatClick,
       required this.onIdClick,
       required this.onLogoutClick,
-      required this.keyDialog,
-      required this.modelDialog,
       required this.onDelete});
 
   @override
@@ -295,11 +292,9 @@ class HomeDrawer extends StatelessWidget {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return SettingsDialog(
-          data: keyDialog.data, // don't ask, I was lazy... but if it works it works
+          data: data,
           nameController: nameController,
           user: user,
-          keyDialog: keyDialog,
-          modelDialog: modelDialog,
         );
       },
     );

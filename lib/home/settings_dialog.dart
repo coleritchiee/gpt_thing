@@ -12,15 +12,11 @@ class SettingsDialog extends StatelessWidget {
   const SettingsDialog({
     super.key,
     required this.data,
-    required this.keyDialog,
-    required this.modelDialog,
     required this.nameController,
     required this.user,
   });
 
   final ChatData data;
-  final KeySetDialog keyDialog;
-  final ModelDialog modelDialog;
   final TextEditingController nameController;
   final u.User user;
 
@@ -30,24 +26,26 @@ class SettingsDialog extends StatelessWidget {
         u.User(uid: user.uid, name: user.name, settings: user.settings);
 
     Future<bool> openKeySetDialog() async {
-      bool? keySet = await showDialog(context: context, builder: keyDialog.build);
+      bool? keySet =
+          await showDialog(context: context, builder: KeySetDialog(data).build);
       return keySet == true;
     }
 
     Future<bool> setDefaultModel() async {
       if (!data.keyIsSet()) {
-          if (!await openKeySetDialog()) return false;
+        if (!await openKeySetDialog()) return false;
+      }
+      Model? newModel;
+      if (context.mounted) {
+        newModel = await showDialog(
+            context: context, builder: ModelDialog(data).build);
+        if (newModel != null) {
+          user.settings.defaultModel = newModel.id;
         }
-        Model? newModel;
-        if (context.mounted) {
-          newModel = await showDialog(context: context, builder: modelDialog.build);
-          if (newModel != null) {
-            user.settings.defaultModel = newModel.id;
-          }
-        }
-        return newModel != null;
+      }
+      return newModel != null;
     }
-      
+
     return Dialog(
       insetPadding: const EdgeInsets.all(24.0),
       child: ConstrainedBox(
@@ -103,7 +101,8 @@ class SettingsDialog extends StatelessWidget {
                           : "Selected: ${user.settings.defaultModel}",
                       user.settings.defaultModel,
                       (value) async {
-                        if (value is String && value.isEmpty) { // reset the setting
+                        if (value is String && value.isEmpty) {
+                          // reset the setting
                           setState(() => user.updateSettings(
                               user.settings.copyWith(defaultModel: "")));
                           return;
@@ -113,7 +112,7 @@ class SettingsDialog extends StatelessWidget {
                           setState(() {});
                         }
                       },
-                        defaultValue: UserSettings.DEFAULT.defaultModel,
+                      defaultValue: UserSettings.DEFAULT.defaultModel,
                       buttonText: "Select",
                     ),
                     SettingsTile(
@@ -122,8 +121,7 @@ class SettingsDialog extends StatelessWidget {
                         user.settings.showSystemPrompt, (value) {
                       setState(() => user.updateSettings(
                           user.settings.copyWith(showSystemPrompt: value)));
-                    },
-                        defaultValue: UserSettings.DEFAULT.showSystemPrompt),
+                    }, defaultValue: UserSettings.DEFAULT.showSystemPrompt),
                     SettingsTile(
                         "Save API Key",
                         "Save your API key in the database, so it's ready when you log in",
@@ -133,8 +131,7 @@ class SettingsDialog extends StatelessWidget {
                         user.settings.saveAPIKey, (value) {
                       setState(() => user.updateSettings(
                           user.settings.copyWith(saveAPIKey: value)));
-                    },
-                        defaultValue: UserSettings.DEFAULT.saveAPIKey),
+                    }, defaultValue: UserSettings.DEFAULT.saveAPIKey),
                     SettingsTile(
                       "Set API Key",
                       "It may or may not be necessary to use this app",
@@ -144,9 +141,7 @@ class SettingsDialog extends StatelessWidget {
                       (value) async {
                         await showDialog(
                             context: context,
-                            builder: (context) {
-                              return keyDialog;
-                            });
+                            builder: KeySetDialog(data).build);
                         setState(() {});
                       },
                       buttonIcon: const Icon(Icons.key_rounded),

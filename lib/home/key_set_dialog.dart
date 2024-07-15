@@ -6,7 +6,7 @@ import 'package:gpt_thing/home/chat_data.dart';
 class KeySetDialog extends StatelessWidget {
   final ChatData data;
 
-  const KeySetDialog({super.key, required this.data});
+  const KeySetDialog(this.data, {super.key});
 
   @override
   Widget build(BuildContext context) {

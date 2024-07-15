@@ -5,7 +5,7 @@ import 'package:gpt_thing/home/model_group.dart';
 class ModelDialog extends StatelessWidget {
   final ChatData data;
 
-  const ModelDialog({super.key, required this.data});
+  const ModelDialog(this.data, {super.key});
 
   @override
   Widget build(BuildContext context) {
