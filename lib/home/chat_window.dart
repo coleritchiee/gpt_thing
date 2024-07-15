@@ -32,9 +32,9 @@ class _ChatWindowState extends State<ChatWindow> {
       return ChatMessage(
         role: msg.role,
         modelGroup: widget.data.modelGroup,
-        text: msg.content!.first.text != null ? msg.content!.first.text! : "",
-        imageUrl: msg.content!.first.imageUrl != null
-            ? msg.content!.first.imageUrl!['url']
+        text: msg.text != null ? msg.text! : "",
+        imageUrl: msg.imageUrl != null
+            ? msg.imageUrl!
             : "",
       );
     }).toList());

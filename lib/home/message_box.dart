@@ -9,6 +9,7 @@ import 'package:get_it/get_it.dart';
 import 'package:gpt_thing/home/api_manager.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/chat_info.dart';
+import 'package:gpt_thing/home/chat_message_data.dart';
 import 'package:gpt_thing/home/key_set_dialog.dart';
 import 'package:gpt_thing/home/model_dialog.dart';
 import 'package:gpt_thing/home/model_group.dart';
@@ -42,7 +43,8 @@ class _MessageBoxState extends State<MessageBox> {
   bool _isWaiting = false;
 
   Future<bool> openKeySetDialog() async {
-    bool? keySet = await showDialog(context: context, builder: KeySetDialog(widget.data).build);
+    bool? keySet = await showDialog(
+        context: context, builder: KeySetDialog(widget.data).build);
     return keySet == true;
   }
 
@@ -52,7 +54,8 @@ class _MessageBoxState extends State<MessageBox> {
     }
     Model? newModel;
     if (mounted) {
-      newModel = await showDialog(context: context, builder: ModelDialog(widget.data).build);
+      newModel = await showDialog(
+          context: context, builder: ModelDialog(widget.data).build);
       widget.data.setModel(newModel);
     }
     return newModel != null;
@@ -80,7 +83,8 @@ class _MessageBoxState extends State<MessageBox> {
 
   Future<void> generateChatTitle() async {
     ChatInfo info = widget.chatIds.getById(widget.data.id)!;
-    final title = await APIManager.getChatTitle(widget.data.messages);
+    final title = await APIManager.getChatTitle(
+        ChatMessageData.convertForAPI(widget.data.messages));
     info.title = title.choices.first.message.content!.first.text!;
     widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
     widget.data.overwrite(FirestoreService().updateChat(widget.data, info));
@@ -99,8 +103,9 @@ class _MessageBoxState extends State<MessageBox> {
         // api call and text streaming (setting dependent)
         switch (widget.user.settings.streamResponse) {
           case "word":
-            final chatStream = APIManager
-                .chatPromptStream(widget.data.messages, widget.data.model);
+            final chatStream = APIManager.chatPromptStream(
+                ChatMessageData.convertForAPI(widget.data.messages),
+                widget.data.model);
             final streamCompleter = Completer<bool>();
             chatStream.listen(
               (delta) {
@@ -120,8 +125,9 @@ class _MessageBoxState extends State<MessageBox> {
             message = widget.data.clearStreamText();
             break;
           case "line":
-            final chatStream = APIManager
-                .chatPromptStream(widget.data.messages, widget.data.model);
+            final chatStream = APIManager.chatPromptStream(
+                ChatMessageData.convertForAPI(widget.data.messages),
+                widget.data.model);
             final streamCompleter = Completer<bool>();
             String buffer = "";
             chatStream.listen(
@@ -149,8 +155,9 @@ class _MessageBoxState extends State<MessageBox> {
             message = widget.data.clearStreamText();
             break;
           case "off":
-            final response = await APIManager
-                .chatPrompt(widget.data.messages, widget.data.model);
+            final response = await APIManager.chatPrompt(
+                ChatMessageData.convertForAPI(widget.data.messages),
+                widget.data.model);
             message = (response.choices.first.message.content)!.first.text!;
             inputTokens = response.usage.promptTokens;
             outputTokens = response.usage.completionTokens;

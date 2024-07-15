@@ -1,6 +1,7 @@
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:gpt_thing/home/chat_message_data.dart';
 import 'package:gpt_thing/home/model_group.dart';
 import 'package:gpt_thing/services/firestore.dart';
 import '../services/models.dart' as u;
@@ -24,7 +25,7 @@ class Model {
 
 class ChatData extends ChangeNotifier {
   // included fields
-  List<OpenAIChatCompletionChoiceMessageModel> messages = [];
+  List<ChatMessageData> messages = [];
   String id = "";
   String model = "";
   ModelGroup modelGroup = ModelGroup.other;
@@ -110,7 +111,9 @@ class ChatData extends ChangeNotifier {
   }
 
   void applyDefaultModel([BuildContext? context]) {
-    if (messages.isNotEmpty) return; // don't change model if there's a conversation
+    if (messages.isNotEmpty) {
+      return; // don't change model if there's a conversation
+    }
     if (keyIsSet() && user.settings.defaultModel.isNotEmpty) {
       Model? defaultModel = getModelById(user.settings.defaultModel);
       if (defaultModel == null && context != null) {
@@ -120,21 +123,24 @@ class ChatData extends ChangeNotifier {
             user.settings.copyWith(defaultModel: "", defaultModelGroup: ""));
         FirestoreService().updateUser(user);
         // tell the user the default model is gone
-        showDialog(context: context, builder: (context) {
-          return AlertDialog(
-            title: const Text("Default Model Error"),
-            content: Text("Looks like your default model ($oldModel) isn't supported anymore. Choose a new one in settings."),
-            actions: [
-              TextButton(
-                child: const Text("OK"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              )
-            ],
-            insetPadding: const EdgeInsets.all(24),
-          );
-        });
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text("Default Model Error"),
+                content: Text(
+                    "Looks like your default model ($oldModel) isn't supported anymore. Choose a new one in settings."),
+                actions: [
+                  TextButton(
+                    child: const Text("OK"),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  )
+                ],
+                insetPadding: const EdgeInsets.all(24),
+              );
+            });
       }
       setModel(defaultModel);
     }
@@ -169,12 +175,28 @@ class ChatData extends ChangeNotifier {
     return temp;
   }
 
-  void addMessage(OpenAIChatMessageRole role, String message) {
-    messages.add(OpenAIChatCompletionChoiceMessageModel(
+  void addMessage(OpenAIChatMessageRole role, String text,
+      {String? model, int? inputTokens, int? outputTokens}) {
+    messages.add(ChatMessageData(
       role: role,
-      content: [
-        OpenAIChatCompletionChoiceMessageContentItemModel.text(message),
-      ],
+      timestamp: DateTime.now(),
+      text: text,
+      model: model,
+      inputTokens: inputTokens,
+      outputTokens: outputTokens,
+    ));
+    notifyListeners();
+  }
+
+  void addImage(OpenAIChatMessageRole role, String url,
+      {String? model, int? inputTokens, int? outputTokens}) {
+    messages.add(ChatMessageData(
+      role: role,
+      imageUrl: url, 
+      timestamp: DateTime.now(),
+      model: model,
+      inputTokens: inputTokens,
+      outputTokens: outputTokens,
     ));
     notifyListeners();
   }
@@ -189,21 +211,13 @@ class ChatData extends ChangeNotifier {
     return inputTokens > 0 || outputTokens > 0;
   }
 
-  void addImage(OpenAIChatMessageRole role, String url) {
-    messages.add(OpenAIChatCompletionChoiceMessageModel(
-      role: role,
-      content: [
-        OpenAIChatCompletionChoiceMessageContentItemModel.imageUrl(url),
-      ],
-    ));
-    notifyListeners();
-  }
-
   String firstUserMessage(int limit) {
     String message = "Untitled Chat"; // failsafe instead of id (security risk)
-    for (OpenAIChatCompletionChoiceMessageModel msg in messages) {
+    for (ChatMessageData msg in messages) {
       if (msg.role == OpenAIChatMessageRole.user) {
-        message = msg.content!.first.text!;
+        if (msg.text != null) {
+          message = msg.text!;
+        }
       }
     }
     if (message.length > limit) {
@@ -220,7 +234,7 @@ class ChatData extends ChangeNotifier {
       ..inputTokens = json['inputTokens'] as int
       ..outputTokens = json['outputTokens'] as int
       ..messages = (json['messages'] as List)
-          .map((e) => OpenAIChatCompletionChoiceMessageModel.fromMap(
+          .map((e) => ChatMessageData.fromJson(
               e as Map<String, dynamic>))
           .toList();
   }
@@ -232,7 +246,7 @@ class ChatData extends ChangeNotifier {
       'modelGroup': modelGroup.name,
       'inputTokens': inputTokens,
       'outputTokens': outputTokens,
-      'messages': messages.map((message) => message.toMap()).toList(),
+      'messages': messages.map((message) => message.toJson()).toList(),
     };
   }
 
@@ -247,16 +261,5 @@ class ChatData extends ChangeNotifier {
       default:
         return "Unknown";
     }
-  }
-
-  @override
-  String toString() {
-    // really just to be used for debugging
-    // TODO: remove this eventually
-    String retStr = "ChatData Contents:";
-    for (int i = 0; i < messages.length; i++) {
-      retStr += "\n ${messages[i].role}:\n  ${(messages[i].content)![0].text}";
-    }
-    return retStr;
   }
 }
