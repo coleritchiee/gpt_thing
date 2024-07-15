@@ -1,17 +1,21 @@
 import 'package:dart_openai/dart_openai.dart';
 
 class ChatMessageData {
-  OpenAIChatCompletionChoiceMessageModel message;
-  bool visible;
+  OpenAIChatMessageRole role;
   DateTime timestamp;
+  String? text;
+  String? imageUrl;
+  bool visible;
   String? model;
   int? inputTokens;
   int? outputTokens;
 
   ChatMessageData({
-    required this.message,
-    required this.visible,
+    required this.role,
     required this.timestamp,
+    this.text,
+    this.imageUrl,
+    this.visible = true,
     this.model,
     this.inputTokens,
     this.outputTokens,
@@ -21,28 +25,50 @@ class ChatMessageData {
       List<ChatMessageData> data) {
     List<OpenAIChatCompletionChoiceMessageModel> apiList = [];
     for (final msg in data) {
-      apiList.add(msg.message);
+      List<OpenAIChatCompletionChoiceMessageContentItemModel> content = [];
+      if (msg.text != null) {
+        content.add(
+          OpenAIChatCompletionChoiceMessageContentItemModel.text(msg.text!)
+        );
+      }
+      if (msg.imageUrl != null) {
+        content.add(
+          OpenAIChatCompletionChoiceMessageContentItemModel.imageUrl(msg.imageUrl!)
+        );
+      }
+      if (content.isNotEmpty) {
+        apiList.add(
+          OpenAIChatCompletionChoiceMessageModel(
+            role: msg.role,
+            content: content,
+          ),
+        );
+      }
     }
     return apiList;
   }
 
   factory ChatMessageData.fromJson(Map<String, dynamic> json) {
     return ChatMessageData(
-      message: OpenAIChatCompletionChoiceMessageModel.fromMap(
-          json['message'] as Map<String, dynamic>),
+      role: OpenAIChatMessageRole.values
+          .firstWhere((role) => role.name == json['role']),
+      timestamp: json['timestamp'] as DateTime,
+      text: json['text'] as String,
+      imageUrl: json['imageUrl'] as String,
       visible: json['visible'] as bool,
-      timestamp: json['modelGroup'] as DateTime,
-    )
-      ..model = json['model'] as String
-      ..inputTokens = json['inputTokens'] as int
-      ..outputTokens = json['outputTokens'] as int;
+      model: json['model'] as String,
+      inputTokens: json['inputTokens'] as int,
+      outputTokens: json['outputTokens'] as int,
+    );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'message': message,
-      'visible': visible,
+      'role': role.name,
       'timestamp': timestamp,
+      'text': text,
+      'imageUrl': imageUrl,
+      'visible': visible,
       'model': model,
       'inputTokens': inputTokens,
       'outputTokens': outputTokens,
