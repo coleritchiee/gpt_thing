@@ -21,7 +21,6 @@ class MessageBox extends StatefulWidget {
   final ChatData data;
   final KeySetDialog keyDialog;
   final ModelDialog modelDialog;
-  final APIManager api;
   final ChatIdNotifier chatIds;
   final ScrollController chatScroller;
 
@@ -32,7 +31,6 @@ class MessageBox extends StatefulWidget {
     required this.data,
     required this.keyDialog,
     required this.modelDialog,
-    required this.api,
     required this.chatIds,
     required this.chatScroller,
   });
@@ -86,7 +84,7 @@ class _MessageBoxState extends State<MessageBox> {
 
   Future<void> generateChatTitle() async {
     ChatInfo info = widget.chatIds.getById(widget.data.id)!;
-    final title = await widget.api.getChatTitle(widget.data.messages);
+    final title = await APIManager.getChatTitle(widget.data.messages);
     info.title = title.choices.first.message.content!.first.text!;
     widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
     widget.data.overwrite(FirestoreService().updateChat(widget.data, info));
@@ -105,7 +103,7 @@ class _MessageBoxState extends State<MessageBox> {
         // api call and text streaming (setting dependent)
         switch (widget.user.settings.streamResponse) {
           case "word":
-            final chatStream = widget.api
+            final chatStream = APIManager
                 .chatPromptStream(widget.data.messages, widget.data.model);
             final streamCompleter = Completer<bool>();
             chatStream.listen(
@@ -126,7 +124,7 @@ class _MessageBoxState extends State<MessageBox> {
             message = widget.data.clearStreamText();
             break;
           case "line":
-            final chatStream = widget.api
+            final chatStream = APIManager
                 .chatPromptStream(widget.data.messages, widget.data.model);
             final streamCompleter = Completer<bool>();
             String buffer = "";
@@ -155,7 +153,7 @@ class _MessageBoxState extends State<MessageBox> {
             message = widget.data.clearStreamText();
             break;
           case "off":
-            final response = await widget.api
+            final response = await APIManager
                 .chatPrompt(widget.data.messages, widget.data.model);
             message = (response.choices.first.message.content)!.first.text!;
             inputTokens = response.usage.promptTokens;
@@ -189,7 +187,7 @@ class _MessageBoxState extends State<MessageBox> {
         }
         break;
       case ModelGroup.dalle:
-        final response = await widget.api.imagePrompt(
+        final response = await APIManager.imagePrompt(
           msg,
           widget.data.model,
         );

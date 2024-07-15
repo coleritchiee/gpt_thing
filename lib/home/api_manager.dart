@@ -1,7 +1,7 @@
 import 'package:dart_openai/dart_openai.dart';
 
 class APIManager {
-  Future<OpenAIChatCompletionModel> chatPrompt(
+  static Future<OpenAIChatCompletionModel> chatPrompt(
       List<OpenAIChatCompletionChoiceMessageModel> messages,
       String model) async {
     return await OpenAI.instance.chat.create(
@@ -10,7 +10,7 @@ class APIManager {
     );
   }
   
-  Future<OpenAIChatCompletionModel> getChatTitle(List<OpenAIChatCompletionChoiceMessageModel> messages) async {
+  static Future<OpenAIChatCompletionModel> getChatTitle(List<OpenAIChatCompletionChoiceMessageModel> messages) async {
     final promptMsg = <OpenAIChatCompletionChoiceMessageModel>[];
     // clone it to avoid messing with the actual chat
     promptMsg.addAll(messages);
@@ -36,7 +36,7 @@ class APIManager {
     );
   }
 
-  Stream<OpenAIStreamChatCompletionModel> chatPromptStream(
+  static Stream<OpenAIStreamChatCompletionModel> chatPromptStream(
       List<OpenAIChatCompletionChoiceMessageModel> messages, String model) {
     return OpenAI.instance.chat.createStream(
         model: model,
@@ -46,7 +46,7 @@ class APIManager {
         });
   }
 
-  Future<OpenAIImageModel> imagePrompt(String prompt, String model) async {
+  static Future<OpenAIImageModel> imagePrompt(String prompt, String model) async {
     return await OpenAI.instance.image.create(
       model: model,
       prompt: prompt,
@@ -57,7 +57,7 @@ class APIManager {
     );
   }
 
-  Future<List<String>> getModels() async {
+  static Future<List<String>> getModels() async {
     final result = await OpenAI.instance.model.list();
     result.sort((a, b) => a.id.compareTo(b.id));
     final models = <String>[];

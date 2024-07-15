@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:gpt_thing/home/api_manager.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/chat_id_notifier.dart';
 import 'package:gpt_thing/home/home_drawer.dart';
@@ -20,10 +19,9 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    APIManager api = APIManager();
     ChatData data = ChatData();
     ScrollController scroller = ScrollController();
-    KeySetDialog keyDialog = KeySetDialog(data: data, api: api);
+    KeySetDialog keyDialog = KeySetDialog(data: data);
     ModelDialog modelDialog = ModelDialog(data: data);
     u.User user = GetIt.I<u.User>();
 
@@ -248,7 +246,6 @@ class HomePage extends StatelessWidget {
                                                                   keyDialog,
                                                               modelDialog:
                                                                   modelDialog,
-                                                              api: api,
                                                               chatIds: chatIds,
                                                               chatScroller:
                                                                   scroller,

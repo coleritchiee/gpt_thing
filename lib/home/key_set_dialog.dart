@@ -5,9 +5,8 @@ import 'package:gpt_thing/home/chat_data.dart';
 
 class KeySetDialog extends StatelessWidget {
   final ChatData data;
-  final APIManager api;
 
-  const KeySetDialog({super.key, required this.data, required this.api});
+  const KeySetDialog({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +36,7 @@ class KeySetDialog extends StatelessWidget {
                   isWaiting = true;
                 });
                 try {
-                  data.addModels(await api.getModels());
+                  data.addModels(await APIManager.getModels());
                 } catch (e) {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
