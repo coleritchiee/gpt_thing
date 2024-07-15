@@ -1,13 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:gpt_thing/home/api_manager.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/chat_id_notifier.dart';
 import 'package:gpt_thing/home/home_drawer.dart';
+import 'package:gpt_thing/home/key_set_dialog.dart';
 import 'package:gpt_thing/services/auth.dart';
 import 'package:gpt_thing/services/firestore.dart';
 import '../services/user_locator.dart';
 import 'chat_info.dart';
+import 'package:gpt_thing/home/model_dialog.dart';
 import '../services/models.dart' as u;
 import 'chat_window.dart';
 import 'message_box.dart';
@@ -17,9 +20,12 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ChatData data = GetIt.I<ChatData>();
-    u.User user = GetIt.I<u.User>();
+    APIManager api = APIManager();
+    ChatData data = ChatData();
     ScrollController scroller = ScrollController();
+    KeySetDialog keyDialog = KeySetDialog(data: data, api: api);
+    ModelDialog modelDialog = ModelDialog(data: data);
+    u.User user = GetIt.I<u.User>();
 
     bool linkHover = false;
 
@@ -47,10 +53,13 @@ class HomePage extends StatelessWidget {
               ),
               drawer: HomeDrawer(
                 ids: ChatIdNotifier([]),
+                user: user,
                 onNewChatClick: () {},
                 onIdClick: (info) {},
                 onDelete: (index) {},
                 onLogoutClick: () {},
+                keyDialog: keyDialog,
+                modelDialog: modelDialog,
               ),
               body: SafeArea(
                 child: Center(
@@ -65,7 +74,7 @@ class HomePage extends StatelessWidget {
                         builder: (context, child) {
                           return Column(
                             children: [
-                              ChatWindow(scroller: scroller),
+                              ChatWindow(data: data, scroller: scroller),
                               Container(
                                 margin: const EdgeInsets.all(16.0),
                                 padding: const EdgeInsets.symmetric(
@@ -183,6 +192,7 @@ class HomePage extends StatelessWidget {
                                     ),
                                     drawer: HomeDrawer(
                                       ids: chatIds,
+                                      user: user,
                                       onNewChatClick: () {
                                         data.overwrite(ChatData());
                                         data.applyDefaultModel(context);
@@ -210,6 +220,8 @@ class HomePage extends StatelessWidget {
                                         user.overwrite(u.User.NOT_SIGNED_IN);
                                         data.overwrite(ChatData());
                                       },
+                                      keyDialog: keyDialog,
+                                      modelDialog: modelDialog,
                                     ),
                                     body: SafeArea(
                                       child: Center(
@@ -227,9 +239,16 @@ class HomePage extends StatelessWidget {
                                                         return Column(
                                                           children: [
                                                             ChatWindow(
+                                                                data: data,
                                                                 scroller:
                                                                     scroller),
                                                             MessageBox(
+                                                              data: data,
+                                                              keyDialog:
+                                                                  keyDialog,
+                                                              modelDialog:
+                                                                  modelDialog,
+                                                              api: api,
                                                               chatIds: chatIds,
                                                               chatScroller:
                                                                   scroller,

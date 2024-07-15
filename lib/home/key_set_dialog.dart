@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get_it/get_it.dart';
 import 'package:gpt_thing/home/api_manager.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 
 class KeySetDialog extends StatelessWidget {
-  final ChatData data = GetIt.I<ChatData>();
-  final APIManager api = GetIt.I<APIManager>();
+  final ChatData data;
+  final APIManager api;
 
-  KeySetDialog({super.key});
+  const KeySetDialog({super.key, required this.data, required this.api});
 
   @override
   Widget build(BuildContext context) {
