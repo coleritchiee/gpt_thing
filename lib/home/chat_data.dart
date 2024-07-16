@@ -254,23 +254,17 @@ class ChatData extends ChangeNotifier {
   }
 
   factory ChatData.fromJson(Map<String, dynamic> json) {
-    print(json);
-    try {
-      final stuff = ChatData()
+    final stuff = ChatData()
       ..id = json['id'] as String
       ..modelGroup = ModelGroup.getByName(json['modelGroup'] as String)
       ..tokenUsage = (json['tokenUsage'] as Map<String, dynamic>)
           .map<String, TokenUsageEntry>((model, usage) =>
-              MapEntry<String, TokenUsageEntry>(
-                  model, TokenUsageEntry.fromJson(usage as Map<String, dynamic>)))
+              MapEntry<String, TokenUsageEntry>(model,
+                  TokenUsageEntry.fromJson(usage as Map<String, dynamic>)))
       ..messages = (json['messages'] as List)
           .map((e) => ChatMessageData.fromJson(e as Map<String, dynamic>))
           .toList();
-      return stuff;
-    } catch (e) {
-      print(e);
-    }
-    return ChatData();
+    return stuff;
   }
 
   Map<String, dynamic> toJson() {

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/chat_message.dart';
 import 'package:gpt_thing/home/model_group.dart';
-import 'package:intl/intl.dart';
+// import 'package:intl/intl.dart';
 
 class ChatWindow extends StatefulWidget {
   final ChatData data;
@@ -59,29 +59,29 @@ class _ChatWindowState extends State<ChatWindow> {
       }
     }
 
-    if (widget.data.hasTokenUsage()) {
-      final formatter = NumberFormat.compact();
-      formatter.maximumFractionDigits = 1;
-      // final input = formatter.format(widget.data.inputTokens);
-      // final output = formatter.format(widget.data.outputTokens);
-      final input = 1;
-      final output = 1; // TODO: FIXIIIXIINEWJKFNJEKWLTYWE
+    // if (widget.data.hasTokenUsage()) {
+    //   final formatter = NumberFormat.compact();
+    //   formatter.maximumFractionDigits = 1;
+    //   // final input = formatter.format(widget.data.inputTokens);
+    //   // final output = formatter.format(widget.data.outputTokens);
+    //   final input = 1;
+    //   final output = 1;
 
-      messages.add(
-        Padding(
-          padding: const EdgeInsets.only(bottom: 4),
-          child: Text(
-            "Token Usage: $input input, $output output",
-            style: const TextStyle(
-              color: Colors.grey,
-              fontSize: 12,
-              fontStyle: FontStyle.italic,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      );
-    }
+    //   messages.add(
+    //     Padding(
+    //       padding: const EdgeInsets.only(bottom: 4),
+    //       child: Text(
+    //         "Token Usage: $input input, $output output",
+    //         style: const TextStyle(
+    //           color: Colors.grey,
+    //           fontSize: 12,
+    //           fontStyle: FontStyle.italic,
+    //         ),
+    //         textAlign: TextAlign.center,
+    //       ),
+    //     ),
+    //   );
+    // }
 
     return Expanded(
       child: NotificationListener<ScrollNotification>(
