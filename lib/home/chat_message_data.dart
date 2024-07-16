@@ -1,5 +1,9 @@
 import 'package:dart_openai/dart_openai.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+part 'chat_message_data.g.dart';
+
+@JsonSerializable(explicitToJson: true)
 class ChatMessageData {
   OpenAIChatMessageRole role;
   DateTime timestamp;
@@ -28,13 +32,11 @@ class ChatMessageData {
       List<OpenAIChatCompletionChoiceMessageContentItemModel> content = [];
       if (msg.text != null) {
         content.add(
-          OpenAIChatCompletionChoiceMessageContentItemModel.text(msg.text!)
-        );
+            OpenAIChatCompletionChoiceMessageContentItemModel.text(msg.text!));
       }
       if (msg.imageUrl != null) {
-        content.add(
-          OpenAIChatCompletionChoiceMessageContentItemModel.imageUrl(msg.imageUrl!)
-        );
+        content.add(OpenAIChatCompletionChoiceMessageContentItemModel.imageUrl(
+            msg.imageUrl!));
       }
       if (content.isNotEmpty) {
         apiList.add(
@@ -48,30 +50,7 @@ class ChatMessageData {
     return apiList;
   }
 
-  factory ChatMessageData.fromJson(Map<String, dynamic> json) {
-    return ChatMessageData(
-      role: OpenAIChatMessageRole.values
-          .firstWhere((role) => role.name == json['role']),
-      timestamp: json['timestamp'] as DateTime,
-      text: json['text'] as String,
-      imageUrl: json['imageUrl'] as String,
-      visible: json['visible'] as bool,
-      model: json['model'] as String,
-      inputTokens: json['inputTokens'] as int,
-      outputTokens: json['outputTokens'] as int,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'role': role.name,
-      'timestamp': timestamp,
-      'text': text,
-      'imageUrl': imageUrl,
-      'visible': visible,
-      'model': model,
-      'inputTokens': inputTokens,
-      'outputTokens': outputTokens,
-    };
-  }
+  factory ChatMessageData.fromJson(Map<String, dynamic> json) =>
+      _$ChatMessageDataFromJson(json);
+  Map<String, dynamic> toJson() => _$ChatMessageDataToJson(this);
 }

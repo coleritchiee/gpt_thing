@@ -34,7 +34,7 @@ class TokenUsageEntry {
     this.output += output;
   }
 
-  factory TokenUsageEntry.fromJson(Map<String, int> json) {
+  factory TokenUsageEntry.fromJson(Map<String, dynamic> json) {
     return TokenUsageEntry(
       input: json['input'] as int,
       output: json['output'] as int,
@@ -254,20 +254,31 @@ class ChatData extends ChangeNotifier {
   }
 
   factory ChatData.fromJson(Map<String, dynamic> json) {
-    return ChatData()
+    print(json);
+    try {
+      final stuff = ChatData()
       ..id = json['id'] as String
       ..modelGroup = ModelGroup.getByName(json['modelGroup'] as String)
-      ..tokenUsage = (json['tokenUsage'] as Map<String, Map<String, int>>).map((model, usage) => MapEntry<String, TokenUsageEntry>(model, TokenUsageEntry.fromJson(usage)))
+      ..tokenUsage = (json['tokenUsage'] as Map<String, dynamic>)
+          .map<String, TokenUsageEntry>((model, usage) =>
+              MapEntry<String, TokenUsageEntry>(
+                  model, TokenUsageEntry.fromJson(usage as Map<String, dynamic>)))
       ..messages = (json['messages'] as List)
           .map((e) => ChatMessageData.fromJson(e as Map<String, dynamic>))
           .toList();
+      return stuff;
+    } catch (e) {
+      print(e);
+    }
+    return ChatData();
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'modelGroup': modelGroup.name,
-      'tokenUsage': tokenUsage.map((model, usage) => MapEntry<String, Map<String, int>>(model, usage.toJson())),
+      'tokenUsage': tokenUsage.map((model, usage) =>
+          MapEntry<String, Map<String, int>>(model, usage.toJson())),
       'messages': messages.map((message) => message.toJson()).toList(),
     };
   }
