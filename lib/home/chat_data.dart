@@ -23,14 +23,38 @@ class Model {
   }
 }
 
+class TokenUsageEntry {
+  int input;
+  int output;
+
+  TokenUsageEntry({required this.input, required this.output});
+
+  void addUsage(int input, int output) {
+    this.input += input;
+    this.output += output;
+  }
+
+  factory TokenUsageEntry.fromJson(Map<String, int> json) {
+    return TokenUsageEntry(
+      input: json['input'] as int,
+      output: json['output'] as int,
+    );
+  }
+
+  Map<String, int> toJson() {
+    return {
+      'input': input,
+      'output': output,
+    };
+  }
+}
+
 class ChatData extends ChangeNotifier {
   // included fields
   List<ChatMessageData> messages = [];
   String id = "";
-  String model = "";
   ModelGroup modelGroup = ModelGroup.other;
-  int inputTokens = 0;
-  int outputTokens = 0;
+  Map<String, TokenUsageEntry> tokenUsage = <String, TokenUsageEntry>{};
 
   // excluded fields
   String apiKey = "";
@@ -44,6 +68,7 @@ class ChatData extends ChangeNotifier {
     ModelGroup.embeddings,
     ModelGroup.other,
   ];
+  String model = "";
   bool _thinking = false;
   String streamText = "";
   u.User user = GetIt.I<u.User>();
@@ -55,8 +80,7 @@ class ChatData extends ChangeNotifier {
     messages = data.messages;
     model = data.model;
     modelGroup = data.modelGroup;
-    inputTokens = data.inputTokens;
-    outputTokens = data.outputTokens;
+    tokenUsage = data.tokenUsage;
     _thinking = false;
     streamText = "";
     notifyListeners();
@@ -192,7 +216,7 @@ class ChatData extends ChangeNotifier {
       {String? model, int? inputTokens, int? outputTokens}) {
     messages.add(ChatMessageData(
       role: role,
-      imageUrl: url, 
+      imageUrl: url,
       timestamp: DateTime.now(),
       model: model,
       inputTokens: inputTokens,
@@ -201,14 +225,17 @@ class ChatData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addTokenUsage(int input, int output) {
-    inputTokens += input;
-    outputTokens += output;
+  void addTokenUsage(String model, int input, int output) {
+    if (tokenUsage.containsKey(model)) {
+      tokenUsage[model]!.addUsage(input, output);
+    } else {
+      tokenUsage[model] = TokenUsageEntry(input: input, output: output);
+    }
     notifyListeners();
   }
 
   bool hasTokenUsage() {
-    return inputTokens > 0 || outputTokens > 0;
+    return tokenUsage.isNotEmpty;
   }
 
   String firstUserMessage(int limit) {
@@ -229,23 +256,18 @@ class ChatData extends ChangeNotifier {
   factory ChatData.fromJson(Map<String, dynamic> json) {
     return ChatData()
       ..id = json['id'] as String
-      ..model = json['model'] as String
       ..modelGroup = ModelGroup.getByName(json['modelGroup'] as String)
-      ..inputTokens = json['inputTokens'] as int
-      ..outputTokens = json['outputTokens'] as int
+      ..tokenUsage = (json['tokenUsage'] as Map<String, Map<String, int>>).map((model, usage) => MapEntry<String, TokenUsageEntry>(model, TokenUsageEntry.fromJson(usage)))
       ..messages = (json['messages'] as List)
-          .map((e) => ChatMessageData.fromJson(
-              e as Map<String, dynamic>))
+          .map((e) => ChatMessageData.fromJson(e as Map<String, dynamic>))
           .toList();
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'model': model,
       'modelGroup': modelGroup.name,
-      'inputTokens': inputTokens,
-      'outputTokens': outputTokens,
+      'tokenUsage': tokenUsage.map((model, usage) => MapEntry<String, Map<String, int>>(model, usage.toJson())),
       'messages': messages.map((message) => message.toJson()).toList(),
     };
   }

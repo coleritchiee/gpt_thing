@@ -62,8 +62,10 @@ class _ChatWindowState extends State<ChatWindow> {
     if (widget.data.hasTokenUsage()) {
       final formatter = NumberFormat.compact();
       formatter.maximumFractionDigits = 1;
-      final input = formatter.format(widget.data.inputTokens);
-      final output = formatter.format(widget.data.outputTokens);
+      // final input = formatter.format(widget.data.inputTokens);
+      // final output = formatter.format(widget.data.outputTokens);
+      final input = 1;
+      final output = 1; // TODO: FIXIIIXIINEWJKFNJEKWLTYWE
 
       messages.add(
         Padding(

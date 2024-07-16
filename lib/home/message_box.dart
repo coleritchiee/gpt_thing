@@ -94,7 +94,7 @@ class _MessageBoxState extends State<MessageBox> {
     // widget.data.addTokenUsage(title.usage.promptTokens, title.usage.completionTokens);
   }
 
-  void recMsg(String msg, bool firstMsg) async {
+  void recMsg(String msg, bool firstMsg, String model) async {
     switch (widget.data.modelGroup) {
       case ModelGroup.chatGPT:
         late String message;
@@ -167,8 +167,9 @@ class _MessageBoxState extends State<MessageBox> {
         }
 
         // add the stuff to the database
-        widget.data.addTokenUsage(inputTokens, outputTokens);
-        widget.data.addMessage(OpenAIChatMessageRole.assistant, message);
+        widget.data.addTokenUsage(model, inputTokens, outputTokens);
+        widget.data.addMessage(OpenAIChatMessageRole.assistant, message,
+            model: model, inputTokens: inputTokens, outputTokens: outputTokens);
         if (widget.data.id == "") {
           ChatInfo info = ChatInfo(
               id: widget.data.id,
@@ -211,7 +212,8 @@ class _MessageBoxState extends State<MessageBox> {
         await DefaultCacheManager().putFile(
             firebaseUrl, base64Decode(response.data.first.b64Json!),
             fileExtension: "png");
-        widget.data.addImage(OpenAIChatMessageRole.assistant, firebaseUrl);
+        widget.data.addImage(OpenAIChatMessageRole.assistant, firebaseUrl,
+            model: model);
         ChatInfo info = widget.chatIds.getById(widget.data.id)!;
         widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
         widget.data.overwrite(FirestoreService().updateChat(widget.data, info));
@@ -238,7 +240,7 @@ class _MessageBoxState extends State<MessageBox> {
       widget.data.addMessage(OpenAIChatMessageRole.system, sysController.text);
     }
     widget.data.addMessage(OpenAIChatMessageRole.user, msgController.text);
-    recMsg(msgController.text, firstMessage);
+    recMsg(msgController.text, firstMessage, widget.data.model);
     msgController.clear();
     sysController.clear();
     setState(() {
