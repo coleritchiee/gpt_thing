@@ -12,12 +12,16 @@ class User extends ChangeNotifier{
 
   String uid;
   String name;
+  String? apiKey;
+  String? org;
   UserSettings settings;
 
   User({
     required this.uid,
     required this.name,
-    required this.settings
+    required this.settings,
+    this.apiKey,
+    this.org
   });
 
   void updateSettings(UserSettings settings){
@@ -29,6 +33,8 @@ class User extends ChangeNotifier{
     this.name = user.name;
     this.uid = user.uid;
     this.settings = user.settings;
+    this.apiKey = user.apiKey;
+    this.org = user.org;
     notifyListeners();
   }
 

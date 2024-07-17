@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gpt_thing/home/api_manager.dart';
 import 'package:gpt_thing/home/chat_data.dart';
+import 'package:gpt_thing/services/firestore.dart';
 
 class KeySetDialog extends StatelessWidget {
   final ChatData data;
@@ -32,6 +33,10 @@ class KeySetDialog extends StatelessWidget {
               // i know its ugly but i need this function here to be able to call setState
               void setInfo() async {
                 data.setKey(keyController.text, orgController.text);
+                data.user.apiKey = keyController.text;
+                data.user.org = orgController.text;
+                data.user.overwrite(data.user);
+                FirestoreService().updateUser(data.user);
                 setState(() {
                   isWaiting = true;
                 });
@@ -72,8 +77,7 @@ class KeySetDialog extends StatelessWidget {
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    "This info will not be saved.",
+                  Text(!data.user.settings.saveAPIKey?"This info will not be saved.":"This info WILL be saved. This can be changed in settings.",
                     style: Theme.of(context).textTheme.labelSmall,
                     textAlign: TextAlign.center,
                   ),

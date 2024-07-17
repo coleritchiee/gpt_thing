@@ -1,3 +1,4 @@
+import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:gpt_thing/home/chat_data.dart';
@@ -129,8 +130,13 @@ class SettingsDialog extends StatelessWidget {
                             "This is sensitive info, only do this if you understand the risks involved",
                         noteColor: Colors.red.shade400,
                         user.settings.saveAPIKey, (value) {
-                      setState(() => user.updateSettings(
-                          user.settings.copyWith(saveAPIKey: value)));
+                      setState((){
+                        user.updateSettings(user.settings.copyWith(saveAPIKey: value));
+                        if(data.apiKey != ""){
+                          user.apiKey = data.apiKey;
+                          user.org = data.organization;
+                        }
+                      });
                     }, defaultValue: UserSettings.DEFAULT.saveAPIKey),
                     SettingsTile(
                       "Set API Key",
@@ -179,6 +185,8 @@ class SettingsDialog extends StatelessWidget {
                               uid: user.uid,
                               name: nameController.text,
                               settings: user.settings,
+                              apiKey: user.apiKey,
+                              org: user.org
                             ));
                             FirestoreService().updateUser(user);
                             Navigator.of(context).pop();

@@ -7,6 +7,7 @@ import 'package:gpt_thing/home/home_drawer.dart';
 import 'package:gpt_thing/services/auth.dart';
 import 'package:gpt_thing/services/firestore.dart';
 import '../services/user_locator.dart';
+import 'api_manager.dart';
 import 'chat_info.dart';
 import '../services/models.dart' as u;
 import 'chat_window.dart';
@@ -23,9 +24,27 @@ class HomePage extends StatelessWidget {
 
     bool linkHover = false;
 
-    void applyUserSettings() {
-      if (user.settings.saveAPIKey) {
-        // FETCH AND SET API KEY HERE
+    void applyUserSettings() async {
+      if (user.settings.saveAPIKey && user.apiKey != null && user.apiKey != "") {
+        try{
+          await APIManager.getModels();
+          data.apiKey = user.apiKey!;
+          data.overwrite(data);
+          if(user.org != null && user.org != "") {
+            data.organization = user.org!;
+          }
+        }
+        catch(e){
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                // TODO: change this to something else later
+                content: Text(
+                    "Something went wrong. Check your API key and try again."),
+              ),
+            );
+          }
+        }
         data.applyDefaultModel(context);
       }
     }

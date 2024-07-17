@@ -39,6 +39,10 @@ class FirestoreService {
 
   Future<void> updateUser(u.User user) async {
     try{
+      if(user.settings.saveAPIKey != true){
+        user.apiKey = null;
+        user.org = null;
+      }
       await _db.collection('users').doc(user.uid).set(user.toJson());
       GetIt.I<u.User>().overwrite(user);
     }
