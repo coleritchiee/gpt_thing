@@ -24,8 +24,10 @@ class HomePage extends StatelessWidget {
     bool linkHover = false;
 
     void applyUserSettings() async {
+      print(user.settings.saveAPIKey);
+      print(user.apiKey);
       if (user.settings.saveAPIKey) {
-        final validated = await data.setKey(user.apiKey!, user.org!);
+        final validated = await data.setKey(user.apiKey!, user.org!, fromUser: true);
         if (validated) {
           data.applyDefaultModel(context);
         } else {
@@ -188,10 +190,10 @@ class HomePage extends StatelessWidget {
                           // USER IS FOUND, CONFIGURE SETTINGS HERE
                           ChatIdNotifier chatIds =
                               ChatIdNotifier(snapshot.data!);
-                          applyUserSettings();
                           return ListenableBuilder(
                               listenable: user,
                               builder: (context, snapshot) {
+                                applyUserSettings();
                                 return Scaffold(
                                     appBar: AppBar(
                                       title: Text("GPT Thing ${user.name}"),

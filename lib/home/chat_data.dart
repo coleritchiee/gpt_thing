@@ -92,7 +92,7 @@ class ChatData extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> setKey(String key, String org) async {
+  Future<bool> setKey(String key, String org, {bool fromUser = false}) async {
     bool validated = true;
     OpenAI.apiKey = apiKey = key;
     OpenAI.organization = organization = org;
@@ -102,7 +102,7 @@ class ChatData extends ChangeNotifier {
       resetKey();
       validated = false;
     }
-    if (user.settings.saveAPIKey) {
+    if (user.settings.saveAPIKey && !fromUser) {
       user.setKey(apiKey, organization);
     }
     notifyListeners();
@@ -143,8 +143,8 @@ class ChatData extends ChangeNotifier {
   }
 
   void applyDefaultModel([BuildContext? context]) {
-    if (messages.isNotEmpty) {
-      return; // don't change model if there's a conversation
+    if (model.isNotEmpty) {
+      return; // don't change model if it's already set
     }
     if (keyIsSet() && user.settings.defaultModel.isNotEmpty) {
       Model? defaultModel = getModelById(user.settings.defaultModel);
