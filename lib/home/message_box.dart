@@ -290,7 +290,7 @@ class _MessageBoxState extends State<MessageBox> {
     return Column(
       children: [
         if (widget.data.messages.isEmpty &&
-            widget.user.settings.showSystemPrompt)
+            widget.user.settings.showSystemPrompt && widget.data.modelGroup.systemPrompt)
           ConstrainedBox(
             constraints: const BoxConstraints(
               maxHeight: 215,
