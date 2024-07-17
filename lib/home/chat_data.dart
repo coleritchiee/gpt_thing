@@ -1,6 +1,7 @@
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:gpt_thing/home/api_manager.dart';
 import 'package:gpt_thing/home/chat_message_data.dart';
 import 'package:gpt_thing/home/model_group.dart';
 import 'package:gpt_thing/services/firestore.dart';
@@ -91,14 +92,21 @@ class ChatData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setKey(String key, String org) {
-    apiKey = key;
-    OpenAI.apiKey = apiKey;
-    organization = org;
-    if (organization.isNotEmpty) {
-      OpenAI.organization = organization;
+  Future<bool> setKey(String key, String org) async {
+    bool validated = true;
+    OpenAI.apiKey = apiKey = key;
+    OpenAI.organization = organization = org;
+    try {
+      addModels(await APIManager.getModels());
+    } catch (e) {
+      resetKey();
+      validated = false;
+    }
+    if (user.settings.saveAPIKey) {
+      user.setKey(apiKey, organization);
     }
     notifyListeners();
+    return validated;
   }
 
   void resetKey() {

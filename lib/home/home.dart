@@ -7,7 +7,6 @@ import 'package:gpt_thing/home/home_drawer.dart';
 import 'package:gpt_thing/services/auth.dart';
 import 'package:gpt_thing/services/firestore.dart';
 import '../services/user_locator.dart';
-import 'api_manager.dart';
 import 'chat_info.dart';
 import '../services/models.dart' as u;
 import 'chat_window.dart';
@@ -25,16 +24,13 @@ class HomePage extends StatelessWidget {
     bool linkHover = false;
 
     void applyUserSettings() async {
-      if (user.settings.saveAPIKey && user.apiKey != null && user.apiKey != "") {
-        try{
-          await APIManager.getModels();
-          data.apiKey = user.apiKey!;
-          data.overwrite(data);
-          if(user.org != null && user.org != "") {
-            data.organization = user.org!;
-          }
-        }
-        catch(e){
+      if (user.settings.saveAPIKey) {
+        final validated = await data.setKey(user.apiKey!, user.org!);
+        if (validated) {
+          data.applyDefaultModel(context);
+        } else {
+          user.updateSettings(user.settings.copyWith(saveAPIKey: false));
+          FirestoreService().updateUser(user);
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -45,7 +41,6 @@ class HomePage extends StatelessWidget {
             );
           }
         }
-        data.applyDefaultModel(context);
       }
     }
 

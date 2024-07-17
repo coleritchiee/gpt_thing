@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gpt_thing/home/api_manager.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/services/firestore.dart';
 
@@ -32,40 +31,29 @@ class KeySetDialog extends StatelessWidget {
             builder: (context, setState) {
               // i know its ugly but i need this function here to be able to call setState
               void setInfo() async {
-                data.setKey(keyController.text, orgController.text);
-                data.user.apiKey = keyController.text;
-                data.user.org = orgController.text;
-                data.user.overwrite(data.user);
-                FirestoreService().updateUser(data.user);
                 setState(() {
                   isWaiting = true;
                 });
-                try {
-                  data.addModels(await APIManager.getModels());
-                } catch (e) {
+                final validated = await data.setKey(keyController.text, orgController.text);
+                if (validated) {
+                  FirestoreService().updateUser(data.user);
                   if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        // TODO: change this to something else later
-                        content: Text(
-                            "Something went wrong. Check your API key and try again."),
-                      ),
-                    );
+                    ScaffoldMessenger.of(context).clearSnackBars();
+                    Navigator.pop(context, true);
                   }
-                  data.resetKey();
-                  setState(() {
-                    isWaiting = false;
-                  });
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      // TODO: change this to something else later
+                      content: Text(
+                          "Something went wrong. Check your API key and try again."),
+                    ),
+                  );
                   keyFocus.requestFocus();
-                  return;
                 }
                 setState(() {
                   isWaiting = false;
                 });
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).clearSnackBars();
-                  Navigator.pop(context, true);
-                }
                 data.applyDefaultModel(context);
               }
 
@@ -77,7 +65,10 @@ class KeySetDialog extends StatelessWidget {
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   const SizedBox(height: 4),
-                  Text(!data.user.settings.saveAPIKey?"This info will not be saved.":"This info WILL be saved. This can be changed in settings.",
+                  Text(
+                    !data.user.settings.saveAPIKey
+                        ? "This info will not be saved."
+                        : "This info WILL be saved. This can be changed in settings.",
                     style: Theme.of(context).textTheme.labelSmall,
                     textAlign: TextAlign.center,
                   ),

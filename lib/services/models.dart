@@ -24,6 +24,12 @@ class User extends ChangeNotifier{
     this.org
   });
 
+  void setKey(String key, String org) {
+    this.apiKey = key;
+    this.org = org;
+    notifyListeners();
+  }
+
   void updateSettings(UserSettings settings){
     this.settings = settings;
     notifyListeners();

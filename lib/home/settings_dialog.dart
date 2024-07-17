@@ -1,4 +1,3 @@
-import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:gpt_thing/home/chat_data.dart';
@@ -129,14 +128,23 @@ class SettingsDialog extends StatelessWidget {
                         note:
                             "This is sensitive info, only do this if you understand the risks involved",
                         noteColor: Colors.red.shade400,
-                        user.settings.saveAPIKey, (value) {
-                      setState((){
-                        user.updateSettings(user.settings.copyWith(saveAPIKey: value));
-                        if(data.apiKey != ""){
-                          user.apiKey = data.apiKey;
-                          user.org = data.organization;
+                        user.settings.saveAPIKey, (value) async {
+                      if (value) {
+                        if (!data.keyIsSet()) {
+                          await showDialog(
+                              context: context,
+                              builder: KeySetDialog(data).build);
                         }
-                      });
+                        if (data.keyIsSet()) {
+                          user.updateSettings(
+                              user.settings.copyWith(saveAPIKey: value));
+                          user.setKey(data.apiKey, data.organization);
+                        }
+                      } else {
+                        user.updateSettings(
+                            user.settings.copyWith(saveAPIKey: value));
+                      }
+                      setState(() {});
                     }, defaultValue: UserSettings.DEFAULT.saveAPIKey),
                     SettingsTile(
                       "Set API Key",
@@ -182,12 +190,11 @@ class SettingsDialog extends StatelessWidget {
                         TextButton(
                           onPressed: () {
                             user.overwrite(u.User(
-                              uid: user.uid,
-                              name: nameController.text,
-                              settings: user.settings,
-                              apiKey: user.apiKey,
-                              org: user.org
-                            ));
+                                uid: user.uid,
+                                name: nameController.text,
+                                settings: user.settings,
+                                apiKey: user.apiKey,
+                                org: user.org));
                             FirestoreService().updateUser(user);
                             Navigator.of(context).pop();
                           },
