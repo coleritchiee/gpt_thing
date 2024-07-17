@@ -31,14 +31,25 @@ class HomePage extends StatelessWidget {
         } else {
           user.updateSettings(user.settings.copyWith(saveAPIKey: false));
           FirestoreService().updateUser(user);
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                // TODO: change this to something else later
-                content: Text(
-                    "Something went wrong. Check your API key and try again."),
-              ),
-            );
+          if (context.mounted && ModalRoute.of(context)!.isCurrent) {
+            showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text("API Key Error"),
+                content: const Text(
+                    "Your saved API key failed to validate. Check your key, and set it again in settings."),
+                actions: [
+                  TextButton(
+                    child: const Text("OK"),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  )
+                ],
+                insetPadding: const EdgeInsets.all(24),
+              );
+            });
           }
         }
       }
