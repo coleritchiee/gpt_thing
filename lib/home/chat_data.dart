@@ -79,7 +79,10 @@ class ChatData extends ChangeNotifier {
   void overwrite(ChatData data) {
     id = data.id;
     messages = data.messages;
-    model = data.model;
+    final ChatMessageData? lastMessage = data.messages.lastOrNull;
+    if (lastMessage != null) {
+      model = lastMessage.model!;
+    }
     modelGroup = data.modelGroup;
     tokenUsage = data.tokenUsage;
     _thinking = false;
