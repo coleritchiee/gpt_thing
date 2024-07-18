@@ -72,6 +72,7 @@ class _ChatMessageState extends State<ChatMessage> {
               children: [
                 if (widget.text.isNotEmpty)
                   SelectionArea(
+                      // use SelectionArea to avoid multiple highlights
                       child: widget.role == OpenAIChatMessageRole.assistant
                           ? markdown
                               ? MarkdownBody(
@@ -108,28 +109,44 @@ class _ChatMessageState extends State<ChatMessage> {
                                   },
                                   checkboxBuilder: (isChecked) {
                                     return Icon(
-                                      isChecked
-                                          ? Icons.check_box_rounded
-                                          : Icons
-                                              .check_box_outline_blank_rounded,
-                                      applyTextScaling: true,
-                                      size: 16
-                                    );
+                                        isChecked
+                                            ? Icons.check_box_rounded
+                                            : Icons
+                                                .check_box_outline_blank_rounded,
+                                        applyTextScaling: true,
+                                        size: 16);
                                   },
                                   builders: {
                                       'code': MarkdownCode(),
                                     })
                               : Text(
                                   widget.text,
-                                  textAlign: TextAlign.left,
                                 )
-                          : Text(
-                              widget.text,
-                              textAlign:
-                                  widget.role == OpenAIChatMessageRole.user
-                                      ? TextAlign.right
-                                      : TextAlign.center,
-                            )), // use SelectionArea to avoid multiple highlights
+                          : FractionallySizedBox(
+                              widthFactor: 0.9,
+                              child: Align(
+                                alignment:
+                                    widget.role == OpenAIChatMessageRole.user
+                                        ? Alignment.centerRight
+                                        : widget.role ==
+                                                OpenAIChatMessageRole.system
+                                            ? Alignment.center
+                                            : Alignment.centerLeft,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(16),
+                                    color: Colors.grey[850],
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 12, vertical: 6),
+                                    child: Text(
+                                      widget.text,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            )),
                 if (widget.imageUrl.isNotEmpty)
                   ChatImage(imageUrl: widget.imageUrl),
                 if (widget.text.isEmpty && widget.imageUrl.isEmpty)
