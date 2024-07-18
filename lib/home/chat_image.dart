@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
@@ -20,6 +21,13 @@ class ChatImage extends StatelessWidget {
   final String? altText;
 
   final ValueNotifier<bool> imgLoaded = ValueNotifier(false);
+
+  void checkInCache() async {
+    final FileInfo? file = await DefaultCacheManager().getFileFromCache(imageUrl);
+    if (file != null) {
+      imgLoaded.value = true;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,15 +81,21 @@ class ChatImage extends StatelessWidget {
                   decoration: BoxDecoration(color: Colors.grey[900]!),
                   child: CachedNetworkImage(
                     imageUrl: imageUrl,
-                    imageBuilder: (context, imageProvider) {
-                      if (!imgLoaded.value) {
+                    memCacheWidth: (min(MediaQuery.of(context).size.width, 768) * 0.6).round(),
+                    // imageBuilder: (context, imageProvider) {
+                    //   if (!imgLoaded.value) {
+                    //     Future.delayed(Duration.zero, () {
+                    //       imgLoaded.value = true;
+                    //     });
+                    //   }
+                    //   return Image(image: imageProvider);
+                    // },
+                    progressIndicatorBuilder: (context, url, downloadProgress) {
+                      if (downloadProgress.progress == 1 && !imgLoaded.value) {
                         Future.delayed(Duration.zero, () {
                           imgLoaded.value = true;
                         });
                       }
-                      return Image(image: imageProvider);
-                    },
-                    progressIndicatorBuilder: (context, url, downloadProgress) {
                       return Padding(
                         padding: const EdgeInsets.all(8),
                         child: Column(
@@ -176,6 +190,7 @@ class ChatImage extends StatelessWidget {
                       ),
                     );
                   } else {
+                    checkInCache();
                     return const SizedBox.shrink();
                   }
                 }),
