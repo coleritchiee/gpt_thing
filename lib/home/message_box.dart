@@ -236,6 +236,8 @@ class _MessageBoxState extends State<MessageBox> {
       return;
     }
     bool firstMessage = widget.data.messages.isEmpty;
+    sysController.text = sysController.text.trim();
+    msgController.text = msgController.text.trim();
     if (sysController.text.isNotEmpty) {
       widget.data.addMessage(OpenAIChatMessageRole.system, sysController.text);
     }
@@ -281,7 +283,9 @@ class _MessageBoxState extends State<MessageBox> {
 
   void updateEmpty() {
     setState(() {
-      _isEmpty = msgController.text.isEmpty;
+      final RegExp validMessage = RegExp(r"[a-zA-Z0-9]+", caseSensitive: false);
+      _isEmpty = msgController.text.isEmpty ||
+          !validMessage.hasMatch(msgController.text);
     });
   }
 
@@ -290,7 +294,8 @@ class _MessageBoxState extends State<MessageBox> {
     return Column(
       children: [
         if (widget.data.messages.isEmpty &&
-            widget.user.settings.showSystemPrompt && widget.data.modelGroup.systemPrompt)
+            widget.user.settings.showSystemPrompt &&
+            widget.data.modelGroup.systemPrompt)
           ConstrainedBox(
             constraints: const BoxConstraints(
               maxHeight: 215,
