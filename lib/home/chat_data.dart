@@ -54,6 +54,7 @@ class ChatData extends ChangeNotifier {
   // included fields
   List<ChatMessageData> messages = [];
   String id = "";
+  String lastModel = "";
   ModelGroup modelGroup = ModelGroup.other;
   Map<String, TokenUsageEntry> tokenUsage = <String, TokenUsageEntry>{};
 
@@ -79,12 +80,7 @@ class ChatData extends ChangeNotifier {
   void overwrite(ChatData data) {
     id = data.id;
     messages = data.messages;
-    final ChatMessageData? lastMessage = data.messages.lastOrNull;
-    if (lastMessage != null) {
-      model = lastMessage.model!;
-    } else {
-      model = "";
-    }
+    model = lastModel = data.lastModel;
     modelGroup = data.modelGroup;
     tokenUsage = data.tokenUsage;
     _thinking = false;
@@ -136,6 +132,10 @@ class ChatData extends ChangeNotifier {
       modelGroup = model.group;
       notifyListeners();
     }
+  }
+
+  void setLastModel() {
+    lastModel = model;
   }
 
   Model? getModelById(String id) {
@@ -269,6 +269,7 @@ class ChatData extends ChangeNotifier {
   factory ChatData.fromJson(Map<String, dynamic> json) {
     final stuff = ChatData()
       ..id = json['id'] as String
+      ..lastModel = json['lastModel'] as String
       ..modelGroup = ModelGroup.getByName(json['modelGroup'] as String)
       ..tokenUsage = (json['tokenUsage'] as Map<String, dynamic>)
           .map<String, TokenUsageEntry>((model, usage) =>
@@ -283,6 +284,7 @@ class ChatData extends ChangeNotifier {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'lastModel' : lastModel,
       'modelGroup': modelGroup.name,
       'tokenUsage': tokenUsage.map((model, usage) =>
           MapEntry<String, Map<String, int>>(model, usage.toJson())),

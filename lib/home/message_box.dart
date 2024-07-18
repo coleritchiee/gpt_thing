@@ -242,6 +242,7 @@ class _MessageBoxState extends State<MessageBox> {
       widget.data.addMessage(OpenAIChatMessageRole.system, sysController.text);
     }
     widget.data.addMessage(OpenAIChatMessageRole.user, msgController.text);
+    widget.data.setLastModel();
     recMsg(msgController.text, firstMessage, widget.data.model);
     msgController.clear();
     sysController.clear();
