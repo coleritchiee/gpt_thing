@@ -82,6 +82,8 @@ class ChatData extends ChangeNotifier {
     final ChatMessageData? lastMessage = data.messages.lastOrNull;
     if (lastMessage != null) {
       model = lastMessage.model!;
+    } else {
+      model = "";
     }
     modelGroup = data.modelGroup;
     tokenUsage = data.tokenUsage;
