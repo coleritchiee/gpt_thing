@@ -108,62 +108,47 @@ class _MessageBoxState extends State<MessageBox> {
             widget.data.model);
         streamCompleter = Completer<bool>();
         String buffer = "";
+        late final String Function(String delta, String buffer) bufferBehavior;
         switch (widget.user.settings.streamResponse) {
           case "word":
-            chatSub = chatStream.listen(
-              (delta) {
-                if (delta.usage != null) {
-                  inputTokens = delta.usage!.promptTokens;
-                  outputTokens = delta.usage!.completionTokens;
-                }
-                if (delta.haveChoices) {
-                  widget.data.addChatStreamDelta(getStreamDeltaString(delta));
-                }
-              },
-              onDone: () {
-                streamCompleter!.complete(true);
-              },
-            );
+            bufferBehavior = (delta, buffer) {
+              widget.data.addChatStreamDelta(delta);
+              return "";
+            };
             break;
           case "line":
-            chatSub = chatStream.listen(
-              (delta) {
-                if (delta.usage != null) {
-                  inputTokens = delta.usage!.promptTokens;
-                  outputTokens = delta.usage!.completionTokens;
-                }
-                if (delta.haveChoices) {
-                  buffer += getStreamDeltaString(delta);
-                  if (buffer.contains("\n")) {
-                    widget.data.addChatStreamDelta(buffer);
-                    buffer = "";
-                  }
-                }
-              },
-              onDone: () {
-                streamCompleter!.complete(true);
-              },
-            );
+            bufferBehavior = (delta, buffer) {
+              buffer += delta;
+              if (buffer.contains("\n")) {
+                widget.data.addChatStreamDelta(buffer);
+                buffer = "";
+              }
+              return buffer;
+            };
             break;
           case "off":
-            chatSub = chatStream.listen(
-              (delta) {
-                if (delta.usage != null) {
-                  inputTokens = delta.usage!.promptTokens;
-                  outputTokens = delta.usage!.completionTokens;
-                }
-                if (delta.haveChoices) {
-                  buffer += getStreamDeltaString(delta);
-                }
-              },
-              onDone: () {
-                streamCompleter!.complete(true);
-              },
-            );
+            bufferBehavior = (delta, buffer) {
+              return buffer + delta;
+            };
             break;
           default:
             print("invalid streamResponse setting");
+            return;
         }
+        chatSub = chatStream.listen(
+          (delta) {
+            if (delta.usage != null) {
+              inputTokens = delta.usage!.promptTokens;
+              outputTokens = delta.usage!.completionTokens;
+            }
+            if (delta.haveChoices) {
+              buffer = bufferBehavior(getStreamDeltaString(delta), buffer);
+            }
+          },
+          onDone: () {
+            streamCompleter!.complete(true);
+          },
+        );
         await streamCompleter!.future;
 
         widget.data.addChatStreamDelta(buffer);
