@@ -308,7 +308,7 @@ class _MessageBoxState extends State<MessageBox> {
             child: Container(
               padding: const EdgeInsets.only(right: 12),
               decoration: BoxDecoration(
-                border: Border.all(color: (Colors.grey[800])!),
+                border: Border.all(color: (Colors.grey.shade800)),
                 borderRadius: const BorderRadius.all(
                   Radius.circular(18),
                 ),
@@ -321,7 +321,7 @@ class _MessageBoxState extends State<MessageBox> {
                   decoration: InputDecoration(
                     hintText: 'System Prompt (Optional)',
                     hintStyle: TextStyle(
-                      color: Colors.grey[500],
+                      color: Colors.grey.shade500,
                     ),
                     contentPadding: const EdgeInsets.only(
                       left: 22.0,
@@ -344,7 +344,7 @@ class _MessageBoxState extends State<MessageBox> {
           child: Container(
             padding: const EdgeInsets.only(right: 12),
             decoration: BoxDecoration(
-              border: Border.all(color: (Colors.grey[800])!),
+              border: Border.all(color: (Colors.grey.shade800)),
               borderRadius: const BorderRadius.all(
                 Radius.circular(18),
               ),
@@ -365,7 +365,7 @@ class _MessageBoxState extends State<MessageBox> {
                             ? "Send a message..."
                             : "Message ${widget.data.modelGroup.name}",
                         hintStyle: TextStyle(
-                          color: Colors.grey[500],
+                          color: Colors.grey.shade500,
                         ),
                         contentPadding: const EdgeInsets.only(
                           left: 22.0,
@@ -386,8 +386,8 @@ class _MessageBoxState extends State<MessageBox> {
                       : _isEmpty || _isWaiting
                           ? null
                           : sendMsg,
-                  color: Colors.grey[900],
-                  disabledColor: Colors.grey[900],
+                  color: Colors.grey.shade900,
+                  disabledColor: Colors.grey.shade900,
                   tooltip:
                       canCancelStream() ? "Stop responding" : "Send message",
                   style: ButtonStyle(

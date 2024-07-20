@@ -174,9 +174,9 @@ class ModelDialog extends StatelessWidget {
                                   },
                                   value: showPreviews,
                                   side: BorderSide(
-                                    color: (Colors.grey[500])!,
+                                    color: Colors.grey.shade500,
                                   ),
-                                  activeColor: Colors.grey[500],
+                                  activeColor: Colors.grey.shade500,
                                   materialTapTargetSize:
                                       MaterialTapTargetSize.shrinkWrap,
                                 ),

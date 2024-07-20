@@ -119,7 +119,7 @@ class HomeDrawer extends StatelessWidget {
                                       Radius.circular(5),
                                     ),
                                   ),
-                                  tileColor: Colors.green[600],
+                                  tileColor: Colors.green.shade600,
                                   onTap: () {
                                     Navigator.of(context)
                                         .pushReplacementNamed('/register');

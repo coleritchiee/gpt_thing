@@ -81,7 +81,7 @@ class KeySetDialog extends StatelessWidget {
                           const SizedBox(height: 12),
                           Container(
                             decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey[800]!),
+                              border: Border.all(color: Colors.grey.shade800),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Row(
@@ -114,7 +114,7 @@ class KeySetDialog extends StatelessWidget {
                                   padding: const EdgeInsets.all(4),
                                   child: IconButton(
                                     icon: const Icon(Icons.paste_rounded),
-                                    color: Colors.grey[600]!,
+                                    color: Colors.grey.shade600,
                                     style: const ButtonStyle(
                                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                     ),
@@ -133,7 +133,7 @@ class KeySetDialog extends StatelessWidget {
                           const SizedBox(height: 8),
                           Container(
                             decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey[800]!),
+                              border: Border.all(color: Colors.grey.shade800),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Row(
@@ -161,7 +161,7 @@ class KeySetDialog extends StatelessWidget {
                                   padding: const EdgeInsets.all(4),
                                   child: IconButton(
                                     icon: const Icon(Icons.paste_rounded),
-                                    color: Colors.grey[600]!,
+                                    color: Colors.grey.shade600,
                                     style: const ButtonStyle(
                                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                     ),
