@@ -86,12 +86,12 @@ class _MessageBoxState extends State<MessageBox> {
     final title = await APIManager.getChatTitle(
         ChatMessageData.convertForAPI(widget.data.messages));
     info.title = title.choices.first.message.content!.first.text!;
+    // maybe change this to a separate type of token usage? for now it's fine to just
+    // classify it under the model
+    widget.data.addTokenUsage("gpt-3.5-turbo", title.usage.promptTokens,
+        title.usage.completionTokens);
     widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
     widget.data.overwrite(FirestoreService().updateChat(widget.data, info));
-    // replace this with adding tokens to the user profile so they can keep track,
-    // otherwise the models between the title generation and the conversation can differ
-    // and it will be an inaccurate count
-    // widget.data.addTokenUsage(title.usage.promptTokens, title.usage.completionTokens);
   }
 
   void recMsg(String msg, bool firstMsg, String model) async {

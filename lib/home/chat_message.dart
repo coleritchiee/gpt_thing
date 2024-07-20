@@ -179,6 +179,7 @@ class _ChatMessageState extends State<ChatMessage> {
             ],
           ),
         ),
+        const SizedBox(height: 4),
         if (widget.role == OpenAIChatMessageRole.assistant &&
             !widget.streaming &&
             widget.imageUrl != "Generating...")
@@ -186,7 +187,6 @@ class _ChatMessageState extends State<ChatMessage> {
             alignment: Alignment.centerLeft,
             child: Padding(
               padding: const EdgeInsets.only(
-                top: 4,
                 bottom: 8,
               ),
               child: Row(
