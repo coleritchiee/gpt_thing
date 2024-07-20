@@ -13,14 +13,18 @@ class ChatMessage extends StatefulWidget {
     super.key,
     required this.role,
     required this.modelGroup,
+    this.model,
     this.text = "",
     this.imageUrl = "",
+    this.streaming = false,
   });
 
   final OpenAIChatMessageRole role;
   final ModelGroup modelGroup;
+  final String? model;
   final String text;
   final String imageUrl;
+  final bool streaming;
 
   @override
   State<ChatMessage> createState() => _ChatMessageState();
@@ -161,8 +165,7 @@ class _ChatMessageState extends State<ChatMessage> {
               ],
             ),
           ),
-          if (widget.role == OpenAIChatMessageRole.assistant &&
-              widget.text.isNotEmpty)
+          if (widget.role == OpenAIChatMessageRole.assistant && !widget.streaming && widget.imageUrl != "Generating...")
             Align(
               alignment: Alignment.centerLeft,
               child: Padding(
@@ -171,37 +174,49 @@ class _ChatMessageState extends State<ChatMessage> {
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    CompactIconButton(
-                      icon: const Icon(Icons.copy_rounded),
-                      tooltip: "Copy message",
-                      onPressed: () async {
-                        await Clipboard.setData(
-                            ClipboardData(text: widget.text));
-                        return true;
-                      },
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Text(
+                        widget.model!,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),
+                      ),
                     ),
-                    if (markdown)
+                    if (widget.text.isNotEmpty)
                       CompactIconButton(
-                          icon: const Icon(Icons.code_off_rounded),
-                          tooltip: "View without formatting",
-                          showConfirm: false,
-                          onPressed: () async {
-                            setState(() {
-                              markdown = false;
-                            });
-                            return true;
-                          })
-                    else
-                      CompactIconButton(
-                          icon: const Icon(Icons.code_rounded),
-                          tooltip: "View with Markdown",
-                          showConfirm: false,
-                          onPressed: () async {
-                            setState(() {
-                              markdown = true;
-                            });
-                            return true;
-                          }),
+                        icon: const Icon(Icons.copy_rounded),
+                        tooltip: "Copy message",
+                        onPressed: () async {
+                          await Clipboard.setData(
+                              ClipboardData(text: widget.text));
+                          return true;
+                        },
+                      ),
+                    if (widget.text.isNotEmpty)
+                      if (markdown)
+                        CompactIconButton(
+                            icon: const Icon(Icons.code_off_rounded),
+                            tooltip: "View without formatting",
+                            showConfirm: false,
+                            onPressed: () async {
+                              setState(() {
+                                markdown = false;
+                              });
+                              return true;
+                            })
+                      else
+                        CompactIconButton(
+                            icon: const Icon(Icons.code_rounded),
+                            tooltip: "View with Markdown",
+                            showConfirm: false,
+                            onPressed: () async {
+                              setState(() {
+                                markdown = true;
+                              });
+                              return true;
+                            }),
                   ],
                 ),
               ),

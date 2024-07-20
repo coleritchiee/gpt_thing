@@ -31,6 +31,7 @@ class _ChatWindowState extends State<ChatWindow> {
     messages.addAll(widget.data.messages.map((msg) {
       return ChatMessage(
         role: msg.role,
+        model: msg.model,
         modelGroup: widget.data.modelGroup,
         text: msg.text != null ? msg.text! : "",
         imageUrl: msg.imageUrl != null
@@ -54,6 +55,7 @@ class _ChatWindowState extends State<ChatWindow> {
             role: OpenAIChatMessageRole.assistant,
             modelGroup: widget.data.modelGroup,
             text: widget.data.streamText,
+            streaming: true,
           ),
         );
       }
