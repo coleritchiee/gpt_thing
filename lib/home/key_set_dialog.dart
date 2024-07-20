@@ -34,7 +34,8 @@ class KeySetDialog extends StatelessWidget {
                 setState(() {
                   isWaiting = true;
                 });
-                final validated = await data.setKey(keyController.text, orgController.text);
+                final validated =
+                    await data.setKey(keyController.text, orgController.text);
                 if (validated) {
                   FirestoreService().updateUser(data.user);
                   if (context.mounted) {
@@ -188,20 +189,24 @@ class KeySetDialog extends StatelessWidget {
                       Row(
                         children: [
                           if (isWaiting)
-                            const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(),
+                            const Padding(
+                              padding: EdgeInsets.only(right: 8),
+                              child: SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(),
+                              ),
+                            )
+                          else
+                            TextButton(
+                              onPressed: keyController.text.isEmpty
+                                  ? null
+                                  : setInfo,
+                              style: const ButtonStyle(
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              child: const Text('Submit'),
                             ),
-                          TextButton(
-                            onPressed: keyController.text.isEmpty || isWaiting
-                                ? null
-                                : setInfo,
-                            style: const ButtonStyle(
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            ),
-                            child: const Text('Submit'),
-                          ),
                         ],
                       ),
                     ],
