@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:gpt_thing/home/chat_data.dart';
@@ -148,7 +149,7 @@ class SettingsDialog extends StatelessWidget {
                     }, defaultValue: UserSettings.DEFAULT.saveAPIKey),
                     SettingsTile(
                       "Set API Key",
-                      "It may or may not be necessary to use this app",
+                      "It's necessary in order to use the OpenAI API",
                       note:
                           data.keyIsSet() ? "Key is set!" : "Currently not set",
                       null,
@@ -160,22 +161,23 @@ class SettingsDialog extends StatelessWidget {
                       },
                       buttonIcon: const Icon(Icons.key_rounded),
                     ),
-                    SettingsTile(
-                      "Clear Cache",
-                      "This will not delete any of your chats or images",
-                      null,
-                      (value) async {
-                        await DefaultCacheManager().emptyCache();
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(const SnackBar(
-                            content: Text('Cache cleared'),
-                            duration: Duration(seconds: 2),
-                          ));
-                        }
-                      },
-                      buttonIcon: const Icon(Icons.delete_rounded),
-                    ),
+                    if (!kIsWeb)
+                      SettingsTile(
+                        "Clear Cache",
+                        "This will not delete any of your chats or images",
+                        null,
+                        (value) async {
+                          await DefaultCacheManager().emptyCache();
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text('Cache cleared'),
+                              duration: Duration(seconds: 2),
+                            ));
+                          }
+                        },
+                        buttonIcon: const Icon(Icons.delete_rounded),
+                      ),
                     const SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
