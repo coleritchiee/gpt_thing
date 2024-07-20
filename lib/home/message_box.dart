@@ -241,6 +241,10 @@ class _MessageBoxState extends State<MessageBox> {
     streamCompleter?.complete(true);
   }
 
+  bool canCancelStream() {
+    return _isWaiting && widget.data.modelGroup == ModelGroup.chatGPT;
+  }
+
   void updateDatabaseChat(String model, int inputTokens, int outputTokens,
       String message, bool firstMsg) async {
     // add the stuff to the database
@@ -388,22 +392,27 @@ class _MessageBoxState extends State<MessageBox> {
                       )),
                 ),
                 IconButton(
-                  icon: _isWaiting
+                  // TODO: simplify this logic
+                  icon: canCancelStream()
                       ? const Icon(Icons.stop_rounded)
                       : const Icon(Icons.arrow_upward_rounded),
-                  onPressed: _isWaiting
+                  onPressed: canCancelStream()
                       ? stopRespond
-                      : _isEmpty
+                      : _isEmpty || _isWaiting
                           ? null
                           : sendMsg,
                   color: Colors.grey[900],
                   disabledColor: Colors.grey[900],
-                  tooltip: _isWaiting ? "Stop responding" : "Send message",
+                  tooltip:
+                      canCancelStream() ? "Stop responding" : "Send message",
                   style: ButtonStyle(
                     backgroundColor: WidgetStateProperty.all<Color>(
-                        _isEmpty && !_isWaiting
-                            ? (Colors.grey[800])!
-                            : Colors.white),
+                      canCancelStream()
+                          ? Colors.white
+                          : _isWaiting || _isEmpty
+                              ? Colors.grey.shade800
+                              : Colors.white,
+                    ),
                     shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                       const RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(
