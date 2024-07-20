@@ -1,12 +1,11 @@
 import 'dart:io';
-import 'dart:math';
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:gal/gal.dart';
 import 'package:gpt_thing/home/compact_icon_button.dart';
+import 'package:gpt_thing/home/mobile_image.dart';
+import 'package:gpt_thing/home/web_image.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:universal_html/html.dart' as html;
 
@@ -23,7 +22,8 @@ class ChatImage extends StatelessWidget {
   final ValueNotifier<bool> imgLoaded = ValueNotifier(false);
 
   void checkInCache() async {
-    final FileInfo? file = await DefaultCacheManager().getFileFromCache(imageUrl);
+    final FileInfo? file =
+        await DefaultCacheManager().getFileFromCache(imageUrl);
     if (file != null) {
       imgLoaded.value = true;
     }
@@ -79,82 +79,15 @@ class ChatImage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
                 child: Container(
                   decoration: BoxDecoration(color: Colors.grey[900]!),
-                  child: CachedNetworkImage(
-                    imageUrl: imageUrl,
-                    memCacheWidth: (min(MediaQuery.of(context).size.width, 768) * 0.6).round(),
-                    // imageBuilder: (context, imageProvider) {
-                    //   if (!imgLoaded.value) {
-                    //     Future.delayed(Duration.zero, () {
-                    //       imgLoaded.value = true;
-                    //     });
-                    //   }
-                    //   return Image(image: imageProvider);
-                    // },
-                    progressIndicatorBuilder: (context, url, downloadProgress) {
-                      if (downloadProgress.progress == 1 && !imgLoaded.value) {
-                        Future.delayed(Duration.zero, () {
-                          imgLoaded.value = true;
-                        });
-                      }
-                      return Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.image_rounded, color: Colors.grey[700]),
-                            const Text(
-                              "Loading image...",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                                fontStyle: FontStyle.italic,
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 6,
-                            ),
-                            SizedBox(
-                              width: 100,
-                              child: LinearProgressIndicator(
-                                value: downloadProgress.progress,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                    errorWidget: (context, url, error) => Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.image_not_supported_rounded,
-                              color: Colors.grey[700]),
-                          const Text(
-                            "Image not found.",
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey,
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                          if (altText != null)
-                            Text(
-                              "Alt: ${altText!}",
-                              textAlign: TextAlign.center,
-                              maxLines: 5,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                                fontStyle: FontStyle.italic,
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                    fadeOutDuration: Duration.zero,
-                  ),
+                  child: kIsWeb
+                      ? WebImage(
+                          imageUrl: imageUrl,
+                          imgLoaded: imgLoaded,
+                          altText: altText)
+                      : MobileImage(
+                          imageUrl: imageUrl,
+                          imgLoaded: imgLoaded,
+                          altText: altText),
                 ),
               ),
             ),
@@ -174,7 +107,7 @@ class ChatImage extends StatelessWidget {
                         children: [
                           CompactIconButton(
                             icon: const Icon(Icons.file_download_rounded),
-                            tooltip: "Save image",
+                            tooltip: "Save image (full quality)",
                             showLoading: true,
                             onPressed: () => saveImage(imageUrl, context),
                           ),
