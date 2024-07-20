@@ -7,6 +7,7 @@ import 'package:gpt_thing/home/compact_icon_button.dart';
 import 'package:gpt_thing/home/markdown_code.dart';
 import 'package:gpt_thing/home/model_group.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:intl/intl.dart';
 
 class ChatMessage extends StatefulWidget {
   const ChatMessage({
@@ -14,6 +15,7 @@ class ChatMessage extends StatefulWidget {
     required this.role,
     required this.modelGroup,
     this.model,
+    this.timestamp,
     this.text = "",
     this.imageUrl = "",
     this.streaming = false,
@@ -22,6 +24,7 @@ class ChatMessage extends StatefulWidget {
   final OpenAIChatMessageRole role;
   final ModelGroup modelGroup;
   final String? model;
+  final DateTime? timestamp;
   final String text;
   final String imageUrl;
   final bool streaming;
@@ -35,194 +38,223 @@ class _ChatMessageState extends State<ChatMessage> {
 
   @override
   void initState() {
-    super.initState();
     markdown = true;
+    super.initState();
+  }
+
+  bool isToday() {
+    final stamp = widget.timestamp!;
+    final now = DateTime.now();
+    return stamp.year == now.year &&
+        stamp.month == now.month &&
+        stamp.day == now.day;
+  }
+
+  String stampFormat() {
+    return isToday()
+        ? DateFormat.jm().format(widget.timestamp!)
+        : DateFormat.yMd().format(widget.timestamp!);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Column(
-        children: [
-          Align(
-            alignment: widget.role == OpenAIChatMessageRole.user
-                ? Alignment.centerRight
+    return Column(
+      children: [
+        Align(
+          alignment: widget.role == OpenAIChatMessageRole.user
+              ? Alignment.centerRight
+              : widget.role == OpenAIChatMessageRole.system
+                  ? Alignment.center
+                  : Alignment.centerLeft,
+          child: Text(
+            widget.role == OpenAIChatMessageRole.user
+                ? "You"
                 : widget.role == OpenAIChatMessageRole.system
-                    ? Alignment.center
-                    : Alignment.centerLeft,
-            child: Text(
-              widget.role == OpenAIChatMessageRole.user
-                  ? "You"
-                  : widget.role == OpenAIChatMessageRole.system
-                      ? "System"
-                      : widget.modelGroup == ModelGroup.other
-                          ? "Assistant"
-                          : widget.modelGroup.name,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
+                    ? "System"
+                    : widget.modelGroup == ModelGroup.other
+                        ? "Assistant"
+                        : widget.modelGroup.name,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 4),
-          Align(
-            alignment: widget.role == OpenAIChatMessageRole.user
-                ? Alignment.centerRight
-                : widget.role == OpenAIChatMessageRole.system
-                    ? Alignment.center
-                    : Alignment.centerLeft,
-            child: Column(
-              children: [
-                if (widget.text.isNotEmpty)
-                  SelectionArea(
-                      // use SelectionArea to avoid multiple highlights
-                      child: widget.role == OpenAIChatMessageRole.assistant
-                          ? markdown
-                              ? MarkdownBody(
-                                  data: widget.text,
-                                  styleSheet: gptStyle,
-                                  onTapLink: (text, href, title) async {
-                                    if (href != null) {
-                                      if (!await openLink(href) &&
-                                          context.mounted) {
-                                        ScaffoldMessenger.of(context)
-                                            .clearSnackBars();
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(SnackBar(
-                                          content: Text(
-                                            "Invalid link: $href",
-                                          ),
-                                        ));
-                                      }
+        ),
+        const SizedBox(height: 4),
+        Align(
+          alignment: widget.role == OpenAIChatMessageRole.user
+              ? Alignment.centerRight
+              : widget.role == OpenAIChatMessageRole.system
+                  ? Alignment.center
+                  : Alignment.centerLeft,
+          child: Column(
+            children: [
+              if (widget.text.isNotEmpty)
+                SelectionArea(
+                    // use SelectionArea to avoid multiple highlights
+                    child: widget.role == OpenAIChatMessageRole.assistant
+                        ? markdown
+                            ? MarkdownBody(
+                                data: widget.text,
+                                styleSheet: gptStyle,
+                                onTapLink: (text, href, title) async {
+                                  if (href != null) {
+                                    if (!await openLink(href) &&
+                                        context.mounted) {
+                                      ScaffoldMessenger.of(context)
+                                          .clearSnackBars();
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                        content: Text(
+                                          "Invalid link: $href",
+                                        ),
+                                      ));
                                     }
-                                  },
-                                  imageBuilder: (uri, title, alt) {
-                                    return Padding(
-                                      padding: const EdgeInsets.only(top: 4),
-                                      child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Expanded(
-                                                child: ChatImage(
-                                                    imageUrl: uri.toString(),
-                                                    altText: alt)),
-                                          ]),
-                                    );
-                                  },
-                                  checkboxBuilder: (isChecked) {
-                                    return Icon(
-                                        isChecked
-                                            ? Icons.check_box_rounded
-                                            : Icons
-                                                .check_box_outline_blank_rounded,
-                                        applyTextScaling: true,
-                                        size: 16);
-                                  },
-                                  builders: {
-                                      'code': MarkdownCode(),
-                                    })
-                              : Text(
-                                  widget.text,
-                                )
-                          : FractionallySizedBox(
-                              widthFactor: 0.9,
-                              child: Align(
-                                alignment:
-                                    widget.role == OpenAIChatMessageRole.user
-                                        ? Alignment.centerRight
-                                        : widget.role ==
-                                                OpenAIChatMessageRole.system
-                                            ? Alignment.center
-                                            : Alignment.centerLeft,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(16),
-                                    color: Colors.grey[850],
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 12, vertical: 6),
-                                    child: Text(
-                                      widget.text,
-                                    ),
+                                  }
+                                },
+                                imageBuilder: (uri, title, alt) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(top: 4),
+                                    child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Expanded(
+                                              child: ChatImage(
+                                                  imageUrl: uri.toString(),
+                                                  altText: alt)),
+                                        ]),
+                                  );
+                                },
+                                checkboxBuilder: (isChecked) {
+                                  return Icon(
+                                      isChecked
+                                          ? Icons.check_box_rounded
+                                          : Icons
+                                              .check_box_outline_blank_rounded,
+                                      applyTextScaling: true,
+                                      size: 16);
+                                },
+                                builders: {
+                                    'code': MarkdownCode(),
+                                  })
+                            : Text(
+                                widget.text,
+                              )
+                        : FractionallySizedBox(
+                            widthFactor: 0.9,
+                            child: Align(
+                              alignment: widget.role ==
+                                      OpenAIChatMessageRole.user
+                                  ? Alignment.centerRight
+                                  : widget.role == OpenAIChatMessageRole.system
+                                      ? Alignment.center
+                                      : Alignment.centerLeft,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16),
+                                  color: Colors.grey[850],
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 6),
+                                  child: Text(
+                                    widget.text,
                                   ),
                                 ),
                               ),
-                            )),
-                if (widget.imageUrl.isNotEmpty)
-                  ChatImage(imageUrl: widget.imageUrl),
-                if (widget.text.isEmpty && widget.imageUrl.isEmpty)
-                  const Text(
-                    "Thinking...",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  )
-              ],
-            ),
+                            ),
+                          )),
+              if (widget.imageUrl.isNotEmpty)
+                ChatImage(imageUrl: widget.imageUrl),
+              if (widget.text.isEmpty && widget.imageUrl.isEmpty)
+                const Text(
+                  "Thinking...",
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                    fontStyle: FontStyle.italic,
+                  ),
+                )
+            ],
           ),
-          if (widget.role == OpenAIChatMessageRole.assistant && !widget.streaming && widget.imageUrl != "Generating...")
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Text(
-                        widget.model!,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
-                        ),
+        ),
+        if (widget.role == OpenAIChatMessageRole.assistant &&
+            !widget.streaming &&
+            widget.imageUrl != "Generating...")
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: const EdgeInsets.only(
+                top: 4,
+                bottom: 8,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  if (widget.text.isNotEmpty)
+                    CompactIconButton(
+                      icon: const Icon(Icons.copy_rounded),
+                      tooltip: "Copy message",
+                      onPressed: () async {
+                        await Clipboard.setData(
+                            ClipboardData(text: widget.text));
+                        return true;
+                      },
+                    ),
+                  if (widget.text.isNotEmpty)
+                    if (markdown)
+                      CompactIconButton(
+                          icon: const Icon(Icons.code_off_rounded),
+                          tooltip: "View without formatting",
+                          showConfirm: false,
+                          onPressed: () async {
+                            setState(() {
+                              markdown = false;
+                            });
+                            return true;
+                          })
+                    else
+                      CompactIconButton(
+                          icon: const Icon(Icons.code_rounded),
+                          tooltip: "View with Markdown",
+                          showConfirm: false,
+                          onPressed: () async {
+                            setState(() {
+                              markdown = true;
+                            });
+                            return true;
+                          }),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: Text(
+                      "${widget.model!} • ${stampFormat()}",
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
                       ),
                     ),
-                    if (widget.text.isNotEmpty)
-                      CompactIconButton(
-                        icon: const Icon(Icons.copy_rounded),
-                        tooltip: "Copy message",
-                        onPressed: () async {
-                          await Clipboard.setData(
-                              ClipboardData(text: widget.text));
-                          return true;
-                        },
-                      ),
-                    if (widget.text.isNotEmpty)
-                      if (markdown)
-                        CompactIconButton(
-                            icon: const Icon(Icons.code_off_rounded),
-                            tooltip: "View without formatting",
-                            showConfirm: false,
-                            onPressed: () async {
-                              setState(() {
-                                markdown = false;
-                              });
-                              return true;
-                            })
-                      else
-                        CompactIconButton(
-                            icon: const Icon(Icons.code_rounded),
-                            tooltip: "View with Markdown",
-                            showConfirm: false,
-                            onPressed: () async {
-                              setState(() {
-                                markdown = true;
-                              });
-                              return true;
-                            }),
-                  ],
+                  ),
+                ],
+              ),
+            ),
+          )
+        else if (widget.role == OpenAIChatMessageRole.user)
+          Align(
+            alignment: Alignment.centerRight,
+            child: Padding(
+              padding: const EdgeInsets.all(4),
+              child: Text(
+                stampFormat(),
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
                 ),
               ),
             ),
-        ],
-      ),
+          )
+      ],
     );
   }
 }

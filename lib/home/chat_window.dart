@@ -32,6 +32,7 @@ class _ChatWindowState extends State<ChatWindow> {
       return ChatMessage(
         role: msg.role,
         model: msg.model,
+        timestamp: msg.timestamp,
         modelGroup: widget.data.modelGroup,
         text: msg.text != null ? msg.text! : "",
         imageUrl: msg.imageUrl != null
