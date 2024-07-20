@@ -102,8 +102,6 @@ class _ChatMessageState extends State<ChatMessage> {
                                     if (!await openLink(href) &&
                                         context.mounted) {
                                       ScaffoldMessenger.of(context)
-                                          .clearSnackBars();
-                                      ScaffoldMessenger.of(context)
                                           .showSnackBar(SnackBar(
                                         content: Text(
                                           "Invalid link: $href",
