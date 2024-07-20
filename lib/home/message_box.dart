@@ -41,6 +41,8 @@ class _MessageBoxState extends State<MessageBox> {
   final sysController = TextEditingController();
   bool _isEmpty = true;
   bool _isWaiting = false;
+  Completer<bool>? streamCompleter;
+  StreamSubscription? chatSub;
 
   Future<bool> openKeySetDialog() async {
     bool? keySet = await showDialog(
@@ -98,16 +100,17 @@ class _MessageBoxState extends State<MessageBox> {
     switch (widget.data.modelGroup) {
       case ModelGroup.chatGPT:
         late String message;
-        late int inputTokens;
-        late int outputTokens;
+        int inputTokens = 0;
+        int outputTokens = 0;
         // api call and text streaming (setting dependent)
+        final chatStream = APIManager.chatPromptStream(
+            ChatMessageData.convertForAPI(widget.data.messages),
+            widget.data.model);
+        streamCompleter = Completer<bool>();
+        String buffer = "";
         switch (widget.user.settings.streamResponse) {
           case "word":
-            final chatStream = APIManager.chatPromptStream(
-                ChatMessageData.convertForAPI(widget.data.messages),
-                widget.data.model);
-            final streamCompleter = Completer<bool>();
-            chatStream.listen(
+            chatSub = chatStream.listen(
               (delta) {
                 if (delta.usage != null) {
                   inputTokens = delta.usage!.promptTokens;
@@ -118,19 +121,12 @@ class _MessageBoxState extends State<MessageBox> {
                 }
               },
               onDone: () {
-                streamCompleter.complete(true);
+                streamCompleter!.complete(true);
               },
             );
-            await streamCompleter.future;
-            message = widget.data.clearStreamText();
             break;
           case "line":
-            final chatStream = APIManager.chatPromptStream(
-                ChatMessageData.convertForAPI(widget.data.messages),
-                widget.data.model);
-            final streamCompleter = Completer<bool>();
-            String buffer = "";
-            chatStream.listen(
+            chatSub = chatStream.listen(
               (delta) {
                 if (delta.usage != null) {
                   inputTokens = delta.usage!.promptTokens;
@@ -145,50 +141,36 @@ class _MessageBoxState extends State<MessageBox> {
                 }
               },
               onDone: () {
-                streamCompleter.complete(true);
+                streamCompleter!.complete(true);
               },
             );
-            await streamCompleter.future;
-
-            widget.data.addChatStreamDelta(buffer);
-            buffer = "";
-            message = widget.data.clearStreamText();
             break;
           case "off":
-            final response = await APIManager.chatPrompt(
-                ChatMessageData.convertForAPI(widget.data.messages),
-                widget.data.model);
-            message = (response.choices.first.message.content)!.first.text!;
-            inputTokens = response.usage.promptTokens;
-            outputTokens = response.usage.completionTokens;
+            chatSub = chatStream.listen(
+              (delta) {
+                if (delta.usage != null) {
+                  inputTokens = delta.usage!.promptTokens;
+                  outputTokens = delta.usage!.completionTokens;
+                }
+                if (delta.haveChoices) {
+                  buffer += getStreamDeltaString(delta);
+                }
+              },
+              onDone: () {
+                streamCompleter!.complete(true);
+              },
+            );
             break;
           default:
             print("invalid streamResponse setting");
         }
+        await streamCompleter!.future;
 
-        // add the stuff to the database
-        widget.data.addTokenUsage(model, inputTokens, outputTokens);
-        widget.data.addMessage(OpenAIChatMessageRole.assistant, message,
-            model: model, inputTokens: inputTokens, outputTokens: outputTokens);
-        if (widget.data.id == "") {
-          ChatInfo info = ChatInfo(
-              id: widget.data.id,
-              title: widget.data.firstUserMessage(64),
-              date: DateTime.now());
-          widget.data
-              .overwrite(FirestoreService().updateChat(widget.data, info));
-          widget.chatIds.addInfo(info);
-        } else {
-          ChatInfo info = widget.chatIds.getById(widget.data.id)!;
-          widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
-          widget.data
-              .overwrite(FirestoreService().updateChat(widget.data, info));
-        }
+        widget.data.addChatStreamDelta(buffer);
+        buffer = "";
+        message = widget.data.clearStreamText();
 
-        // generate the title if the setting is on
-        if (widget.user.settings.generateTitles && firstMsg) {
-          await generateChatTitle();
-        }
+        updateDatabaseChat(model, inputTokens, outputTokens, message, firstMsg);
         break;
       case ModelGroup.dalle:
         final response = await APIManager.imagePrompt(
@@ -252,6 +234,38 @@ class _MessageBoxState extends State<MessageBox> {
       widget.data.setThinking(true);
       resetChatScroll();
     });
+  }
+
+  void stopRespond() {
+    chatSub?.cancel();
+    streamCompleter?.complete(true);
+  }
+
+  void updateDatabaseChat(String model, int inputTokens, int outputTokens,
+      String message, bool firstMsg) async {
+    // add the stuff to the database
+    if (inputTokens > 0 && outputTokens > 0) {
+      widget.data.addTokenUsage(model, inputTokens, outputTokens);
+    }
+    widget.data.addMessage(OpenAIChatMessageRole.assistant, message,
+        model: model, inputTokens: inputTokens, outputTokens: outputTokens);
+    if (widget.data.id == "") {
+      ChatInfo info = ChatInfo(
+          id: widget.data.id,
+          title: widget.data.firstUserMessage(64),
+          date: DateTime.now());
+      widget.data.overwrite(FirestoreService().updateChat(widget.data, info));
+      widget.chatIds.addInfo(info);
+    } else {
+      ChatInfo info = widget.chatIds.getById(widget.data.id)!;
+      widget.chatIds.updateInfo(FirestoreService().updateInfo(info));
+      widget.data.overwrite(FirestoreService().updateChat(widget.data, info));
+    }
+
+    // generate the title if the setting is on
+    if (widget.user.settings.generateTitles && firstMsg) {
+      await generateChatTitle();
+    }
   }
 
   late final msgFocusNode = FocusNode(
@@ -374,13 +388,20 @@ class _MessageBoxState extends State<MessageBox> {
                       )),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.arrow_upward_rounded),
-                  onPressed: _isWaiting || _isEmpty ? null : sendMsg,
+                  icon: _isWaiting
+                      ? const Icon(Icons.stop_rounded)
+                      : const Icon(Icons.arrow_upward_rounded),
+                  onPressed: _isWaiting
+                      ? stopRespond
+                      : _isEmpty
+                          ? null
+                          : sendMsg,
                   color: Colors.grey[900],
                   disabledColor: Colors.grey[900],
+                  tooltip: _isWaiting ? "Stop responding" : "Send message",
                   style: ButtonStyle(
                     backgroundColor: WidgetStateProperty.all<Color>(
-                        _isWaiting || _isEmpty
+                        _isEmpty && !_isWaiting
                             ? (Colors.grey[800])!
                             : Colors.white),
                     shape: WidgetStateProperty.all<RoundedRectangleBorder>(
