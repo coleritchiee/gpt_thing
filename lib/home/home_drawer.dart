@@ -40,7 +40,7 @@ class HomeDrawer extends StatelessWidget {
               child: Column(
                 children: [
                   const ListTile(
-                    title: Text('GPT Thing'),
+                    title: Text('ChatKeyPT'),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(4.0),

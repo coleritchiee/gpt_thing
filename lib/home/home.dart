@@ -60,14 +60,14 @@ class HomePage extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Scaffold(
-              appBar: AppBar(title: const Text('GPT Thing')),
+              appBar: AppBar(title: const Text('ChatKeyPT')),
               body: const Center(child: CircularProgressIndicator()),
             );
           }
           if (snapshot.data == null) {
             return Scaffold(
               appBar: AppBar(
-                title: const Text('GPT Thing'),
+                title: const Text('ChatKeyPT'),
                 forceMaterialTransparency: true,
               ),
               drawer: HomeDrawer(
@@ -191,7 +191,7 @@ class HomePage extends StatelessWidget {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
                           return Scaffold(
-                            appBar: AppBar(title: const Text('GPT Thing')),
+                            appBar: AppBar(title: const Text('ChatKeyPT')),
                             body: const Center(
                                 child: CircularProgressIndicator()),
                           );
@@ -205,7 +205,7 @@ class HomePage extends StatelessWidget {
                                 applyUserSettings();
                                 return Scaffold(
                                     appBar: AppBar(
-                                      title: Text("GPT Thing ${user.name}"),
+                                      title: const Text("ChatKeyPT"),
                                       forceMaterialTransparency: true,
                                     ),
                                     drawer: HomeDrawer(
