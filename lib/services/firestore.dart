@@ -180,4 +180,9 @@ class FirestoreService {
       print('Error occurred while deleting files: $e');
     }
   }
+
+  Future<String> fetchCurrentVersion() async {
+    var versionDoc = await FirebaseFirestore.instance.collection('config').doc('appConfig').get();
+    return versionDoc['currentVersion'] as String;
+  }
 }
