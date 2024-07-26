@@ -189,7 +189,7 @@ class FirestoreService {
   Future<bool> addChatReport(ChatData data) async {
     try {
       CollectionReference reports = _db.collection('reports');
-      final doc = reports.doc();
+      final doc = reports.doc(DateTime.now().millisecondsSinceEpoch.toString());
       await doc.set(data.toJson());
     } catch (e) {
       print('Error occured while reporting chat: $e');
