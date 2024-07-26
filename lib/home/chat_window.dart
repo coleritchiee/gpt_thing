@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/chat_message.dart';
 import 'package:gpt_thing/home/model_group.dart';
+import 'package:gpt_thing/services/firestore.dart';
 // import 'package:intl/intl.dart';
 
 class ChatWindow extends StatefulWidget {
@@ -38,6 +39,32 @@ class _ChatWindowState extends State<ChatWindow> {
         imageUrl: msg.imageUrl != null
             ? msg.imageUrl!
             : "",
+        onReport: () async {
+          final result = await FirestoreService().addChatReport(widget.data);
+          if (result) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    "Report sent",
+                  ),
+                ),
+              );
+            }
+            return true;
+          } else {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    "Error occurred while sending report",
+                  ),
+                ),
+              );
+            }
+            return false;
+          }
+        }
       );
     }).toList());
 

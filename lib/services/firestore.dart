@@ -185,4 +185,16 @@ class FirestoreService {
     var versionDoc = await FirebaseFirestore.instance.collection('config').doc('appConfig').get();
     return versionDoc['currentVersion'] as String;
   }
+
+  Future<bool> addChatReport(ChatData data) async {
+    try {
+      CollectionReference reports = _db.collection('reports');
+      final doc = reports.doc();
+      await doc.set(data.toJson());
+    } catch (e) {
+      print('Error occured while reporting chat: $e');
+      return false;
+    }
+    return true;
+  }
 }
