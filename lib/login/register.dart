@@ -129,13 +129,13 @@ class RegisterPage extends StatelessWidget {
                       )
                   ),
                   const SizedBox(height: 25),
-                  LoginButton(text: "Sign in with Google", icon: FontAwesomeIcons.google, color: Colors.white, loginMethod: AuthService().googleLogin, textColor: Colors.black, iconColor: Colors.black),
+                  LoginButton(text: "Sign in with Google", icon: FontAwesomeIcons.google, color: Colors.white, loginMethod: AuthService().googleLogin, textColor: Colors.black, iconColor: Colors.black, redirect: "/",),
                   const SizedBox(height: 25),
                   FutureBuilder<Object>(
                     future: SignInWithApple.isAvailable(),
                     builder: (context, snapshot) {
                       if (snapshot.data == true) {
-                        return LoginButton(text: "Sign in with Apple", icon: FontAwesomeIcons.apple, color: Colors.white, loginMethod: AuthService().anonLogin, textColor: Colors.black, iconColor: Colors.black);
+                        return LoginButton(text: "Sign in with Apple", icon: FontAwesomeIcons.apple, color: Colors.white, loginMethod: AuthService().anonLogin, textColor: Colors.black, iconColor: Colors.black, redirect: "/");
                       } else {
                         return Container();
                       }
