@@ -31,6 +31,9 @@ class _ReportDialogState extends State<ReportDialog> {
               message = value;
             });
           },
+          decoration: const InputDecoration(
+            hintText: "What went wrong?",
+          ),
         ),
       ),
       actions: <Widget>[

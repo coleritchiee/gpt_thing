@@ -6,13 +6,19 @@ import 'package:gpt_thing/home/chat_message.dart';
 import 'package:gpt_thing/home/model_group.dart';
 import 'package:gpt_thing/home/report_dialog.dart';
 import 'package:gpt_thing/services/firestore.dart';
+import '../services/models.dart' as u;
 // import 'package:intl/intl.dart';
 
 class ChatWindow extends StatefulWidget {
   final ChatData data;
   final ScrollController scroller;
+  final u.User user;
 
-  const ChatWindow({super.key, required this.data, required this.scroller});
+  const ChatWindow(
+      {super.key,
+      required this.data,
+      required this.scroller,
+      required this.user});
 
   @override
   State<ChatWindow> createState() => _ChatWindowState();
@@ -44,7 +50,8 @@ class _ChatWindowState extends State<ChatWindow> {
             if (message == null || message.isEmpty) {
               return false;
             }
-            final result = await FirestoreService().addChatReport(widget.data);
+            final result = await FirestoreService()
+                .addChatReport(widget.data, widget.user.uid, message);
             if (result) {
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(

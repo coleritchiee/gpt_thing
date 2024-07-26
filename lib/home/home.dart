@@ -97,7 +97,8 @@ class HomePage extends StatelessWidget {
                         builder: (context, child) {
                           return Column(
                             children: [
-                              ChatWindow(data: data, scroller: scroller),
+                              ChatWindow(
+                                  data: data, scroller: scroller, user: user),
                               Container(
                                 margin: const EdgeInsets.all(16.0),
                                 padding: const EdgeInsets.symmetric(
@@ -261,7 +262,8 @@ class HomePage extends StatelessWidget {
                                                             ChatWindow(
                                                                 data: data,
                                                                 scroller:
-                                                                    scroller),
+                                                                    scroller,
+                                                                user: user),
                                                             MessageBox(
                                                               data: data,
                                                               chatIds: chatIds,
