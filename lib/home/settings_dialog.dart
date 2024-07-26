@@ -71,16 +71,16 @@ class SettingsDialog extends StatelessWidget {
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
                             const SizedBox(height: 8),
-                            TextFormField(
-                              controller: nameController,
-                              decoration: const InputDecoration(
-                                labelText: "Change Name",
-                                border: OutlineInputBorder(),
-                                contentPadding: EdgeInsets.all(10),
-                              ),
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                            const SizedBox(height: 12),
+                            // TextFormField(
+                            //   controller: nameController,
+                            //   decoration: const InputDecoration(
+                            //     labelText: "Change Name",
+                            //     border: OutlineInputBorder(),
+                            //     contentPadding: EdgeInsets.all(10),
+                            //   ),
+                            //   style: Theme.of(context).textTheme.bodySmall,
+                            // ),
+                            // const SizedBox(height: 12),
                             SettingsTile(
                                 "Stream Response",
                                 "Show chat responses as they are generated",
