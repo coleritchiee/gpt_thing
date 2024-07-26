@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:gpt_thing/route.dart';
 import 'package:gpt_thing/services/firestore.dart';
 import 'package:gpt_thing/services/user_locator.dart';
 import 'package:gpt_thing/theme.dart';
 import 'package:gpt_thing/firebase_options.dart';
-import 'package:gpt_thing/home/home.dart';
 
 
 Future<void> main() async {
@@ -67,10 +67,11 @@ class _AppState extends State<App> {
                     ),
                   );
                 }
-                return MaterialApp(
-                  routes: appRoutes,
+                return MaterialApp.router(
+                  routerConfig: GoRouter(
+                    routes: appRoutes,
+                  ),
                   theme: appTheme,
-                  home: const HomePage(),
                 );
               },
             );

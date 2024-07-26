@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
@@ -148,7 +149,7 @@ class RegisterPage extends StatelessWidget {
                       const SizedBox(width: 4),
                       InkWell(
                         child: Text("Sign in", style: TextStyle(color: Colors.blue)),
-                        onTap: () {Navigator.pushReplacementNamed(context, "/login");},
+                        onTap: () {context.go("/login");},
                       ),
                     ],
                   )
@@ -223,7 +224,7 @@ class EmailSignupButton extends StatelessWidget {
           } else {
             try{
               await AuthService().emailSignup(emailController.text, passwordController.text);
-              Navigator.of(context).pushReplacementNamed('');
+              context.go('/');
             }
             on FirebaseAuthException catch (e){
               print("Firebase Auth Exception: Code=${e.code}, Message=${e.message}");

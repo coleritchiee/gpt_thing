@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
@@ -78,7 +79,7 @@ class LoginPage extends StatelessWidget {
                 EmailLoginButton(text: 'Sign in', icon: Icons.account_circle, color: Colors.green, textColor: Colors.white, iconColor: Colors.white, emailController: emailController, passwordController: passwordController,),
                 const SizedBox(height: 25),
                 const Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 25),
+                      padding: EdgeInsets.symmetric(horizontal: 25),
                       child: SizedBox(
                         width: 400,
                         child: Row(
@@ -123,11 +124,11 @@ class LoginPage extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Not Registered?", style: TextStyle(color: Colors.black)),
+                    const Text("Not Registered?", style: TextStyle(color: Colors.black)),
                     const SizedBox(width: 4),
                     InkWell(
                       child: Text("Register Now", style: TextStyle(color: Colors.blue)),
-                      onTap: () {Navigator.pushReplacementNamed(context, "/register");},
+                      onTap: () {context.go("/register");},
                     ),
                   ],
                 )
@@ -175,7 +176,7 @@ class LoginButton extends StatelessWidget {
         onPressed: () async {
           try {
             await loginMethod();
-            Navigator.of(context).pushReplacementNamed('');
+            context.go('/');
           }
           on FirebaseAuthException catch (e){
             print("Login failed: ${e.code}");
@@ -234,7 +235,7 @@ class EmailLoginButton extends StatelessWidget {
         onPressed: () async {
           try {
             await AuthService().emailLogin(emailController.text, passwordController.text);
-            Navigator.of(context).pushReplacementNamed('');
+            context.go('/');
           }
           on FirebaseAuthException catch (e){
             print("Firebase Auth Exception: Code=${e.code}, Message=${e.message}");
