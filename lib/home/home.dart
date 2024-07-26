@@ -25,6 +25,9 @@ class HomePage extends StatelessWidget {
     bool linkHover = false;
 
     void applyUserSettings() async {
+      if (user.uid.isEmpty) {
+        return;
+      }
       if (user.settings.saveAPIKey) {
         final validated =
             await data.setKey(user.apiKey!, user.org!, fromUser: true);
