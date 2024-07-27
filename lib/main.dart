@@ -3,7 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gpt_thing/firebase_init.dart';
-import 'package:gpt_thing/home/delete_account.dart';
+import 'package:gpt_thing/delete_account/delete_account.dart';
 import 'package:gpt_thing/home/home.dart';
 import 'package:gpt_thing/login/login.dart';
 import 'package:gpt_thing/login/register.dart';
