@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/chat_id_notifier.dart';
 import 'package:gpt_thing/home/chat_info.dart';
@@ -121,8 +122,7 @@ class HomeDrawer extends StatelessWidget {
                                   ),
                                   tileColor: Colors.green.shade600,
                                   onTap: () {
-                                    Navigator.of(context)
-                                        .pushReplacementNamed('/register');
+                                    context.go('/register');
                                   },
                                 ),
                               ),
@@ -139,8 +139,7 @@ class HomeDrawer extends StatelessWidget {
                                     ),
                                   ),
                                   onTap: () {
-                                    Navigator.of(context)
-                                        .pushReplacementNamed('/login');
+                                    context.go('/login');
                                   },
                                 ),
                               ),
