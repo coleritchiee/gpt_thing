@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import 'package:gpt_thing/route.dart';
-import 'package:gpt_thing/services/firestore.dart';
+import 'package:gpt_thing/firebase_init.dart';
+import 'package:gpt_thing/home/delete_account.dart';
+import 'package:gpt_thing/home/home.dart';
+import 'package:gpt_thing/login/login.dart';
+import 'package:gpt_thing/login/register.dart';
 import 'package:gpt_thing/services/user_locator.dart';
 import 'package:gpt_thing/theme.dart';
 import 'package:gpt_thing/firebase_options.dart';
@@ -15,80 +18,61 @@ Future<void> main() async {
   ]);
   UserLocator.setupLocator();
   runApp(
-    const App(),
+    App(),
   );
 }
 
-class App extends StatefulWidget {
-  const App({super.key});
+class App extends StatelessWidget {
+  App({super.key});
 
-  @override
-  State<App> createState() => _AppState();
-}
-
-class _AppState extends State<App> {
   final Future<FirebaseApp> _initialization =
       Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   final String version = "v1.0.0";
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _initialization,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Text("${snapshot.error}", textDirection: TextDirection.rtl);
-        }
-        if (snapshot.connectionState == ConnectionState.done) {
-          return FutureBuilder(
-            future: FirestoreService().fetchCurrentVersion(),
-            builder: (context, versionSnapshot) {
-              if (versionSnapshot.connectionState == ConnectionState.waiting) {
-                return const MaterialApp(
-                    home: Scaffold(
-                        body: Center(child: CircularProgressIndicator())));
-              } else if (versionSnapshot.hasError) {
-                return MaterialApp(
-                    home: Scaffold(
-                        body: Center(
-                            child: Text(
-                                "Error fetching version info: ${versionSnapshot.error}"))));
-              }
-
-              if (versionSnapshot.data != version) {
-                return MaterialApp(
-                  home: Scaffold(
-                    body: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text("Update Available",
-                              style: TextStyle(
-                                  fontSize: 24, fontWeight: FontWeight.bold)),
-                          const SizedBox(height: 20),
-                          Text(
-                              "Your app version is $version, but the latest version is ${versionSnapshot.data}. Please update the app."),
-                          const SizedBox(height: 20),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              }
-              return MaterialApp.router(
-                routerConfig: GoRouter(
-                  onException: (context, state, router) {
-                    router.go('/');
-                  },
-                  routes: appRoutes,
-                ),
-                theme: appTheme,
-              );
-            },
-          );
-        }
-        return const Text('loading', textDirection: TextDirection.rtl);
-      },
+    return MaterialApp.router(
+      routerConfig: GoRouter(
+        onException: (context, state, router) {
+          router.go('/');
+        },
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (context, state) => FirebaseInit(
+                init: _initialization,
+                version: version,
+                child: const HomePage()),
+          ),
+          GoRoute(
+            path: '/login',
+            builder: (context, state) => FirebaseInit(
+                init: _initialization, version: version, child: LoginPage()),
+          ),
+          GoRoute(
+            path: '/register',
+            builder: (context, state) => FirebaseInit(
+                init: _initialization, version: version, child: RegisterPage()),
+          ),
+          GoRoute(
+            path: '/login-delete-account',
+            builder: (context, state) => FirebaseInit(
+              init: _initialization,
+              version: version,
+              child: LoginPage(redirect: "/delete-account"),
+            ),
+          ),
+          GoRoute(
+            path: '/delete-account',
+            builder: (context, state) => FirebaseInit(
+                init: _initialization,
+                version: version,
+                child: const DeleteAccountPage()),
+          ),
+        ],
+      ),
+      theme: appTheme,
     );
   }
 }

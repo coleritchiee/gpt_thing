@@ -202,7 +202,7 @@ class FirestoreService {
   }
 
   Future<void> deleteUserAccount(String userId) async {
-    if (userId == null) {
+    if (userId.isEmpty) {
       return;
     }
     try {
