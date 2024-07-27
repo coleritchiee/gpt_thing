@@ -18,106 +18,97 @@ class RegisterPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
         body: SafeArea(
-          child: SingleChildScrollView(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 50),
-                child: Column(children: [
+      child: SingleChildScrollView(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 50),
+            child: Wrap(
+                direction: Axis.vertical,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 20,
+                children: [
                   SvgPicture.asset(
                     'assets/icon/icon.svg',
                     height: 75,
-                  ),
-                  const SizedBox(
-                    height: 20,
                   ),
                   Text(
                     "Register",
                     style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
                         fontFamily: GoogleFonts.notoSans().fontFamily),
                   ),
-                  const SizedBox(height: 25),
-                  SizedBox(
-                    width: 350,
-                    child: TextField(
-                      controller: emailController,
-                      decoration: InputDecoration(
-                        enabledBorder: const OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.grey)),
-                        focusedBorder: const OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.green)),
-                        hintText: "Email Address",
-                        hintStyle: TextStyle(
-                            color: Colors.green,
-                            fontFamily: GoogleFonts.notoSans().fontFamily),
+                  Column(
+                    children: [
+                      SizedBox(
+                        width: 350,
+                        child: TextField(
+                          controller: emailController,
+                          decoration: InputDecoration(
+                            enabledBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey)),
+                            focusedBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white)),
+                            hintText: "Email Address",
+                            hintStyle: TextStyle(
+                                fontFamily: GoogleFonts.notoSans().fontFamily),
+                          ),
+                          style: TextStyle(
+                              fontFamily: GoogleFonts.notoSans().fontFamily),
+                        ),
                       ),
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontFamily: GoogleFonts.notoSans().fontFamily),
-                      cursorColor: Colors.black,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    width: 350,
-                    child: TextField(
-                      controller: passwordController,
-                      decoration: InputDecoration(
-                        enabledBorder: const OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.grey)),
-                        focusedBorder: const OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.green)),
-                        hintText: 'Password',
-                        hintStyle: TextStyle(
-                            color: Colors.green,
-                            fontFamily: GoogleFonts.notoSans().fontFamily),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        width: 350,
+                        child: TextField(
+                          controller: passwordController,
+                          decoration: InputDecoration(
+                            enabledBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey)),
+                            focusedBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white)),
+                            hintText: 'Password',
+                            hintStyle: TextStyle(
+                                fontFamily: GoogleFonts.notoSans().fontFamily),
+                          ),
+                          obscureText: true,
+                          style: TextStyle(
+                              fontFamily: GoogleFonts.notoSans().fontFamily),
+                        ),
                       ),
-                      obscureText: true,
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontFamily: GoogleFonts.notoSans().fontFamily),
-                      cursorColor: Colors.black,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    width: 350,
-                    child: TextField(
-                      controller: passwordConfirmController,
-                      decoration: InputDecoration(
-                        enabledBorder: const OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.grey)),
-                        focusedBorder: const OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.green)),
-                        hintText: 'Confirm Password',
-                        hintStyle: TextStyle(
-                            color: Colors.green,
-                            fontFamily: GoogleFonts.notoSans().fontFamily),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        width: 350,
+                        child: TextField(
+                          controller: passwordConfirmController,
+                          decoration: InputDecoration(
+                            enabledBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey)),
+                            focusedBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white)),
+                            hintText: 'Confirm Password',
+                            hintStyle: TextStyle(
+                                fontFamily: GoogleFonts.notoSans().fontFamily),
+                          ),
+                          obscureText: true,
+                          style: TextStyle(
+                              fontFamily: GoogleFonts.notoSans().fontFamily),
+                        ),
                       ),
-                      obscureText: true,
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontFamily: GoogleFonts.notoSans().fontFamily),
-                      cursorColor: Colors.black,
-                    ),
+                    ],
                   ),
-                  const SizedBox(height: 19),
                   EmailSignupButton(
                     text: 'Create Account',
                     icon: Icons.account_circle,
-                    color: Colors.green,
-                    textColor: Colors.white,
-                    iconColor: Colors.white,
+                    color: Colors.white,
+                    textColor: Colors.black,
+                    iconColor: Colors.black,
                     emailController: emailController,
                     passwordController: passwordController,
                     passwordConfirmController: passwordConfirmController,
                   ),
-                  const SizedBox(height: 19),
-                  const Padding(
+                  Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 25),
                       child: SizedBox(
                         width: 400,
@@ -126,63 +117,59 @@ class RegisterPage extends StatelessWidget {
                             Expanded(
                               child: Divider(
                                 thickness: 0.5,
-                                color: Colors.grey,
+                                color: Colors.grey.shade100,
                               ),
                             ),
-                            Text(
+                            const Text(
                               "   OR   ",
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.black,
                               ),
                             ),
                             Expanded(
                               child: Divider(
                                 thickness: 0.5,
-                                color: Colors.grey,
+                                color: Colors.grey.shade100,
                               ),
                             ),
                           ],
                         ),
                       )),
-                  const SizedBox(height: 25),
                   LoginButton(
                     text: "Sign in with Google",
                     icon: FontAwesomeIcons.google,
-                    color: Colors.white,
+                    color: Colors.grey.shade800,
                     loginMethod: AuthService().googleLogin,
-                    textColor: Colors.black,
-                    iconColor: Colors.black,
+                    textColor: Colors.white,
+                    iconColor: Colors.white,
                     redirect: "/",
                   ),
-                  const SizedBox(height: 25),
                   FutureBuilder<Object>(
                     future: SignInWithApple.isAvailable(),
                     builder: (context, snapshot) {
                       if (snapshot.data == true) {
                         return LoginButton(
-                            text: "Sign in with Apple",
-                            icon: FontAwesomeIcons.apple,
-                            color: Colors.white,
-                            loginMethod: AuthService().anonLogin,
-                            textColor: Colors.black,
-                            iconColor: Colors.black,
-                            redirect: "/");
+                          text: "Sign in with Apple",
+                          icon: FontAwesomeIcons.apple,
+                          color: Colors.grey.shade800,
+                          loginMethod: AuthService().anonLogin,
+                          textColor: Colors.white,
+                          iconColor: Colors.white,
+                          redirect: "/",
+                        );
                       } else {
                         return Container();
                       }
                     },
                   ),
-                  const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Already have an Account?",
-                          style: TextStyle(color: Colors.black)),
+                      const Text("Already have an account?"),
                       const SizedBox(width: 4),
                       InkWell(
-                        child: Text("Sign in",
+                        child: const Text("Sign in",
                             style: TextStyle(color: Colors.blue)),
                         onTap: () {
                           context.go("/login");
@@ -191,10 +178,10 @@ class RegisterPage extends StatelessWidget {
                     ],
                   )
                 ]),
-              ),
-            ),
           ),
-        ));
+        ),
+      ),
+    ));
   }
 }
 

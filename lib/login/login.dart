@@ -18,152 +18,150 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         body: SafeArea(
-          child: SingleChildScrollView(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 50),
-                child: Wrap(
-                    direction: Axis.vertical,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    spacing: 20,
+      child: SingleChildScrollView(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 50),
+            child: Wrap(
+                direction: Axis.vertical,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 20,
+                children: [
+                  SvgPicture.asset(
+                    'assets/icon/icon.svg',
+                    height: 75,
+                  ),
+                  Text(
+                    "Welcome Back",
+                    style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: GoogleFonts.notoSans().fontFamily),
+                  ),
+                  Column(
                     children: [
-                      SvgPicture.asset(
-                        'assets/icon/icon.svg',
-                        height: 75,
-                      ),
-                      Text(
-                        "Welcome Back",
-                        style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: GoogleFonts.notoSans().fontFamily),
-                      ),
-                      Column(
-                        children: [
-                          SizedBox(
-                            width: 350,
-                            child: TextField(
-                              controller: emailController,
-                              decoration: InputDecoration(
-                                enabledBorder: const OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: const OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.white)),
-                                hintText: "Email Address",
-                                hintStyle: TextStyle(
-                                    color: Colors.grey,
-                                    fontFamily: GoogleFonts.notoSans().fontFamily),
-                              ),
-                              style: TextStyle(
-                                  fontFamily: GoogleFonts.notoSans().fontFamily),
-                            ),
+                      SizedBox(
+                        width: 350,
+                        child: TextField(
+                          controller: emailController,
+                          decoration: InputDecoration(
+                            enabledBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey)),
+                            focusedBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white)),
+                            hintText: "Email Address",
+                            hintStyle: TextStyle(
+                                fontFamily: GoogleFonts.notoSans().fontFamily),
                           ),
-                          const SizedBox(height: 10),
-                          SizedBox(
-                            width: 350,
-                            child: TextField(
-                              controller: passwordController,
-                              decoration: InputDecoration(
-                                enabledBorder: const OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: const OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.white)),
-                                hintText: 'Password',
-                                hintStyle: TextStyle(
-                                    color: Colors.grey,
-                                    fontFamily: GoogleFonts.notoSans().fontFamily),
-                              ),
-                              obscureText: true,
-                              style: TextStyle(
-                                  fontFamily: GoogleFonts.notoSans().fontFamily),
-                            ),
+                          style: TextStyle(
+                              fontFamily: GoogleFonts.notoSans().fontFamily),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        width: 350,
+                        child: TextField(
+                          controller: passwordController,
+                          decoration: InputDecoration(
+                            enabledBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey)),
+                            focusedBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white)),
+                            hintText: 'Password',
+                            hintStyle: TextStyle(
+                                fontFamily: GoogleFonts.notoSans().fontFamily),
                           ),
-                        ],
+                          obscureText: true,
+                          style: TextStyle(
+                              fontFamily: GoogleFonts.notoSans().fontFamily),
+                        ),
                       ),
-                      EmailLoginButton(
-                        text: 'Sign in',
-                        icon: Icons.account_circle,
-                        color: Colors.white,
-                        textColor: Colors.black,
-                        iconColor: Colors.black,
-                        emailController: emailController,
-                        passwordController: passwordController,
-                        redirect: redirect,
-                      ),
-                      Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 25),
-                          child: SizedBox(
-                            width: 400,
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Divider(
-                                    thickness: 0.5,
-                                    color: Colors.grey.shade100,
-                                  ),
-                                ),
-                                const Text(
-                                  "   OR   ",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Divider(
-                                    thickness: 0.5,
-                                    color: Colors.grey.shade100,
-                                  ),
-                                ),
-                              ],
+                    ],
+                  ),
+                  EmailLoginButton(
+                    text: 'Sign In',
+                    icon: Icons.account_circle,
+                    color: Colors.white,
+                    textColor: Colors.black,
+                    iconColor: Colors.black,
+                    emailController: emailController,
+                    passwordController: passwordController,
+                    redirect: redirect,
+                  ),
+                  Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 25),
+                      child: SizedBox(
+                        width: 400,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Divider(
+                                thickness: 0.5,
+                                color: Colors.grey.shade100,
+                              ),
                             ),
-                          )),
-                      LoginButton(
-                        text: "Sign in with Google",
-                        icon: FontAwesomeIcons.google,
-                        color: Colors.grey.shade800,
-                        loginMethod: AuthService().googleLogin,
-                        textColor: Colors.white,
-                        iconColor: Colors.white,
-                        redirect: redirect,
-                      ),
-                      FutureBuilder<Object>(
-                        future: SignInWithApple.isAvailable(),
-                        builder: (context, snapshot) {
-                          if (snapshot.data == true) {
-                            return LoginButton(
-                              text: "Sign in with Apple",
-                              icon: FontAwesomeIcons.apple,
-                              color: Colors.grey.shade800,
-                              loginMethod: AuthService().anonLogin,
-                              textColor: Colors.white,
-                              iconColor: Colors.white,
-                              redirect: redirect,
-                            );
-                          } else {
-                            return Container();
-                          }
+                            const Text(
+                              "   OR   ",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Expanded(
+                              child: Divider(
+                                thickness: 0.5,
+                                color: Colors.grey.shade100,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )),
+                  LoginButton(
+                    text: "Sign in with Google",
+                    icon: FontAwesomeIcons.google,
+                    color: Colors.grey.shade800,
+                    loginMethod: AuthService().googleLogin,
+                    textColor: Colors.white,
+                    iconColor: Colors.white,
+                    redirect: redirect,
+                  ),
+                  FutureBuilder<Object>(
+                    future: SignInWithApple.isAvailable(),
+                    builder: (context, snapshot) {
+                      if (snapshot.data == true) {
+                        return LoginButton(
+                          text: "Sign in with Apple",
+                          icon: FontAwesomeIcons.apple,
+                          color: Colors.grey.shade800,
+                          loginMethod: AuthService().anonLogin,
+                          textColor: Colors.white,
+                          iconColor: Colors.white,
+                          redirect: redirect,
+                        );
+                      } else {
+                        return Container();
+                      }
+                    },
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Not registered?"),
+                      const SizedBox(width: 4),
+                      InkWell(
+                        child: const Text("Register Now",
+                            style: TextStyle(color: Colors.blue)),
+                        onTap: () {
+                          context.go("/register");
                         },
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text("Not registered?"),
-                          const SizedBox(width: 4),
-                          InkWell(
-                            child: const Text("Register Now",
-                                style: TextStyle(color: Colors.blue)),
-                            onTap: () {
-                              context.go("/register");
-                            },
-                          ),
-                        ],
-                      )
-                    ]),
-              ),
-            ),
+                    ],
+                  )
+                ]),
           ),
-        ));
+        ),
+      ),
+    ));
   }
 }
 
