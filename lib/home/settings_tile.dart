@@ -73,6 +73,7 @@ class SettingsTile extends StatelessWidget {
     }
 
     return ListTile(
+      contentPadding: EdgeInsets.zero,
       title: Text(title),
       subtitle: RichText(
         text: TextSpan(children: [

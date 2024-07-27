@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/chat_id_notifier.dart';
 import 'package:gpt_thing/home/home_drawer.dart';
@@ -24,8 +25,12 @@ class HomePage extends StatelessWidget {
     bool linkHover = false;
 
     void applyUserSettings() async {
+      if (user.uid.isEmpty) {
+        return;
+      }
       if (user.settings.saveAPIKey) {
-        final validated = await data.setKey(user.apiKey!, user.org!, fromUser: true);
+        final validated =
+            await data.setKey(user.apiKey!, user.org!, fromUser: true);
         if (validated) {
           data.applyDefaultModel(context);
         } else {
@@ -33,23 +38,23 @@ class HomePage extends StatelessWidget {
           FirestoreService().updateUser(user);
           if (context.mounted && ModalRoute.of(context)!.isCurrent) {
             showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: const Text("API Key Error"),
-                content: const Text(
-                    "Your saved API key failed to validate. Check your key, and set it again in settings."),
-                actions: [
-                  TextButton(
-                    child: const Text("OK"),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  )
-                ],
-                insetPadding: const EdgeInsets.all(24),
-              );
-            });
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text("API Key Error"),
+                    content: const Text(
+                        "Your saved API key failed to validate. Check your key, and set it again in settings."),
+                    actions: [
+                      TextButton(
+                        child: const Text("OK"),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      )
+                    ],
+                    insetPadding: const EdgeInsets.all(24),
+                  );
+                });
           }
         }
       }
@@ -92,7 +97,8 @@ class HomePage extends StatelessWidget {
                         builder: (context, child) {
                           return Column(
                             children: [
-                              ChatWindow(data: data, scroller: scroller),
+                              ChatWindow(
+                                  data: data, scroller: scroller, user: user),
                               Container(
                                 margin: const EdgeInsets.all(16.0),
                                 padding: const EdgeInsets.symmetric(
@@ -137,9 +143,7 @@ class HomePage extends StatelessWidget {
                                               cursor: SystemMouseCursors.click,
                                               child: GestureDetector(
                                                 onTap: () {
-                                                  Navigator.of(context)
-                                                      .pushReplacementNamed(
-                                                          '/login');
+                                                  context.go('/login');
                                                 },
                                                 child: Text(
                                                   'sign in',
@@ -258,7 +262,8 @@ class HomePage extends StatelessWidget {
                                                             ChatWindow(
                                                                 data: data,
                                                                 scroller:
-                                                                    scroller),
+                                                                    scroller,
+                                                                user: user),
                                                             MessageBox(
                                                               data: data,
                                                               chatIds: chatIds,

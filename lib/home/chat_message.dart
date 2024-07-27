@@ -19,6 +19,7 @@ class ChatMessage extends StatefulWidget {
     this.text = "",
     this.imageUrl = "",
     this.streaming = false,
+    this.onReport,
   });
 
   final OpenAIChatMessageRole role;
@@ -28,6 +29,7 @@ class ChatMessage extends StatefulWidget {
   final String text;
   final String imageUrl;
   final bool streaming;
+  final Future<bool> Function()? onReport;
 
   @override
   State<ChatMessage> createState() => _ChatMessageState();
@@ -224,6 +226,16 @@ class _ChatMessageState extends State<ChatMessage> {
                             });
                             return true;
                           }),
+                  CompactIconButton(
+                    icon: const Icon(Icons.report_rounded),
+                    tooltip: "Report conversation",
+                    onPressed: () async {
+                      if (widget.onReport == null) {
+                        return false;
+                      }
+                      return await widget.onReport!();
+                    }
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4),
                     child: Text(

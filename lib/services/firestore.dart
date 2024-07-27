@@ -180,4 +180,55 @@ class FirestoreService {
       print('Error occurred while deleting files: $e');
     }
   }
+
+  Future<String> fetchCurrentVersion() async {
+    var versionDoc = await FirebaseFirestore.instance.collection('config').doc('appConfig').get();
+    return versionDoc['currentVersion'] as String;
+  }
+
+  Future<bool> addChatReport(ChatData data, String uid, String message) async {
+    try {
+      CollectionReference reports = _db.collection('reports');
+      final doc = reports.doc(DateTime.now().millisecondsSinceEpoch.toString());
+      final reportData = data.toJson();
+      reportData['uid'] = uid;
+      reportData['reportMessage'] = message;
+      await doc.set(reportData);
+    } catch (e) {
+      print('Error occured while reporting chat: $e');
+      return false;
+    }
+    return true;
+  }
+
+  Future<void> deleteUserAccount(String userId) async {
+    if (userId == null) {
+      return;
+    }
+    try {
+      await deleteImagesFromStorage(userId);
+      await _db.collection('users').doc(userId).delete();
+      await FirebaseAuth.instance.currentUser!.delete();
+    } catch (e) {
+      print('Failed to delete user data: $e');
+      return;
+    }
+  }
+
+
+  Future<void> deleteImagesFromStorage(String userId) async {
+    final storageRef = FirebaseStorage.instance.ref().child('images').child(userId);
+
+    try {
+      final ListResult result = await storageRef.listAll();
+      for (var folderRef in result.prefixes) {
+        final folderContent = await folderRef.listAll();
+        for (var fileRef in folderContent.items) {
+          await fileRef.delete();
+        }
+      }
+    } catch (e) {
+      throw Exception('Failed to delete images: $e');
+    }
+  }
 }
