@@ -99,11 +99,6 @@ class RegisterPage extends StatelessWidget {
                     ],
                   ),
                   EmailSignupButton(
-                    text: 'Create Account',
-                    icon: Icons.account_circle,
-                    color: Colors.white,
-                    textColor: Colors.black,
-                    iconColor: Colors.black,
                     emailController: emailController,
                     passwordController: passwordController,
                     passwordConfirmController: passwordConfirmController,
@@ -141,8 +136,6 @@ class RegisterPage extends StatelessWidget {
                     icon: FontAwesomeIcons.google,
                     color: Colors.grey.shade800,
                     loginMethod: AuthService().googleLogin,
-                    textColor: Colors.white,
-                    iconColor: Colors.white,
                     redirect: "/",
                   ),
                   FutureBuilder<Object>(
@@ -154,8 +147,6 @@ class RegisterPage extends StatelessWidget {
                           icon: FontAwesomeIcons.apple,
                           color: Colors.grey.shade800,
                           loginMethod: AuthService().anonLogin,
-                          textColor: Colors.white,
-                          iconColor: Colors.white,
                           redirect: "/",
                         );
                       } else {
@@ -169,7 +160,7 @@ class RegisterPage extends StatelessWidget {
                       const Text("Already have an account?"),
                       const SizedBox(width: 4),
                       InkWell(
-                        child: const Text("Sign in",
+                        child: const Text("Sign In",
                             style: TextStyle(color: Colors.blue)),
                         onTap: () {
                           context.go("/login");
@@ -186,45 +177,34 @@ class RegisterPage extends StatelessWidget {
 }
 
 class EmailSignupButton extends StatelessWidget {
-  final Color color;
-  final IconData icon;
-  final String text;
-  final Color textColor;
-  final Color iconColor;
-  final emailController;
-  final passwordController;
-  final passwordConfirmController;
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
+  final TextEditingController passwordConfirmController;
 
   const EmailSignupButton(
       {super.key,
-      required this.text,
-      required this.icon,
-      required this.color,
-      required this.textColor,
-      required this.iconColor,
-      this.emailController,
-      this.passwordController,
-      this.passwordConfirmController});
+      required this.emailController,
+      required this.passwordController,
+      required this.passwordConfirmController});
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: 350,
       child: ElevatedButton.icon(
-        icon: Icon(
-          icon,
-          color: iconColor,
+        icon: const Icon(
+          Icons.account_circle_rounded,
+          color: Colors.black,
           size: 20,
         ),
         style: TextButton.styleFrom(
             padding: const EdgeInsets.all(24),
-            backgroundColor: color,
+            backgroundColor: Colors.white,
             elevation: 5),
         onPressed: () async {
           if (passwordConfirmController.text != passwordController.text) {
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               content: Text("Passwords do not match"),
-              backgroundColor: Colors.red,
             ));
             return;
           } else if (emailController.text.isEmpty ||
@@ -232,14 +212,12 @@ class EmailSignupButton extends StatelessWidget {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('Please enter a valid email address.'),
-                backgroundColor: Colors.red,
               ),
             );
           } else if (passwordController.text.length < 6) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('Password must be at least 6 characters long.'),
-                backgroundColor: Colors.red,
               ),
             );
           } else {
@@ -253,18 +231,17 @@ class EmailSignupButton extends StatelessWidget {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text('${e.message}'),
-                  backgroundColor: Colors.red,
                 ),
               );
             }
           }
         },
         label: Text(
-          text,
+          "Create Account",
           textAlign: TextAlign.center,
           style: TextStyle(
               fontSize: 16,
-              color: textColor,
+              color: Colors.black,
               fontFamily: GoogleFonts.notoSans().fontFamily),
         ),
       ),

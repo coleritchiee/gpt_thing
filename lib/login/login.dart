@@ -79,11 +79,6 @@ class LoginPage extends StatelessWidget {
                     ],
                   ),
                   EmailLoginButton(
-                    text: 'Sign In',
-                    icon: Icons.account_circle,
-                    color: Colors.white,
-                    textColor: Colors.black,
-                    iconColor: Colors.black,
                     emailController: emailController,
                     passwordController: passwordController,
                     redirect: redirect,
@@ -121,8 +116,6 @@ class LoginPage extends StatelessWidget {
                     icon: FontAwesomeIcons.google,
                     color: Colors.grey.shade800,
                     loginMethod: AuthService().googleLogin,
-                    textColor: Colors.white,
-                    iconColor: Colors.white,
                     redirect: redirect,
                   ),
                   FutureBuilder<Object>(
@@ -134,8 +127,6 @@ class LoginPage extends StatelessWidget {
                           icon: FontAwesomeIcons.apple,
                           color: Colors.grey.shade800,
                           loginMethod: AuthService().anonLogin,
-                          textColor: Colors.white,
-                          iconColor: Colors.white,
                           redirect: redirect,
                         );
                       } else {
@@ -170,8 +161,6 @@ class LoginButton extends StatelessWidget {
   final IconData icon;
   final String text;
   final Function loginMethod;
-  final Color textColor;
-  final Color iconColor;
   final String redirect;
 
   const LoginButton(
@@ -180,8 +169,6 @@ class LoginButton extends StatelessWidget {
       required this.icon,
       required this.color,
       required this.loginMethod,
-      required this.textColor,
-      required this.iconColor,
       required this.redirect});
 
   @override
@@ -191,7 +178,7 @@ class LoginButton extends StatelessWidget {
       child: ElevatedButton.icon(
         icon: Icon(
           icon,
-          color: iconColor,
+          color: Colors.white,
           size: 20,
         ),
         style: TextButton.styleFrom(
@@ -213,7 +200,7 @@ class LoginButton extends StatelessWidget {
           textAlign: TextAlign.center,
           style: TextStyle(
               fontSize: 16,
-              color: textColor,
+              color: Colors.white,
               fontFamily: GoogleFonts.notoSans().fontFamily),
         ),
       ),
@@ -222,22 +209,12 @@ class LoginButton extends StatelessWidget {
 }
 
 class EmailLoginButton extends StatelessWidget {
-  final Color color;
-  final IconData icon;
-  final String text;
-  final Color textColor;
-  final Color iconColor;
   final TextEditingController emailController;
   final TextEditingController passwordController;
   final String redirect;
 
   const EmailLoginButton(
       {super.key,
-      required this.text,
-      required this.icon,
-      required this.color,
-      required this.textColor,
-      required this.iconColor,
       required this.emailController,
       required this.passwordController,
       required this.redirect});
@@ -247,14 +224,14 @@ class EmailLoginButton extends StatelessWidget {
     return SizedBox(
       width: 350,
       child: ElevatedButton.icon(
-        icon: Icon(
-          icon,
-          color: iconColor,
+        icon: const Icon(
+          Icons.account_circle_rounded,
+          color: Colors.black,
           size: 20,
         ),
         style: TextButton.styleFrom(
             padding: const EdgeInsets.all(24),
-            backgroundColor: color,
+            backgroundColor: Colors.white,
             elevation: 5),
         onPressed: () async {
           try {
@@ -272,11 +249,11 @@ class EmailLoginButton extends StatelessWidget {
           }
         },
         label: Text(
-          text,
+          "Sign In",
           textAlign: TextAlign.center,
           style: TextStyle(
               fontSize: 16,
-              color: textColor,
+              color: Colors.black,
               fontFamily: GoogleFonts.notoSans().fontFamily),
         ),
       ),
