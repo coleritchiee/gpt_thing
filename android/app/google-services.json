@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:202585147455:android:daf36b76f293f01315508a",
         "android_client_info": {
-          "package_name": "net.iicosahedra.gpt_thing"
+          "package_name": "net.silverpangolin.chatkeypt"
         }
       },
       "oauth_client": [
@@ -34,7 +34,7 @@
               "client_id": "202585147455-n7tab0i5n14g2ieoouqgo1qk69f82vof.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "net.iicosahedra.gptThing"
+                "bundle_id": "net.silverpangolin.chatkeypt"
               }
             }
           ]
