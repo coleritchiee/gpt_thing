@@ -54,6 +54,7 @@ class ModelDialog extends StatelessWidget {
                           .map((group) {
                         return Material(
                           // avoiding color overflow
+                          color: Colors.transparent,
                           child: ListTile(
                             onTap: () {
                               setState(() {
@@ -106,6 +107,7 @@ class ModelDialog extends StatelessWidget {
                         }).map((model) {
                           return Material(
                             // need this so color doesn't overflow
+                            color: Colors.transparent,
                             child: ListTile(
                               onTap: () {
                                 setState(() {

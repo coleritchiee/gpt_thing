@@ -34,6 +34,9 @@ var appTheme = ThemeData(
     ),
   ),
   canvasColor: Colors.grey.shade800,
+  dialogTheme: const DialogTheme(
+    surfaceTintColor: Colors.transparent,
+  )
 );
 
 class NoTransitionsBuilder extends PageTransitionsBuilder {
