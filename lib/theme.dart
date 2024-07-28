@@ -36,6 +36,7 @@ var appTheme = ThemeData(
   canvasColor: Colors.grey.shade800,
   dialogTheme: const DialogTheme(
     surfaceTintColor: Colors.transparent,
+    backgroundColor: Color.fromARGB(255, 20, 18, 24),
   )
 );
 
