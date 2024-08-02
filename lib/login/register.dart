@@ -56,7 +56,8 @@ class RegisterPage extends StatelessWidget {
                                   borderSide: BorderSide(color: Colors.white)),
                               hintText: "Email Address",
                               hintStyle: TextStyle(
-                                  fontFamily: GoogleFonts.notoSans().fontFamily),
+                                  fontFamily:
+                                      GoogleFonts.notoSans().fontFamily),
                             ),
                             style: TextStyle(
                                 fontFamily: GoogleFonts.notoSans().fontFamily),
@@ -73,7 +74,8 @@ class RegisterPage extends StatelessWidget {
                                   borderSide: BorderSide(color: Colors.white)),
                               hintText: 'Password',
                               hintStyle: TextStyle(
-                                  fontFamily: GoogleFonts.notoSans().fontFamily),
+                                  fontFamily:
+                                      GoogleFonts.notoSans().fontFamily),
                             ),
                             obscureText: true,
                             style: TextStyle(
@@ -91,7 +93,8 @@ class RegisterPage extends StatelessWidget {
                                   borderSide: BorderSide(color: Colors.white)),
                               hintText: 'Confirm Password',
                               hintStyle: TextStyle(
-                                  fontFamily: GoogleFonts.notoSans().fontFamily),
+                                  fontFamily:
+                                      GoogleFonts.notoSans().fontFamily),
                             ),
                             obscureText: true,
                             style: TextStyle(
@@ -153,6 +156,10 @@ class RegisterPage extends StatelessWidget {
                           return Container();
                         }
                       },
+                    ),
+                    const Text(
+                      "By registering, you agree to our privacy policy.",
+                      style: TextStyle(fontSize: 14, color: Colors.grey),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
