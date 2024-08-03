@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../services/auth.dart';
 import 'login.dart';
@@ -181,7 +182,9 @@ class RegisterPage extends StatelessWidget {
                             cursor: SystemMouseCursors.click,
                             child: GestureDetector(
                               onTap: () {
-                                // TODO: OPEN PRIVACY POLICY HERE
+                                final policy = Uri.parse(
+                                    "https://firebasestorage.googleapis.com/v0/b/gptthing-a25d7.appspot.com/o/public%2FSilver%20Pangolin%20Privacy%20Policy.pdf?alt=media");
+                                launchUrl(policy);
                               },
                               child: Text(
                                 'Privacy Policy',
