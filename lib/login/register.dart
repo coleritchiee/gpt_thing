@@ -17,6 +17,8 @@ class RegisterPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool linkHover = false;
+
     return Scaffold(
         body: SafeArea(
       child: SingleChildScrollView(
@@ -157,9 +159,49 @@ class RegisterPage extends StatelessWidget {
                         }
                       },
                     ),
-                    const Text(
-                      "By registering, you agree to our privacy policy.",
-                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          "By registering, you agree to our ",
+                          style: TextStyle(fontSize: 14, color: Colors.grey),
+                        ),
+                        StatefulBuilder(builder: (context, setState) {
+                          return MouseRegion(
+                            onEnter: (event) {
+                              setState(() {
+                                linkHover = true;
+                              });
+                            },
+                            onExit: (event) {
+                              setState(() {
+                                linkHover = false;
+                              });
+                            },
+                            cursor: SystemMouseCursors.click,
+                            child: GestureDetector(
+                              onTap: () {
+                                // TODO: OPEN PRIVACY POLICY HERE
+                              },
+                              child: Text(
+                                'Privacy Policy',
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 14,
+                                  decoration: linkHover
+                                      ? TextDecoration.underline
+                                      : null,
+                                  decorationColor: Colors.blue,
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
+                        const Text(
+                          ".",
+                          style: TextStyle(fontSize: 14, color: Colors.grey),
+                        ),
+                      ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
