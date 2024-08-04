@@ -140,8 +140,7 @@ class LoginPage extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text("Not registered?"),
-                        const SizedBox(width: 4),
+                        const Text("Not registered? "),
                         InkWell(
                           child: const Text("Register Now",
                               style: TextStyle(color: Colors.blue)),

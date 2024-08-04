@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -18,8 +19,6 @@ class RegisterPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool linkHover = false;
-
     return Scaffold(
         body: SafeArea(
       child: SingleChildScrollView(
@@ -160,57 +159,45 @@ class RegisterPage extends StatelessWidget {
                         }
                       },
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          "By registering, you agree to our ",
-                          style: TextStyle(fontSize: 14, color: Colors.grey),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 350),
+                      child: RichText(
+                        textAlign: TextAlign.center,
+                        text: TextSpan(
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey,
+                            fontFamily: GoogleFonts.notoSans().fontFamily,
+                          ),
+                          children: <TextSpan>[
+                            const TextSpan(
+                                text: "By registering, you agree to our "),
+                            TextSpan(
+                                text: "Privacy Policy",
+                                style: const TextStyle(color: Colors.blue),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    final policy = Uri.parse(
+                                        "https://firebasestorage.googleapis.com/v0/b/gptthing-a25d7.appspot.com/o/public%2FSilver%20Pangolin%20Privacy%20Policy.pdf?alt=media");
+                                    launchUrl(policy);
+                                  }),
+                            const TextSpan(text: " and "),
+                            TextSpan(
+                                text: "Terms of Service",
+                                style: const TextStyle(color: Colors.blue),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    // OPEN TERMS OF SERVICE HERE
+                                  }),
+                            const TextSpan(text: "."),
+                          ],
                         ),
-                        StatefulBuilder(builder: (context, setState) {
-                          return MouseRegion(
-                            onEnter: (event) {
-                              setState(() {
-                                linkHover = true;
-                              });
-                            },
-                            onExit: (event) {
-                              setState(() {
-                                linkHover = false;
-                              });
-                            },
-                            cursor: SystemMouseCursors.click,
-                            child: GestureDetector(
-                              onTap: () {
-                                final policy = Uri.parse(
-                                    "https://firebasestorage.googleapis.com/v0/b/gptthing-a25d7.appspot.com/o/public%2FSilver%20Pangolin%20Privacy%20Policy.pdf?alt=media");
-                                launchUrl(policy);
-                              },
-                              child: Text(
-                                'Privacy Policy',
-                                style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 14,
-                                  decoration: linkHover
-                                      ? TextDecoration.underline
-                                      : null,
-                                  decorationColor: Colors.blue,
-                                ),
-                              ),
-                            ),
-                          );
-                        }),
-                        const Text(
-                          ".",
-                          style: TextStyle(fontSize: 14, color: Colors.grey),
-                        ),
-                      ],
+                      ),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text("Already have an account?"),
-                        const SizedBox(width: 4),
+                        const Text("Already have an account? "),
                         InkWell(
                           child: const Text("Sign In",
                               style: TextStyle(color: Colors.blue)),
