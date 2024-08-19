@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:gpt_thing/home/about_dialog.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/chat_id_notifier.dart';
 import 'package:gpt_thing/home/chat_info.dart';
@@ -157,6 +158,7 @@ class HomeDrawer extends StatelessWidget {
                                   ),
                                   onTap: () {
                                     Navigator.pop(context);
+                                    _showAbout(context);
                                   },
                                 ),
                               ),
@@ -214,6 +216,7 @@ class HomeDrawer extends StatelessWidget {
                                   ),
                                   onTap: () {
                                     Navigator.pop(context);
+                                    _showAbout(context);
                                   },
                                 ),
                               ),
@@ -298,4 +301,20 @@ class HomeDrawer extends StatelessWidget {
       },
     );
   }
+}
+
+void _showAbout(BuildContext context) {
+  showAboutDialog(
+    context: context,
+    applicationName: "ChatKeyPT",
+    applicationVersion: "1.0.0",
+    applicationIcon: Image.asset(
+      "assets/icon/icon.png",
+      width: 50,
+      height: 50,
+    ),
+    children: [
+      const About(),
+    ],
+  );
 }
