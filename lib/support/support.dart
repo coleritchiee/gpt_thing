@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
 class SupportPage extends StatelessWidget {
@@ -6,6 +7,8 @@ class SupportPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var textHover = false;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("ChatKeyPT"),
@@ -25,10 +28,38 @@ class SupportPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Reach out to us by email at: silverpangolin.contact@gmail.com',
+                  'Reach out to us by email at:',
                   style: Theme.of(context).textTheme.titleMedium,
                   textAlign: TextAlign.center,
                 ),
+                StatefulBuilder(builder: (context, setState) {
+                  return MouseRegion(
+                    onEnter: (event) {
+                      setState(() {
+                        textHover = true;
+                      });
+                    },
+                    onExit: (event) {
+                      setState(() {
+                        textHover = false;
+                      });
+                    },
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                      onTap: () {
+                        Clipboard.setData(const ClipboardData(
+                            text: "silverpangolin.contact@gmail.com"));
+                      },
+                      child: Text("silverpangolin.contact@gmail.com",
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            decoration:
+                                textHover ? TextDecoration.underline : null,
+                            decorationColor: Theme.of(context).colorScheme.primary,
+                          )),
+                    ),
+                  );
+                }),
                 const SizedBox(height: 20),
                 Center(
                   child: ElevatedButton(
