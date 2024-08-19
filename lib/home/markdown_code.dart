@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_highlight/flutter_highlight.dart';
@@ -30,7 +31,8 @@ class MarkdownCode extends MarkdownElementBuilder {
             backgroundColor: Colors.black,
           ),
         ),
-        textScaler: MediaQuery.textScalerOf(context), // to scale with mobile accessibility
+        textScaler: MediaQuery.textScalerOf(
+            context), // to scale with mobile accessibility
       );
     } else {
       ScrollController scroller = ScrollController();
@@ -55,27 +57,48 @@ class MarkdownCode extends MarkdownElementBuilder {
                       theme: irBlackModifiedTheme,
                       padding: const EdgeInsets.all(8),
                       textStyle: GoogleFonts.robotoMono(
-                        fontSize: MediaQuery.of(context).textScaler.scale(
-                            14), // to scale with mobile accessibility
+                        fontSize: MediaQuery.of(context)
+                            .textScaler
+                            .scale(14), // to scale with mobile accessibility
                       ),
                     )
-                  : Scrollbar(
-                      controller: scroller,
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        controller: scroller,
-                        child: HighlightView(
-                          code,
-                          language: language,
-                          theme: irBlackModifiedTheme,
-                          padding: const EdgeInsets.all(8),
-                          textStyle: GoogleFonts.robotoMono(
-                            fontSize: MediaQuery.of(context).textScaler.scale(
-                                14), // must do this or it won't scale with mobile accessibility
+                  : kIsWeb
+                      ? Scrollbar(
+                          controller: scroller,
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            controller: scroller,
+                            child: HighlightView(
+                              code,
+                              language: language,
+                              theme: irBlackModifiedTheme,
+                              padding: const EdgeInsets.all(8),
+                              textStyle: GoogleFonts.robotoMono(
+                                fontSize: MediaQuery.of(context).textScaler.scale(
+                                    14), // to scale with mobile accessibility
+                              ),
+                            ),
+                          ),
+                        )
+                      : Scrollbar(
+                          controller: scroller,
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            controller: scroller,
+                            child: IgnorePointer(
+                              child: HighlightView(
+                                code,
+                                language: language,
+                                theme: irBlackModifiedTheme,
+                                padding: const EdgeInsets.all(8),
+                                textStyle: GoogleFonts.robotoMono(
+                                  fontSize: MediaQuery.of(context).textScaler.scale(
+                                      14), // to scale with mobile accessibility
+                                ),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
             ),
             Row(
                 mainAxisAlignment: MainAxisAlignment.start,
