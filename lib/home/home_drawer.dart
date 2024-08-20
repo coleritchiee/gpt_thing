@@ -313,6 +313,7 @@ void _showAbout(BuildContext context) {
       width: 50,
       height: 50,
     ),
+    applicationLegalese: "by Silver Pangolin",
     children: [
       const About(),
     ],
