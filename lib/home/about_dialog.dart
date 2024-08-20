@@ -111,7 +111,8 @@ class About extends StatelessWidget {
             cursor: SystemMouseCursors.click,
             child: GestureDetector(
               onTap: () {
-                openLink("https://www.chatkeypt.com/");
+                openLink(
+                    "https://firebasestorage.googleapis.com/v0/b/gptthing-a25d7.appspot.com/o/public%2FSilver%20Pangolin%20Terms%20of%20Service.pdf?alt=media");
               },
               child: Text("Terms of Service",
                   style: TextStyle(

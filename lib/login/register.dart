@@ -187,7 +187,9 @@ class RegisterPage extends StatelessWidget {
                                 style: const TextStyle(color: Colors.blue),
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () {
-                                    // OPEN TERMS OF SERVICE HERE
+                                    final policy = Uri.parse(
+                                        "https://firebasestorage.googleapis.com/v0/b/gptthing-a25d7.appspot.com/o/public%2FSilver%20Pangolin%20Terms%20of%20Service.pdf?alt=media");
+                                    launchUrl(policy);
                                   }),
                             const TextSpan(text: "."),
                           ],
