@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:gpt_thing/services/firestore.dart';
+import 'package:gpt_thing/theme.dart';
 
 class FirebaseInit extends StatelessWidget {
   final Future<FirebaseApp> init;
@@ -26,8 +27,9 @@ class FirebaseInit extends StatelessWidget {
             future: FirestoreService().fetchCurrentVersion(),
             builder: (context, versionSnapshot) {
               if (versionSnapshot.connectionState == ConnectionState.waiting) {
-                return const MaterialApp(
-                    home: Scaffold(
+                return MaterialApp(
+                  theme: appTheme,
+                    home: const Scaffold(
                         body: Center(child: CircularProgressIndicator())));
               } else if (versionSnapshot.hasError) {
                 return MaterialApp(
@@ -39,6 +41,7 @@ class FirebaseInit extends StatelessWidget {
 
               if (versionSnapshot.data != version) {
                 return MaterialApp(
+                  theme: appTheme,
                   home: Scaffold(
                     body: Center(
                       child: Column(
@@ -61,7 +64,7 @@ class FirebaseInit extends StatelessWidget {
             },
           );
         }
-        return const Text('loading', textDirection: TextDirection.rtl);
+        return const Text('', textDirection: TextDirection.rtl);
       },
     );
   }
