@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:gpt_thing/services/firestore.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -83,6 +85,13 @@ class AuthService {
         AppleIDAuthorizationScopes.fullName,
       ],
       nonce: nonce,
+      webAuthenticationOptions: WebAuthenticationOptions(
+          clientId: 'net.silverpangolin.chatkeyptsignin',
+          redirectUri: kIsWeb
+              ? Uri.parse('https://www.chatkeypt.com/')
+              : Uri.parse(
+            'https://flawless-destiny-breeze.glitch.me/callbacks/sign_in_with_apple',
+          ),)
     );
 
     final oauthCredential = OAuthProvider("apple.com").credential(

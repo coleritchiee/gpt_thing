@@ -129,7 +129,7 @@ class LoginPage extends StatelessWidget {
                             text: "Sign in with Apple",
                             icon: FontAwesomeIcons.apple,
                             color: Colors.grey.shade800,
-                            loginMethod: AuthService().anonLogin,
+                            loginMethod: AuthService().signInWithApple,
                             redirect: redirect,
                           );
                         } else {
