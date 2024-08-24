@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gpt_thing/legal.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -41,33 +42,34 @@ class About extends StatelessWidget {
             ),
           );
         }),
-        const SizedBox(height: 8),
-        StatefulBuilder(builder: (context, setState) {
-          return MouseRegion(
-            onEnter: (event) {
-              setState(() {
-                hover2 = true;
-              });
-            },
-            onExit: (event) {
-              setState(() {
-                hover2 = false;
-              });
-            },
-            cursor: SystemMouseCursors.click,
-            child: GestureDetector(
-              onTap: () {
-                openLink("https://www.chatkeypt.com/");
+        if (!kIsWeb) const SizedBox(height: 8),
+        if (!kIsWeb)
+          StatefulBuilder(builder: (context, setState) {
+            return MouseRegion(
+              onEnter: (event) {
+                setState(() {
+                  hover2 = true;
+                });
               },
-              child: Text("Website",
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.primary,
-                    decoration: hover2 ? TextDecoration.underline : null,
-                    decorationColor: Theme.of(context).colorScheme.primary,
-                  )),
-            ),
-          );
-        }),
+              onExit: (event) {
+                setState(() {
+                  hover2 = false;
+                });
+              },
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: () {
+                  openLink("https://www.chatkeypt.com/");
+                },
+                child: Text("Website",
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                      decoration: hover2 ? TextDecoration.underline : null,
+                      decorationColor: Theme.of(context).colorScheme.primary,
+                    )),
+              ),
+            );
+          }),
         const SizedBox(height: 8),
         StatefulBuilder(builder: (context, setState) {
           return MouseRegion(
