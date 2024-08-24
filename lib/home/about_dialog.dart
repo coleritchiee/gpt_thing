@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gpt_thing/legal.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class About extends StatelessWidget {
@@ -83,8 +84,7 @@ class About extends StatelessWidget {
             cursor: SystemMouseCursors.click,
             child: GestureDetector(
               onTap: () {
-                openLink(
-                    "https://firebasestorage.googleapis.com/v0/b/gptthing-a25d7.appspot.com/o/public%2FSilver%20Pangolin%20Privacy%20Policy.pdf?alt=media");
+                openPrivacyPolicy();
               },
               child: Text("Privacy Policy",
                   style: TextStyle(
@@ -111,8 +111,7 @@ class About extends StatelessWidget {
             cursor: SystemMouseCursors.click,
             child: GestureDetector(
               onTap: () {
-                openLink(
-                    "https://firebasestorage.googleapis.com/v0/b/gptthing-a25d7.appspot.com/o/public%2FSilver%20Pangolin%20Terms%20of%20Service.pdf?alt=media");
+                openTOS();
               },
               child: Text("Terms of Service",
                   style: TextStyle(

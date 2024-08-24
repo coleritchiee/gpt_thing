@@ -5,8 +5,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:gpt_thing/legal.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../services/auth.dart';
 import 'login.dart';
@@ -176,21 +176,13 @@ class RegisterPage extends StatelessWidget {
                                 text: "Privacy Policy",
                                 style: const TextStyle(color: Colors.blue),
                                 recognizer: TapGestureRecognizer()
-                                  ..onTap = () {
-                                    final policy = Uri.parse(
-                                        "https://firebasestorage.googleapis.com/v0/b/gptthing-a25d7.appspot.com/o/public%2FSilver%20Pangolin%20Privacy%20Policy.pdf?alt=media");
-                                    launchUrl(policy);
-                                  }),
+                                  ..onTap = openPrivacyPolicy),
                             const TextSpan(text: " and "),
                             TextSpan(
                                 text: "Terms of Service",
                                 style: const TextStyle(color: Colors.blue),
                                 recognizer: TapGestureRecognizer()
-                                  ..onTap = () {
-                                    final policy = Uri.parse(
-                                        "https://firebasestorage.googleapis.com/v0/b/gptthing-a25d7.appspot.com/o/public%2FSilver%20Pangolin%20Terms%20of%20Service.pdf?alt=media");
-                                    launchUrl(policy);
-                                  }),
+                                  ..onTap = openTOS),
                             const TextSpan(text: "."),
                           ],
                         ),

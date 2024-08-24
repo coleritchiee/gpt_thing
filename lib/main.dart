@@ -5,13 +5,13 @@ import 'package:go_router/go_router.dart';
 import 'package:gpt_thing/firebase_init.dart';
 import 'package:gpt_thing/delete_account/delete_account.dart';
 import 'package:gpt_thing/home/home.dart';
+import 'package:gpt_thing/legal.dart';
 import 'package:gpt_thing/login/login.dart';
 import 'package:gpt_thing/login/register.dart';
 import 'package:gpt_thing/services/user_locator.dart';
 import 'package:gpt_thing/support/support.dart';
 import 'package:gpt_thing/theme.dart';
 import 'package:gpt_thing/firebase_options.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -82,9 +82,7 @@ class App extends StatelessWidget {
           GoRoute(
             path: '/privacy',
             builder: (context, state) {
-              final link = Uri.parse(
-                  "https://firebasestorage.googleapis.com/v0/b/gptthing-a25d7.appspot.com/o/public%2FSilver%20Pangolin%20Privacy%20Policy.pdf?alt=media");
-              launchUrl(link, webOnlyWindowName: "_self");
+              openPrivacyPolicy(newWindow: false);
               return FirebaseInit(
                   init: _initialization,
                   version: version,
@@ -94,9 +92,7 @@ class App extends StatelessWidget {
           GoRoute(
             path: '/tos',
             builder: (context, state) {
-              final link = Uri.parse(
-                  "https://firebasestorage.googleapis.com/v0/b/gptthing-a25d7.appspot.com/o/public%2FSilver%20Pangolin%20Terms%20of%20Service.pdf?alt=media");
-              launchUrl(link, webOnlyWindowName: "_self");
+              openTOS(newWindow: false);
               return FirebaseInit(
                   init: _initialization,
                   version: version,
