@@ -11,6 +11,7 @@ import 'package:gpt_thing/services/user_locator.dart';
 import 'package:gpt_thing/support/support.dart';
 import 'package:gpt_thing/theme.dart';
 import 'package:gpt_thing/firebase_options.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -77,6 +78,30 @@ class App extends StatelessWidget {
                 init: _initialization,
                 version: version,
                 child: const SupportPage()),
+          ),
+          GoRoute(
+            path: '/privacy',
+            builder: (context, state) {
+              final link = Uri.parse(
+                  "https://firebasestorage.googleapis.com/v0/b/gptthing-a25d7.appspot.com/o/public%2FSilver%20Pangolin%20Privacy%20Policy.pdf?alt=media");
+              launchUrl(link, webOnlyWindowName: "_self");
+              return FirebaseInit(
+                  init: _initialization,
+                  version: version,
+                  child: const HomePage());
+            },
+          ),
+          GoRoute(
+            path: '/tos',
+            builder: (context, state) {
+              final link = Uri.parse(
+                  "https://firebasestorage.googleapis.com/v0/b/gptthing-a25d7.appspot.com/o/public%2FSilver%20Pangolin%20Terms%20of%20Service.pdf?alt=media");
+              launchUrl(link, webOnlyWindowName: "_self");
+              return FirebaseInit(
+                  init: _initialization,
+                  version: version,
+                  child: const HomePage());
+            },
           ),
         ],
       ),
