@@ -27,181 +27,201 @@ class RegisterPage extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 350),
-              child: Wrap(
-                  direction: Axis.vertical,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  spacing: 20,
-                  children: [
-                    SvgPicture.asset(
-                      'assets/icon/icon.svg',
-                      height: 75,
-                    ),
-                    Text(
-                      "Register",
-                      style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: GoogleFonts.notoSans().fontFamily),
-                    ),
-                    Wrap(
+              child: Stack(
+                children: [
+                  Wrap(
                       direction: Axis.vertical,
-                      spacing: 10,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 20,
                       children: [
-                        ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 350),
-                          child: TextField(
-                            controller: emailController,
-                            decoration: InputDecoration(
-                              enabledBorder: const OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: const OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white)),
-                              hintText: "Email Address",
-                              hintStyle: TextStyle(
-                                  fontFamily:
-                                      GoogleFonts.notoSans().fontFamily),
-                            ),
-                            style: TextStyle(
-                                fontFamily: GoogleFonts.notoSans().fontFamily),
-                          ),
+                        SvgPicture.asset(
+                          'assets/icon/icon.svg',
+                          height: 75,
                         ),
-                        ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 350),
-                          child: TextField(
-                            controller: passwordController,
-                            decoration: InputDecoration(
-                              enabledBorder: const OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: const OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white)),
-                              hintText: 'Password',
-                              hintStyle: TextStyle(
-                                  fontFamily:
-                                      GoogleFonts.notoSans().fontFamily),
-                            ),
-                            obscureText: true,
-                            style: TextStyle(
-                                fontFamily: GoogleFonts.notoSans().fontFamily),
-                          ),
-                        ),
-                        ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 350),
-                          child: TextField(
-                            controller: passwordConfirmController,
-                            decoration: InputDecoration(
-                              enabledBorder: const OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: const OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white)),
-                              hintText: 'Confirm Password',
-                              hintStyle: TextStyle(
-                                  fontFamily:
-                                      GoogleFonts.notoSans().fontFamily),
-                            ),
-                            obscureText: true,
-                            style: TextStyle(
-                                fontFamily: GoogleFonts.notoSans().fontFamily),
-                          ),
-                        ),
-                      ],
-                    ),
-                    EmailSignupButton(
-                      emailController: emailController,
-                      passwordController: passwordController,
-                      passwordConfirmController: passwordConfirmController,
-                    ),
-                    ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 350),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Divider(
-                              thickness: 0.5,
-                              color: Colors.grey.shade100,
-                            ),
-                          ),
-                          const Text(
-                            "   OR   ",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Expanded(
-                            child: Divider(
-                              thickness: 0.5,
-                              color: Colors.grey.shade100,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    LoginButton(
-                      text: "Sign in with Google",
-                      icon: FontAwesomeIcons.google,
-                      color: Colors.grey.shade800,
-                      loginMethod: AuthService().googleLogin,
-                      redirect: "/",
-                    ),
-                    FutureBuilder<Object>(
-                      future: SignInWithApple.isAvailable(),
-                      builder: (context, snapshot) {
-                        if (snapshot.data == true) {
-                          return LoginButton(
-                            text: "Sign in with Apple",
-                            icon: FontAwesomeIcons.apple,
-                            color: Colors.grey.shade800,
-                            loginMethod: AuthService().signInWithApple,
-                            redirect: "/",
-                          );
-                        } else {
-                          return Container();
-                        }
-                      },
-                    ),
-                    ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 350),
-                      child: RichText(
-                        textAlign: TextAlign.center,
-                        text: TextSpan(
+                        Text(
+                          "Register",
                           style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey,
-                            fontFamily: GoogleFonts.notoSans().fontFamily,
-                          ),
-                          children: <TextSpan>[
-                            const TextSpan(
-                                text: "By registering, you agree to our "),
-                            TextSpan(
-                                text: "Privacy Policy",
-                                style: const TextStyle(color: Colors.blue),
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = openPrivacyPolicy),
-                            const TextSpan(text: " and "),
-                            TextSpan(
-                                text: "Terms of Service",
-                                style: const TextStyle(color: Colors.blue),
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = openTOS),
-                            const TextSpan(text: "."),
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: GoogleFonts.notoSans().fontFamily),
+                        ),
+                        Wrap(
+                          direction: Axis.vertical,
+                          spacing: 10,
+                          children: [
+                            ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 350),
+                              child: TextField(
+                                controller: emailController,
+                                decoration: InputDecoration(
+                                  enabledBorder: const OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.grey)),
+                                  focusedBorder: const OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.white)),
+                                  hintText: "Email Address",
+                                  hintStyle: TextStyle(
+                                      fontFamily:
+                                          GoogleFonts.notoSans().fontFamily),
+                                ),
+                                style: TextStyle(
+                                    fontFamily:
+                                        GoogleFonts.notoSans().fontFamily),
+                              ),
+                            ),
+                            ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 350),
+                              child: TextField(
+                                controller: passwordController,
+                                decoration: InputDecoration(
+                                  enabledBorder: const OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.grey)),
+                                  focusedBorder: const OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.white)),
+                                  hintText: 'Password',
+                                  hintStyle: TextStyle(
+                                      fontFamily:
+                                          GoogleFonts.notoSans().fontFamily),
+                                ),
+                                obscureText: true,
+                                style: TextStyle(
+                                    fontFamily:
+                                        GoogleFonts.notoSans().fontFamily),
+                              ),
+                            ),
+                            ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 350),
+                              child: TextField(
+                                controller: passwordConfirmController,
+                                decoration: InputDecoration(
+                                  enabledBorder: const OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.grey)),
+                                  focusedBorder: const OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.white)),
+                                  hintText: 'Confirm Password',
+                                  hintStyle: TextStyle(
+                                      fontFamily:
+                                          GoogleFonts.notoSans().fontFamily),
+                                ),
+                                obscureText: true,
+                                style: TextStyle(
+                                    fontFamily:
+                                        GoogleFonts.notoSans().fontFamily),
+                              ),
+                            ),
                           ],
                         ),
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text("Already have an account? "),
-                        InkWell(
-                          child: const Text("Sign In",
-                              style: TextStyle(color: Colors.blue)),
-                          onTap: () {
-                            context.go("/login");
+                        EmailSignupButton(
+                          emailController: emailController,
+                          passwordController: passwordController,
+                          passwordConfirmController: passwordConfirmController,
+                        ),
+                        ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 350),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Divider(
+                                  thickness: 0.5,
+                                  color: Colors.grey.shade100,
+                                ),
+                              ),
+                              const Text(
+                                "   OR   ",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Expanded(
+                                child: Divider(
+                                  thickness: 0.5,
+                                  color: Colors.grey.shade100,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        LoginButton(
+                          text: "Sign in with Google",
+                          icon: FontAwesomeIcons.google,
+                          color: Colors.grey.shade800,
+                          loginMethod: AuthService().googleLogin,
+                          redirect: "/",
+                        ),
+                        FutureBuilder<Object>(
+                          future: SignInWithApple.isAvailable(),
+                          builder: (context, snapshot) {
+                            if (snapshot.data == true) {
+                              return LoginButton(
+                                text: "Sign in with Apple",
+                                icon: FontAwesomeIcons.apple,
+                                color: Colors.grey.shade800,
+                                loginMethod: AuthService().signInWithApple,
+                                redirect: "/",
+                              );
+                            } else {
+                              return Container();
+                            }
                           },
                         ),
-                      ],
-                    )
-                  ]),
+                        ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 350),
+                          child: RichText(
+                            textAlign: TextAlign.center,
+                            text: TextSpan(
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
+                                fontFamily: GoogleFonts.notoSans().fontFamily,
+                              ),
+                              children: <TextSpan>[
+                                const TextSpan(
+                                    text: "By registering, you agree to our "),
+                                TextSpan(
+                                    text: "Privacy Policy",
+                                    style: const TextStyle(color: Colors.blue),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = openPrivacyPolicy),
+                                const TextSpan(text: " and "),
+                                TextSpan(
+                                    text: "Terms of Service",
+                                    style: const TextStyle(color: Colors.blue),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = openTOS),
+                                const TextSpan(text: "."),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text("Already have an account? "),
+                            InkWell(
+                              child: const Text("Sign In",
+                                  style: TextStyle(color: Colors.blue)),
+                              onTap: () {
+                                context.go("/login");
+                              },
+                            ),
+                          ],
+                        )
+                      ]),
+                  Positioned(
+                    child: IconButton(
+                        onPressed: () {
+                          context.go("/");
+                        },
+                        icon: const Icon(Icons.arrow_back)),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
