@@ -1,16 +1,8 @@
 import 'package:dart_openai/dart_openai.dart';
 
 class APIManager {
-  static Future<OpenAIChatCompletionModel> chatPrompt(
-      List<OpenAIChatCompletionChoiceMessageModel> messages,
-      String model) async {
-    return await OpenAI.instance.chat.create(
-      model: model,
-      messages: messages,
-    );
-  }
-  
-  static Future<OpenAIChatCompletionModel> getChatTitle(List<OpenAIChatCompletionChoiceMessageModel> messages) async {
+  static Future<OpenAIChatCompletionModel> getChatTitle(
+      List<OpenAIChatCompletionChoiceMessageModel> messages) async {
     final promptMsg = <OpenAIChatCompletionChoiceMessageModel>[];
     // clone it to avoid messing with the actual chat
     promptMsg.addAll(messages);
@@ -22,14 +14,14 @@ class APIManager {
       }
     }
     // add our own system prompt to generate titles
-    promptMsg.insert(0, OpenAIChatCompletionChoiceMessageModel(
-      role: OpenAIChatMessageRole.system,
-      content: [
-        OpenAIChatCompletionChoiceMessageContentItemModel.text(
-          "You are an assistant that generates summarizing titles for conversations. Respond in ABSOLUTELY NO MORE THAN 30 CHARACTERS, formatted with PROPER TITLE CAPITALIZATION and WITHOUT QUOTATIONS. The following messages are the context of the conversation."
-        )
-      ]
-    ));
+    promptMsg.insert(
+        0,
+        OpenAIChatCompletionChoiceMessageModel(
+            role: OpenAIChatMessageRole.system,
+            content: [
+              OpenAIChatCompletionChoiceMessageContentItemModel.text(
+                  "You are an assistant that generates summarizing titles for conversations. Respond in ABSOLUTELY NO MORE THAN 30 CHARACTERS, formatted with PROPER TITLE CAPITALIZATION and WITHOUT QUOTATIONS. The following messages are the context of the conversation.")
+            ]));
     return await OpenAI.instance.chat.create(
       model: "gpt-3.5-turbo",
       messages: promptMsg,
@@ -38,15 +30,14 @@ class APIManager {
 
   static Stream<OpenAIStreamChatCompletionModel> chatPromptStream(
       List<OpenAIChatCompletionChoiceMessageModel> messages, String model) {
-    return OpenAI.instance.chat.createStream(
-        model: model,
-        messages: messages,
-        streamOptions: {
-          "include_usage": true,
-        });
+    return OpenAI.instance.chat
+        .createStream(model: model, messages: messages, streamOptions: {
+      "include_usage": true,
+    });
   }
 
-  static Future<OpenAIImageModel> imagePrompt(String prompt, String model) async {
+  static Future<OpenAIImageModel> imagePrompt(
+      String prompt, String model) async {
     return await OpenAI.instance.image.create(
       model: model,
       prompt: prompt,
