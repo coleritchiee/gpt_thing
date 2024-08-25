@@ -135,6 +135,7 @@ class _MessageBoxState extends State<MessageBox> {
             print("invalid streamResponse setting");
             return;
         }
+        String error = "";
         chatSub = chatStream.listen(
           (delta) {
             if (delta.usage != null) {
@@ -148,14 +149,43 @@ class _MessageBoxState extends State<MessageBox> {
           onDone: () {
             streamCompleter!.complete(true);
           },
+          onError: (e) {
+            if (e is RequestFailedException) {
+              error = e.message;
+            } else {
+              error = "Something unexpected happened. Try reloading the page.";
+            }
+          }
         );
         await streamCompleter!.future;
 
-        widget.data.addChatStreamDelta(buffer);
-        buffer = "";
-        message = widget.data.clearStreamText();
+        if (error.isEmpty) {
+          widget.data.addChatStreamDelta(buffer);
+          buffer = "";
+          message = widget.data.clearStreamText();
 
-        updateDatabaseChat(model, inputTokens, outputTokens, message, firstMsg);
+          updateDatabaseChat(model, inputTokens, outputTokens, message, firstMsg);
+        } else {
+          widget.data.addChatStreamDelta(error);
+          buffer = "";
+          message = widget.data.clearStreamText();
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text("Error"),
+              content: Text(error),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text("Ok"),
+                )
+              ],
+            ),
+          );
+        }
+
         break;
       case ModelGroup.dalle:
         final response = await APIManager.imagePrompt(
