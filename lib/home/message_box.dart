@@ -10,6 +10,7 @@ import 'package:gpt_thing/home/api_manager.dart';
 import 'package:gpt_thing/home/chat_data.dart';
 import 'package:gpt_thing/home/chat_info.dart';
 import 'package:gpt_thing/home/chat_message_data.dart';
+import 'package:gpt_thing/home/error_dialog.dart';
 import 'package:gpt_thing/home/key_set_dialog.dart';
 import 'package:gpt_thing/home/model_dialog.dart';
 import 'package:gpt_thing/home/model_group.dart';
@@ -153,7 +154,7 @@ class _MessageBoxState extends State<MessageBox> {
             if (e is RequestFailedException) {
               error = e.message;
             } else {
-              error = "Something unexpected happened. Try reloading the page.";
+              error = "unexpected";
             }
           }
         );
@@ -166,23 +167,19 @@ class _MessageBoxState extends State<MessageBox> {
 
           updateDatabaseChat(model, inputTokens, outputTokens, message, firstMsg);
         } else {
-          widget.data.addChatStreamDelta(error);
-          buffer = "";
-          message = widget.data.clearStreamText();
+          if (widget.data.streamText.isNotEmpty) {
+            widget.data.addChatStreamDelta(buffer);
+            buffer = "";
+            message = widget.data.clearStreamText();
+
+            updateDatabaseChat(model, inputTokens, outputTokens, message, firstMsg);
+          } else {
+            buffer = "";
+            widget.data.clearStreamText();
+          }
           showDialog(
             context: context,
-            builder: (context) => AlertDialog(
-              title: Text("Error"),
-              content: Text(error),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text("Ok"),
-                )
-              ],
-            ),
+            builder: (context) => ErrorDialog(errorMsg: error),
           );
         }
 
