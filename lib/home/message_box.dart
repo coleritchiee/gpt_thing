@@ -90,7 +90,19 @@ class _MessageBoxState extends State<MessageBox> {
     try {
       title = await APIManager.getChatTitle(
           ChatMessageData.convertForAPI(widget.data.messages));
+    } on RequestFailedException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("An error occured generating the chat title: ${e.message}"),
+        ),
+      );
+      return;
     } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("An unexpected error occured generating the chat title."),
+        ),
+      );
       return;
     }
     info.title = title.choices.first.message.content!.first.text!;
