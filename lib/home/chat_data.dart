@@ -266,6 +266,26 @@ class ChatData extends ChangeNotifier {
     return message;
   }
 
+  String removeLastMessage() {
+    String msg = "";
+    if (messages.isNotEmpty) {
+      msg = messages.removeLast().text!;
+    }
+    if (messages.length < 2) {
+      messages.clear();
+    }
+    notifyListeners();
+    return msg;
+  }
+
+  String getSystemPrompt() {
+    String msg = "";
+    if (messages.first.role == OpenAIChatMessageRole.system) {
+      msg = messages[0].text!;
+    }
+    return msg;
+  }
+
   factory ChatData.fromJson(Map<String, dynamic> json) {
     final stuff = ChatData()
       ..id = json['id'] as String

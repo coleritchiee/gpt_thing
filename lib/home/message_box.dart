@@ -114,6 +114,14 @@ class _MessageBoxState extends State<MessageBox> {
     widget.data.overwrite(FirestoreService().updateChat(widget.data, info));
   }
 
+  void errorFix(bool firstMsg) {
+    if (firstMsg) {
+      sysController.text = widget.data.getSystemPrompt();
+    }
+    msgController.text = widget.data.removeLastMessage();
+    updateEmpty();
+  }
+
   void recMsg(String msg, bool firstMsg, String model) async {
     switch (widget.data.modelGroup) {
       case ModelGroup.chatGPT:
@@ -191,6 +199,7 @@ class _MessageBoxState extends State<MessageBox> {
           } else {
             buffer = "";
             widget.data.clearStreamText();
+            errorFix(firstMsg);
           }
           showDialog(
             context: context,
@@ -218,6 +227,7 @@ class _MessageBoxState extends State<MessageBox> {
               builder: (context) => ErrorDialog(
                     errorMsg: error,
                   ));
+          errorFix(firstMsg);
         }
         if (widget.data.id == "") {
           ChatInfo info = ChatInfo(
