@@ -86,8 +86,13 @@ class _MessageBoxState extends State<MessageBox> {
 
   Future<void> generateChatTitle() async {
     ChatInfo info = widget.chatIds.getById(widget.data.id)!;
-    final title = await APIManager.getChatTitle(
-        ChatMessageData.convertForAPI(widget.data.messages));
+    OpenAIChatCompletionModel title;
+    try {
+      title = await APIManager.getChatTitle(
+          ChatMessageData.convertForAPI(widget.data.messages));
+    } catch (e) {
+      return;
+    }
     info.title = title.choices.first.message.content!.first.text!;
     // maybe change this to a separate type of token usage? for now it's fine to just
     // classify it under the model
@@ -137,27 +142,23 @@ class _MessageBoxState extends State<MessageBox> {
             return;
         }
         String error = "";
-        chatSub = chatStream.listen(
-          (delta) {
-            if (delta.usage != null) {
-              inputTokens = delta.usage!.promptTokens;
-              outputTokens = delta.usage!.completionTokens;
-            }
-            if (delta.haveChoices) {
-              buffer = bufferBehavior(getStreamDeltaString(delta), buffer);
-            }
-          },
-          onDone: () {
-            streamCompleter!.complete(true);
-          },
-          onError: (e) {
-            if (e is RequestFailedException) {
-              error = e.message;
-            } else {
-              error = "unexpected";
-            }
+        chatSub = chatStream.listen((delta) {
+          if (delta.usage != null) {
+            inputTokens = delta.usage!.promptTokens;
+            outputTokens = delta.usage!.completionTokens;
           }
-        );
+          if (delta.haveChoices) {
+            buffer = bufferBehavior(getStreamDeltaString(delta), buffer);
+          }
+        }, onDone: () {
+          streamCompleter!.complete(true);
+        }, onError: (e) {
+          if (e is RequestFailedException) {
+            error = e.message;
+          } else {
+            error = "unexpected";
+          }
+        });
         await streamCompleter!.future;
 
         if (error.isEmpty) {
@@ -165,14 +166,16 @@ class _MessageBoxState extends State<MessageBox> {
           buffer = "";
           message = widget.data.clearStreamText();
 
-          updateDatabaseChat(model, inputTokens, outputTokens, message, firstMsg);
+          updateDatabaseChat(
+              model, inputTokens, outputTokens, message, firstMsg);
         } else {
           if (widget.data.streamText.isNotEmpty) {
             widget.data.addChatStreamDelta(buffer);
             buffer = "";
             message = widget.data.clearStreamText();
 
-            updateDatabaseChat(model, inputTokens, outputTokens, message, firstMsg);
+            updateDatabaseChat(
+                model, inputTokens, outputTokens, message, firstMsg);
           } else {
             buffer = "";
             widget.data.clearStreamText();
@@ -185,10 +188,25 @@ class _MessageBoxState extends State<MessageBox> {
 
         break;
       case ModelGroup.dalle:
-        final response = await APIManager.imagePrompt(
-          msg,
-          widget.data.model,
-        );
+        String error = "";
+        late OpenAIImageModel response;
+        try {
+          response = await APIManager.imagePrompt(
+            msg,
+            widget.data.model,
+          );
+        } on RequestFailedException catch (e) {
+          error = e.message;
+        } catch (e) {
+          error = "unexpected";
+        }
+        if (error.isNotEmpty) {
+          showDialog(
+              context: context,
+              builder: (context) => ErrorDialog(
+                    errorMsg: error,
+                  ));
+        }
         if (widget.data.id == "") {
           ChatInfo info = ChatInfo(
               id: widget.data.id,
