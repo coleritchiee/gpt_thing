@@ -1,19 +1,48 @@
-import 'package:firebase_auth/firebase_auth.dart' as f;
-import 'package:gpt_thing/home/chat_info.dart';
-import 'package:gpt_thing/services/firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
+
+import '../home/user_settings.dart';
 
 part 'models.g.dart';
 
 @JsonSerializable(explicitToJson: true)
-class User {
-  String uid;
+class User extends ChangeNotifier{
 
-  static Future<User> userFromFireBaseUser(f.User user) async{
-    return User(uid: user.uid);
+  static User NOT_SIGNED_IN = User(uid: "", name: "", settings: UserSettings.DEFAULT);
+
+  String uid;
+  String name;
+  String? apiKey;
+  String? org;
+  UserSettings settings;
+
+  User({
+    required this.uid,
+    required this.name,
+    required this.settings,
+    this.apiKey,
+    this.org
+  });
+
+  void setKey(String key, String org) {
+    this.apiKey = key;
+    this.org = org;
+    notifyListeners();
   }
 
-  User({required this.uid});
+  void updateSettings(UserSettings settings){
+    this.settings = settings;
+    notifyListeners();
+  }
+
+  void overwrite(User user){
+    this.name = user.name;
+    this.uid = user.uid;
+    this.settings = user.settings;
+    this.apiKey = user.apiKey;
+    this.org = user.org;
+    notifyListeners();
+  }
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
   Map<String, dynamic> toJson() => _$UserToJson(this);

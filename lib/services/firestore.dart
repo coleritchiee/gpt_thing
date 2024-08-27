@@ -1,11 +1,29 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:gpt_thing/home/chat_data.dart';
-
+import 'package:gpt_thing/home/model_group.dart';
+import 'package:gpt_thing/home/user_settings.dart';
+import 'models.dart' as u;
 import '../home/chat_info.dart';
+import 'package:get_it/get_it.dart';
 
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
+
+  Future<u.User?> getUserFromId(String uid) async{
+    try {
+      DocumentSnapshot userSnapshot = await _db.collection('users').doc(uid).get();
+      return u.User.fromJson(userSnapshot.data() as Map<String, dynamic>);
+    }
+    catch(e){
+      return u.User(uid: uid, name: "", settings: UserSettings.DEFAULT);
+    }
+  }
 
   Future<List<ChatInfo>> getChats(String uid) async {
     try {
@@ -16,6 +34,20 @@ class FirestoreService {
       return chats;
     } catch (e) {
       return [];
+    }
+  }
+
+  Future<void> updateUser(u.User user) async {
+    try{
+      if(user.settings.saveAPIKey != true){
+        user.apiKey = null;
+        user.org = null;
+      }
+      await _db.collection('users').doc(user.uid).set(user.toJson());
+      GetIt.I<u.User>().overwrite(user);
+    }
+    catch(e){
+      print(e.toString());
     }
   }
 
@@ -42,8 +74,6 @@ class FirestoreService {
       var doc = chats.doc();
       data.setId(doc.id);
       doc.set(data.toJson());
-      info.date = DateTime.now();
-      info.title = data.id;
       info.id = data.id;
       var infoDoc = chatInfos.doc(data.id);
       infoDoc.set(info.toJson());
@@ -91,7 +121,14 @@ class FirestoreService {
     DocumentReference userRef = _db.collection('users').doc(userId);
     DocumentReference chatRef = userRef.collection('chats').doc(chatId);
     DocumentReference chatInfoRef = _db.collection('users').doc(userId).collection('chatInfos').doc(chatId);
-
+    try {
+      DocumentSnapshot chat = await chatRef.get();
+      var data = chat.data() as Map<String, dynamic>;
+      if (ModelGroup.getByName(data["modelGroup"]) == ModelGroup.dalle) {
+        deleteImageFromChat(chatId, userId);
+      }
+    }
+    catch(e){}
     return _db.runTransaction((transaction) async {
       DocumentSnapshot userSnapshot = await transaction.get(userRef);
       if (!userSnapshot.exists) {
@@ -102,5 +139,96 @@ class FirestoreService {
     }).catchError((error) {
       throw Exception('Failed to remove chat ID and delete chat document: $error');
     });
+  }
+
+  Future<String> uploadImageToStorageFromLink(String b64, String chatId) async {
+    try {
+      Uint8List imageData = base64Decode(b64);
+      final storageRef = FirebaseStorage.instance.ref();
+      String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      var user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception('User not logged in');
+      }
+      final imageRef = storageRef.child('images/${user.uid}/$chatId/$fileName.png');
+      final uploadTask = imageRef.putData(imageData);
+      final snapshot = await uploadTask.whenComplete(() => {});
+      final downloadUrl = await snapshot.ref.getDownloadURL();
+
+      return downloadUrl;
+    } catch (e) {
+      print('Error occurred while uploading image: $e');
+      return '';
+    }
+  }
+
+  Future<void> deleteImageFromChat(String chatId, String userId) async {
+    final storageRef = FirebaseStorage.instance.ref();
+    final chatImagesRef = storageRef.child('images/$userId/$chatId');
+
+    try{
+      final ListResult result = await chatImagesRef.listAll();
+      List<Reference> allFiles = result.items;
+
+      for (var fileRef in allFiles) {
+        // remove from the cache
+        DefaultCacheManager().removeFile(await fileRef.getDownloadURL());
+        // then delete from the database
+        await fileRef.delete();
+      }
+    } catch (e) {
+      print('Error occurred while deleting files: $e');
+    }
+  }
+
+  Future<String> fetchCurrentVersion() async {
+    var versionDoc = await FirebaseFirestore.instance.collection('config').doc('appConfig').get();
+    return versionDoc['currentVersion'] as String;
+  }
+
+  Future<bool> addChatReport(ChatData data, String uid, String message) async {
+    try {
+      CollectionReference reports = _db.collection('reports');
+      final doc = reports.doc(DateTime.now().millisecondsSinceEpoch.toString());
+      final reportData = data.toJson();
+      reportData['uid'] = uid;
+      reportData['reportMessage'] = message;
+      await doc.set(reportData);
+    } catch (e) {
+      print('Error occured while reporting chat: $e');
+      return false;
+    }
+    return true;
+  }
+
+  Future<void> deleteUserAccount(String userId) async {
+    if (userId.isEmpty) {
+      return;
+    }
+    try {
+      await deleteImagesFromStorage(userId);
+      await _db.collection('users').doc(userId).delete();
+      await FirebaseAuth.instance.currentUser!.delete();
+    } catch (e) {
+      print('Failed to delete user data: $e');
+      return;
+    }
+  }
+
+
+  Future<void> deleteImagesFromStorage(String userId) async {
+    final storageRef = FirebaseStorage.instance.ref().child('images').child(userId);
+
+    try {
+      final ListResult result = await storageRef.listAll();
+      for (var folderRef in result.prefixes) {
+        final folderContent = await folderRef.listAll();
+        for (var fileRef in folderContent.items) {
+          await fileRef.delete();
+        }
+      }
+    } catch (e) {
+      throw Exception('Failed to delete images: $e');
+    }
   }
 }

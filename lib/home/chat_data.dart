@@ -1,75 +1,113 @@
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
-import 'package:json_annotation/json_annotation.dart';
+import 'package:get_it/get_it.dart';
+import 'package:gpt_thing/home/api_manager.dart';
+import 'package:gpt_thing/home/chat_message_data.dart';
+import 'package:gpt_thing/home/model_group.dart';
+import 'package:gpt_thing/services/firestore.dart';
+import '../services/models.dart' as u;
 
-part 'chat_data.g.dart';
-@JsonSerializable(explicitToJson: true)
+class Model {
+  late String id;
+  ModelGroup group = ModelGroup.other;
+  late bool preview;
+
+  Model(this.id, List<ModelGroup> groups) {
+    for (ModelGroup mg in groups) {
+      if (id.startsWith(mg.prefix)) {
+        group = mg;
+        break;
+      }
+    }
+
+    preview = id.endsWith("preview");
+  }
+}
+
+class TokenUsageEntry {
+  int input;
+  int output;
+
+  TokenUsageEntry({required this.input, required this.output});
+
+  void addUsage(int input, int output) {
+    this.input += input;
+    this.output += output;
+  }
+
+  factory TokenUsageEntry.fromJson(Map<String, dynamic> json) {
+    return TokenUsageEntry(
+      input: json['input'] as int,
+      output: json['output'] as int,
+    );
+  }
+
+  Map<String, int> toJson() {
+    return {
+      'input': input,
+      'output': output,
+    };
+  }
+}
+
 class ChatData extends ChangeNotifier {
-  List<OpenAIChatCompletionChoiceMessageModel> messages = [];
+  // included fields
+  List<ChatMessageData> messages = [];
   String id = "";
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  String lastModel = "";
+  ModelGroup modelGroup = ModelGroup.other;
+  Map<String, TokenUsageEntry> tokenUsage = <String, TokenUsageEntry>{};
+
+  // excluded fields
   String apiKey = "";
-  @JsonKey(includeFromJson: false, includeToJson: false)
   String organization = "";
-  @JsonKey(includeFromJson: false, includeToJson: false)
   List<Model> models = <Model>[];
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  String model = "";
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  String modelGroup = "";
-  @JsonKey(includeFromJson: false, includeToJson: false)
   final List<ModelGroup> groups = [
-    ModelGroup(
-      name: "ChatGPT",
-      prefix: "gpt",
-      description: "Natural language processing"
-    ),
-    ModelGroup(
-      name: "Dall·E",
-      prefix: "dall-e",
-      description: "Generate and edit images"
-    ),
-    ModelGroup(
-      name: "TTS",
-      prefix: "tts",
-      description: "Convert text to spoken audio"
-    ),
-    ModelGroup(
-      name: "Whisper",
-      prefix: "whisper",
-      description: "Convert audio to text"
-    ),
-    ModelGroup(
-      name: "Embeddings",
-      prefix: "text-embedding",
-      description: "Convert text to a numerical form"
-    ),
-    ModelGroup(
-      name: "Other",
-      prefix: "",
-      description: "Specialized models"
-    ),
+    ModelGroup.chatGPT,
+    ModelGroup.dalle,
+    ModelGroup.tts,
+    ModelGroup.whisper,
+    ModelGroup.embeddings,
+    ModelGroup.other,
   ];
+  String model = "";
+  bool _thinking = false;
+  String streamText = "";
+  u.User user = GetIt.I<u.User>();
 
   ChatData();
 
-  void overwrite(ChatData data){
-    this.id = data.id;
-    this.messages = data.messages;
+  void overwrite(ChatData data) {
+    id = data.id;
+    messages = data.messages;
+    model = lastModel = data.lastModel;
+    modelGroup = data.modelGroup;
+    tokenUsage = data.tokenUsage;
+    _thinking = false;
+    streamText = "";
     notifyListeners();
   }
 
-  void setId(String id){
+  void setId(String id) {
     this.id = id;
+    notifyListeners();
   }
 
-  void setKey(String key, String org) {
-    apiKey = key;
-    OpenAI.apiKey = apiKey;
-    organization = org;
-    if (organization.isNotEmpty) {
-      OpenAI.organization = organization;
+  Future<bool> setKey(String key, String org, {bool fromUser = false}) async {
+    bool validated = true;
+    OpenAI.apiKey = apiKey = key;
+    OpenAI.organization = organization = org;
+    try {
+      addModels(await APIManager.getModels());
+    } catch (e) {
+      resetKey();
+      validated = false;
     }
+    if (user.settings.saveAPIKey && !fromUser) {
+      user.setKey(apiKey, organization);
+    }
+    notifyListeners();
+    return validated;
   }
 
   void resetKey() {
@@ -77,19 +115,72 @@ class ChatData extends ChangeNotifier {
     OpenAI.apiKey = "";
     organization = "";
     OpenAI.organization = "";
+    notifyListeners();
   }
 
   void addModels(List<String> ids) {
+    models.clear();
     for (String id in ids) {
       models.add(Model(id, groups));
     }
     notifyListeners();
   }
 
-  void setModel(String model, String group) {
-    this.model = model;
-    this.modelGroup = group;
-    notifyListeners();
+  void setModel(Model? model) {
+    if (model != null) {
+      this.model = model.id;
+      modelGroup = model.group;
+      notifyListeners();
+    }
+  }
+
+  void setLastModel() {
+    lastModel = model;
+  }
+
+  Model? getModelById(String id) {
+    for (Model m in models) {
+      if (m.id == id) {
+        return m;
+      }
+    }
+    return null;
+  }
+
+  void applyDefaultModel([BuildContext? context]) {
+    if (model.isNotEmpty) {
+      return; // don't change model if it's already set
+    }
+    if (keyIsSet() && user.settings.defaultModel.isNotEmpty) {
+      Model? defaultModel = getModelById(user.settings.defaultModel);
+      if (defaultModel == null && context != null) {
+        String oldModel = user.settings.defaultModel;
+        // reset default model and update it in the database
+        user.updateSettings(
+            user.settings.copyWith(defaultModel: "", defaultModelGroup: ""));
+        FirestoreService().updateUser(user);
+        // tell the user the default model is gone
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text("Default Model Error"),
+                content: Text(
+                    "Looks like your default model ($oldModel) isn't supported anymore. Choose a new one in settings."),
+                actions: [
+                  TextButton(
+                    child: const Text("OK"),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  )
+                ],
+                insetPadding: const EdgeInsets.all(24),
+              );
+            });
+      }
+      setModel(defaultModel);
+    }
   }
 
   bool keyIsSet() {
@@ -100,28 +191,124 @@ class ChatData extends ChangeNotifier {
     return model.isNotEmpty;
   }
 
-  void addMessage(OpenAIChatMessageRole role, String message) {
-    messages.add(OpenAIChatCompletionChoiceMessageModel(
+  void setThinking(bool t) {
+    _thinking = t;
+    notifyListeners();
+  }
+
+  bool isThinking() {
+    return _thinking;
+  }
+
+  void addChatStreamDelta(String buffer) {
+    streamText += buffer;
+    notifyListeners();
+  }
+
+  String clearStreamText() {
+    final temp = streamText;
+    streamText = "";
+    notifyListeners();
+    return temp;
+  }
+
+  void addMessage(OpenAIChatMessageRole role, String text,
+      {String? model, int? inputTokens, int? outputTokens}) {
+    messages.add(ChatMessageData(
       role: role,
-      content: [
-        OpenAIChatCompletionChoiceMessageContentItemModel.text(message),
-      ],
+      timestamp: DateTime.now(),
+      text: text,
+      model: model,
+      inputTokens: inputTokens,
+      outputTokens: outputTokens,
     ));
     notifyListeners();
   }
 
+  void addImage(OpenAIChatMessageRole role, String url,
+      {String? model, int? inputTokens, int? outputTokens}) {
+    messages.add(ChatMessageData(
+      role: role,
+      imageUrl: url,
+      timestamp: DateTime.now(),
+      model: model,
+      inputTokens: inputTokens,
+      outputTokens: outputTokens,
+    ));
+    notifyListeners();
+  }
+
+  void addTokenUsage(String model, int input, int output) {
+    if (tokenUsage.containsKey(model)) {
+      tokenUsage[model]!.addUsage(input, output);
+    } else {
+      tokenUsage[model] = TokenUsageEntry(input: input, output: output);
+    }
+    notifyListeners();
+  }
+
+  bool hasTokenUsage() {
+    return tokenUsage.isNotEmpty;
+  }
+
+  String firstUserMessage(int limit) {
+    String message = "Untitled Chat"; // failsafe instead of id (security risk)
+    for (ChatMessageData msg in messages) {
+      if (msg.role == OpenAIChatMessageRole.user) {
+        if (msg.text != null) {
+          message = msg.text!;
+        }
+      }
+    }
+    if (message.length > limit) {
+      message = "${message.substring(0, limit)}...";
+    }
+    return message;
+  }
+
+  String removeLastMessage() {
+    String msg = "";
+    if (messages.isNotEmpty) {
+      msg = messages.removeLast().text!;
+    }
+    if (messages.length < 2) {
+      messages.clear();
+    }
+    notifyListeners();
+    return msg;
+  }
+
+  String getSystemPrompt() {
+    String msg = "";
+    if (messages.first.role == OpenAIChatMessageRole.system) {
+      msg = messages[0].text!;
+    }
+    return msg;
+  }
+
   factory ChatData.fromJson(Map<String, dynamic> json) {
-    return ChatData()
+    final stuff = ChatData()
       ..id = json['id'] as String
+      ..lastModel = json['lastModel'] as String
+      ..modelGroup = ModelGroup.getByName(json['modelGroup'] as String)
+      ..tokenUsage = (json['tokenUsage'] as Map<String, dynamic>)
+          .map<String, TokenUsageEntry>((model, usage) =>
+              MapEntry<String, TokenUsageEntry>(model,
+                  TokenUsageEntry.fromJson(usage as Map<String, dynamic>)))
       ..messages = (json['messages'] as List)
-          .map((e) => OpenAIChatCompletionChoiceMessageModel.fromMap(e as Map<String, dynamic>))
+          .map((e) => ChatMessageData.fromJson(e as Map<String, dynamic>))
           .toList();
+    return stuff;
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'messages': messages.map((message) => message.toMap()).toList(),
+      'lastModel' : lastModel,
+      'modelGroup': modelGroup.name,
+      'tokenUsage': tokenUsage.map((model, usage) =>
+          MapEntry<String, Map<String, int>>(model, usage.toJson())),
+      'messages': messages.map((message) => message.toJson()).toList(),
     };
   }
 
@@ -137,40 +324,4 @@ class ChatData extends ChangeNotifier {
         return "Unknown";
     }
   }
-
-  @override
-  String toString() {
-    // really just to be used for debugging
-    // TODO: remove this eventually
-    String retStr = "ChatData Contents:";
-    for (int i = 0; i < messages.length; i++) {
-      retStr += "\n ${messages[i].role}:\n  ${(messages[i].content)![0].text}";
-    }
-    return retStr;
-  }
-}
-
-class Model {
-  late String id;
-  late String group;
-  late bool preview;
-
-  Model(this.id, List<ModelGroup> groups) {
-    group = "Other";
-    for (ModelGroup mg in groups) {
-      if (id.startsWith(mg.prefix)) {
-        group = mg.name;
-        break;
-      }
-    }
-    preview = id.endsWith("preview");
-  }
-}
-
-class ModelGroup {
-  String name;
-  String prefix;
-  String description;
-
-  ModelGroup({required this.name, required this.prefix, required this.description});
 }

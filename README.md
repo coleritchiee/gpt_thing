@@ -26,7 +26,6 @@ To interact with ChatKeyPT using your personal API key from OpenAI, the followin
 
 In ChatKey, we prioritize your privacy and data security:
 
-- **No Storage of API Keys**: API keys are never stored on our servers or any external databases; they remain on your device.
 - **Secure Authentication with Firebase**: Ensures that all user sessions are secure and data is handled with the utmost care.
 
 ## Why Choose ChatKeyPT?

@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:gpt_thing/services/firestore.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'models.dart' as u;
 
@@ -15,8 +16,8 @@ class AuthService {
   Future<void> anonLogin() async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance.signInAnonymously();
-      u.User newUser = await u.User.userFromFireBaseUser(userCredential.user!);
-      await FirebaseFirestore.instance.collection('users').doc(userCredential.user?.uid).set(newUser.toJson());
+      u.User? newUser = await FirestoreService().getUserFromId(userCredential.user!.uid);
+      FirestoreService().updateUser(newUser!);
         } on FirebaseAuthException {
       //handle error
     }
@@ -24,14 +25,14 @@ class AuthService {
 
   Future<void> emailLogin(email, password) async{
     UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
-    u.User newUser = await u.User.userFromFireBaseUser(userCredential.user!);
-    await FirebaseFirestore.instance.collection('users').doc(userCredential.user?.uid).set(newUser.toJson());
+    u.User? newUser = await FirestoreService().getUserFromId(userCredential.user!.uid);
+    FirestoreService().updateUser(newUser!);
   }
 
   Future<void> emailSignup(email, password) async{
     UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
-    u.User newUser = await u.User.userFromFireBaseUser(userCredential.user!);
-    await FirebaseFirestore.instance.collection('users').doc(userCredential.user?.uid).set(newUser.toJson());
+    u.User? newUser = await FirestoreService().getUserFromId(userCredential.user!.uid);
+    FirestoreService().updateUser(newUser!);
   }
 
   Future<void> signOut() async {
@@ -51,8 +52,8 @@ class AuthService {
       );
 
       UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(authCredential);
-      u.User newUser = await u.User.userFromFireBaseUser(userCredential.user!);
-      await FirebaseFirestore.instance.collection('users').doc(userCredential.user?.uid).set(newUser.toJson());
+      u.User? newUser = await FirestoreService().getUserFromId(userCredential.user!.uid);
+      FirestoreService().updateUser(newUser!);
     } on FirebaseAuthException catch (e) {
       print('Failed with error code: ${e.code}');
       print(e.message);
@@ -83,6 +84,13 @@ class AuthService {
         AppleIDAuthorizationScopes.fullName,
       ],
       nonce: nonce,
+      webAuthenticationOptions: WebAuthenticationOptions(
+          clientId: 'net.silverpangolin.chatkeyptsignin',
+          redirectUri: kIsWeb
+              ? Uri.parse('https://www.chatkeypt.com/')
+              : Uri.parse(
+            'https://flawless-destiny-breeze.glitch.me/callbacks/sign_in_with_apple',
+          ),)
     );
 
     final oauthCredential = OAuthProvider("apple.com").credential(
@@ -93,8 +101,8 @@ class AuthService {
     // Sign in the user with Firebase. If the nonce we generated earlier does
     // not match the nonce in `appleCredential.identityToken`, sign in will fail.
     UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(oauthCredential);
-    u.User newUser = await u.User.userFromFireBaseUser(userCredential.user!);
-    await FirebaseFirestore.instance.collection('users').doc(userCredential.user?.uid).set(newUser.toJson());
+    u.User? newUser = await FirestoreService().getUserFromId(userCredential.user!.uid);
+    FirestoreService().updateUser(newUser!);
     return userCredential;
   }
 }
