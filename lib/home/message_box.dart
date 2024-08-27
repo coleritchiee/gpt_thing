@@ -93,14 +93,16 @@ class _MessageBoxState extends State<MessageBox> {
     } on RequestFailedException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("An error occured generating the chat title: ${e.message}"),
+          content:
+              Text("An error occured generating the chat title: ${e.message}"),
         ),
       );
       return;
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("An unexpected error occured generating the chat title."),
+          content:
+              Text("An unexpected error occured generating the chat title."),
         ),
       );
       return;
@@ -228,6 +230,7 @@ class _MessageBoxState extends State<MessageBox> {
                     errorMsg: error,
                   ));
           errorFix(firstMsg);
+          break;
         }
         if (widget.data.id == "") {
           ChatInfo info = ChatInfo(
