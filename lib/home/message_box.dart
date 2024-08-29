@@ -433,7 +433,7 @@ class _MessageBoxState extends State<MessageBox> {
                       decoration: InputDecoration(
                         hintText: widget.data.modelGroup == ModelGroup.other
                             ? "Send a message..."
-                            : "Message ${widget.data.modelGroup.name}",
+                            : "Message ${widget.data.model}",
                         hintStyle: TextStyle(
                           color: Colors.grey.shade500,
                         ),

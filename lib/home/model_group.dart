@@ -1,16 +1,16 @@
 class ModelGroup {
   static const ModelGroup chatGPT = ModelGroup(
     supported: true,
-    name: "ChatGPT",
+    name: "GPT",
     prefix: "gpt",
     description: "Natural language processing",
     systemPrompt: true,
   );
   static const ModelGroup dalle = ModelGroup(
     supported: true,
-    name: "Dall·E",
+    name: "Diffusion",
     prefix: "dall-e",
-    description: "Generate images",
+    description: "Image generation",
     systemPrompt: false,
   );
   static const ModelGroup tts = ModelGroup(
@@ -61,9 +61,9 @@ class ModelGroup {
 
   static ModelGroup getByName(String name) {
     switch (name) {
-      case "ChatGPT":
+      case "GPT":
         return ModelGroup.chatGPT;
-      case "Dall·E":
+      case "Diffusion":
         return ModelGroup.dalle;
       case "TTS":
         return ModelGroup.tts;

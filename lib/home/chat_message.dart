@@ -75,7 +75,7 @@ class _ChatMessageState extends State<ChatMessage> {
                     ? "System"
                     : widget.modelGroup == ModelGroup.other
                         ? "Assistant"
-                        : widget.modelGroup.name,
+                        : "${widget.modelGroup.name} Assistant",
             style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
