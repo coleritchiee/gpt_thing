@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:gpt_thing/legal.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -116,6 +117,60 @@ class About extends StatelessWidget {
                 openTOS();
               },
               child: Text("Terms of Service",
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                    decoration: hover4 ? TextDecoration.underline : null,
+                    decorationColor: Theme.of(context).colorScheme.primary,
+                  )),
+            ),
+          );
+        }),
+        const SizedBox(height: 8),
+        StatefulBuilder(builder: (context, setState) {
+          return MouseRegion(
+            onEnter: (event) {
+              setState(() {
+                hover4 = true;
+              });
+            },
+            onExit: (event) {
+              setState(() {
+                hover4 = false;
+              });
+            },
+            cursor: SystemMouseCursors.click,
+            child: GestureDetector(
+              onTap: () {
+                context.go("/support");
+              },
+              child: Text("Support",
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                    decoration: hover4 ? TextDecoration.underline : null,
+                    decorationColor: Theme.of(context).colorScheme.primary,
+                  )),
+            ),
+          );
+        }),
+        const SizedBox(height: 8),
+        StatefulBuilder(builder: (context, setState) {
+          return MouseRegion(
+            onEnter: (event) {
+              setState(() {
+                hover4 = true;
+              });
+            },
+            onExit: (event) {
+              setState(() {
+                hover4 = false;
+              });
+            },
+            cursor: SystemMouseCursors.click,
+            child: GestureDetector(
+              onTap: () {
+                context.go("/delete-account");
+              },
+              child: Text("Delete My Account",
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.primary,
                     decoration: hover4 ? TextDecoration.underline : null,
