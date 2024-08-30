@@ -8,9 +8,7 @@ class DeleteAccountPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (FirebaseAuth.instance.currentUser == null) {
-      context.go("/login-delete-account");
-    }
+    final loggedIn = FirebaseAuth.instance.currentUser != null;
 
     return Scaffold(
       appBar: AppBar(
@@ -34,7 +32,16 @@ class DeleteAccountPage extends StatelessWidget {
                 const SizedBox(height: 20),
                 Center(
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: loggedIn ? null : () {
+                      context.go("/login-delete-account");
+                    },
+                    child: const Text('Sign In'),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: !loggedIn ? null : () {
                       showDialog(
                         context: context,
                         builder: (context) {
