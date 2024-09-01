@@ -43,7 +43,7 @@ app.*.map.json
 /android/app/release
 
 # API keys and whatnot
-dotenv
+lib/firebase_options.dart
 ios/Runner/GoogleService-Info.plist
 app/google-services.json
 .vercel
