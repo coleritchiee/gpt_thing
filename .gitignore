@@ -46,4 +46,3 @@ app.*.map.json
 lib/firebase_options.dart
 ios/Runner/GoogleService-Info.plist
 app/google-services.json
-.vercel
